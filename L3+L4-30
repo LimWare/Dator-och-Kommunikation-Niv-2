@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Provfrågor: L3 Nätverk & L4 Internet - Jensen Campus</title>
+  <style>
+    :root {
+      --bg: #070e17;
+      --card-bg: #0d1b2a;
+      --gold: #d4af37;
+      --gold-hover: #e5c158;
+      --gold-border: rgba(212, 175, 55, 0.45);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --opt-bg: #142438;
+      --opt-hover: #1c324e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .modal-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 760px;
+      border-radius: 24px;
+      border: 1.5px solid var(--gold-border);
+      padding: 24px 28px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 175, 55, 0.15);
+      display: flex;
+      flex-direction: column;
+      min-height: 680px;
+      justify-content: space-between;
+    }
+
+    .header-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--gold-border);
+      padding-bottom: 14px;
+    }
+
+    .jensen-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #070e17;
+      color: var(--gold);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+      flex-shrink: 0;
+    }
+
+    .jensen-logo span:first-child {
+      font-size: 0.62rem;
+      letter-spacing: 1px;
+      font-weight: 800;
+    }
+
+    .jensen-logo span:last-child {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .header-titles h1 {
+      font-size: 1.25rem;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .header-titles p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .segments {
+      display: flex;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .seg {
+      height: 5px;
+      flex: 1;
+      background: #192d42;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .seg.correct { background: var(--correct); }
+    .seg.wrong { background: var(--wrong); }
+    .seg.current { background: var(--gold); }
+
+    .step-text {
+      font-size: 0.85rem;
+      color: var(--gold);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pill-counter {
+      display: flex;
+      gap: 6px;
+    }
+
+    .count-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .pill-red { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .pill-green { background: rgba(34, 197, 94, 0.18); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+    .q-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .q-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--gold-border);
+      padding: 2px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .q-type-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: #142438;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .q-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #f1f5f9;
+      margin-bottom: 12px;
+    }
+
+    .hint-btn {
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 14px;
+      display: inline-block;
+      padding: 0;
+    }
+
+    .hint-box {
+      display: none;
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 3px solid var(--gold);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #fde68a;
+      margin-bottom: 14px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .opt-card {
+      background: var(--opt-bg);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      text-align: left;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .opt-card:hover:not(:disabled) {
+      background: var(--opt-hover);
+      border-color: var(--gold-border);
+    }
+
+    .opt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-result {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .opt-card.correct-opt {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: var(--correct);
+    }
+    .opt-card.correct-opt .badge-result { background: #22c55e; color: #fff; }
+
+    .opt-card.wrong-opt {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--wrong);
+    }
+    .opt-card.wrong-opt .badge-result { background: #ef4444; color: #fff; }
+
+    .opt-explanation {
+      margin-top: 8px;
+      padding-top: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: #cbd5e1;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .text-input-wrapper {
+      margin-bottom: 16px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-border);
+      background: var(--opt-bg);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--gold);
+    }
+
+    .text-result-box {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .text-result-correct { background: rgba(34, 197, 94, 0.16); border: 1px solid var(--correct); color: #86efac; }
+    .text-result-wrong { background: rgba(239, 68, 68, 0.16); border: 1px solid var(--wrong); color: #fca5a5; }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .btn-action {
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-back { background: #142438; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.08); }
+    .btn-back:hover:not(:disabled) { background: #1c324e; }
+
+    .btn-next { background: var(--gold); color: #070e17; font-weight: 700; box-shadow: 0 0 12px rgba(212, 175, 55, 0.35); }
+    .btn-next:hover:not(:disabled) { background: var(--gold-hover); }
+
+    .btn-action:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .summary-view {
+      display: none;
+      text-align: center;
+      padding: 30px 10px;
+    }
+    .summary-view h2 { font-size: 1.9rem; margin-bottom: 10px; color: var(--gold); font-weight: 700; }
+    .score-badge-large { font-size: 3.2rem; font-weight: 800; color: var(--gold); margin: 14px 0; text-shadow: 0 0 15px rgba(212, 175, 55, 0.35); }
+    .summary-desc { color: var(--text-muted); font-size: 1rem; max-width: 520px; margin: 0 auto 24px; line-height: 1.55; }
+  </style>
+</head>
+<body>
+
+<div class="modal-container">
+  <div>
+    <div class="header-box">
+      <div class="jensen-logo">
+        <span>JENSEN</span>
+        <span>1996</span>
+      </div>
+      <div class="header-titles">
+        <h1>Provfrågor: L3 Nätverk & L4 Internet</h1>
+        <p>Jensen Education • Slutprovsträning (30 Frågor: Flerval & Fritext)</p>
+      </div>
+    </div>
+
+    <div class="progress-row" id="progressRow">
+      <div class="segments" id="segments"></div>
+      <div class="step-text" id="stepCounter">1/30</div>
+      <div class="pill-counter">
+        <div class="count-pill pill-red" id="pillWrong">✕ 0</div>
+        <div class="count-pill pill-green" id="pillCorrect">✓ 0</div>
+      </div>
+    </div>
+
+    <div id="quizContent">
+      <div class="q-meta">
+        <span class="q-badge" id="qBadge">L3 / L4</span>
+        <span class="q-type-badge" id="qTypeBadge">Flerval</span>
+      </div>
+      <div class="q-text" id="qText">Laddar fråga...</div>
+
+      <button type="button" class="hint-btn" onclick="toggleHint()">💡 Visa ledtråd</button>
+      <div class="hint-box" id="hintBox"></div>
+
+      <div id="questionContainer"></div>
+    </div>
+
+    <div class="summary-view" id="summaryView">
+      <h2>Provträning genomförd!</h2>
+      <div class="score-badge-large" id="finalScore">0 / 30</div>
+      <p class="summary-desc" id="finalFeedback"></p>
+      <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om provet</button>
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar">
+    <button type="button" class="btn-action btn-back" id="btnBack" onclick="prevQuestion()" disabled>Tillbaka</button>
+    <button type="button" class="btn-action btn-next" id="btnNext" onclick="nextQuestion()">Nästa</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // 1 (L3 - MC)
+  {
+    id: 1,
+    type: "mc",
+    module: "L3: Nätverkstyper",
+    q: "Vilket alternativ beskriver nätverkstyperna PAN, LAN, MAN och WAN helt korrekt?",
+    hint: "Tänk från minsta personliga (Bluetooth) till hela världens nätverk.",
+    options: [
+      "PAN: Personligt/nära (Bluetooth), LAN: Lokalt (hem/skola), MAN: Stadsnät, WAN: Över länder/världen (Internet).",
+      "PAN: Offentliga nätverk, LAN: Satellitnätverk, MAN: Datacenter, WAN: Bluetooth-enheter.",
+      "PAN: Industriella nät, LAN: Stadskommunikation, MAN: Privata hem, WAN: Trådlösa sensorer.",
+      "PAN: Virtuella switchar, LAN: Fiber backbone, MAN: Mobila basstationer, WAN: Lokala servrar.",
+      "PAN: Molnservrar, LAN: Fordonskablar, MAN: Radiolänkar, WAN: Skrivarnätverk.",
+      "PAN: PTP-länkar, LAN: Telefonväxlar, MAN: Datorprocessorer, WAN: Campusnätverk."
+    ],
+    correct: 0,
+    expl: "PAN är personligt (Bluetooth), LAN är lokalt (hem/skola/kontor), MAN är stadsnät och WAN täcker länder/världen (Internet)."
+  },
+  // 2 (L3 - Text)
+  {
+    id: 2,
+    type: "text",
+    module: "L3: Topologier",
+    q: "Nämn minst tre olika typer av nätverkstopologier och förklara kort var en av dem används.",
+    hint: "T.ex. stjärna, buss, ring, mesh, träd eller hybrid.",
+    fullCheck: (txt) => {
+      let c = 0;
+      if (txt.includes("stjärn")) c++;
+      if (txt.includes("buss")) c++;
+      if (txt.includes("ring")) c++;
+      if (txt.includes("mesh")) c++;
+      if (txt.includes("träd")) c++;
+      if (txt.includes("hybrid")) c++;
+      let hasUsage = txt.includes("switch") || txt.includes("kontor") || txt.includes("bil") || txt.includes("fordon") || txt.includes("datacenter") || txt.includes("företag") || txt.includes("hem");
+      return c >= 3 && hasUsage;
+    },
+    partialCheck: (txt) => {
+      let c = 0;
+      if (txt.includes("stjärn")) c++;
+      if (txt.includes("buss")) c++;
+      if (txt.includes("ring")) c++;
+      if (txt.includes("mesh")) c++;
+      if (txt.includes("träd")) c++;
+      return c >= 2;
+    },
+    expl: "Stjärna (switch, standard hem/kontor), Buss (fordon/bilar för att spara kabel), Ring (telekomnät), Mesh (datacenter för hög driftsäkerhet) eller Träd (stora företag)."
+  },
+  // 3 (L3 - MC)
+  {
+    id: 3,
+    type: "mc",
+    module: "L3: Topologianvändning",
+    q: "Varför och var används buss- respektive mesh-topologier typiskt i praktiken?",
+    hint: "Spara kabel i bilar gentemot redundans i datacenter.",
+    options: [
+      "Buss används mest i fordon/bilar för att spara kabel; Mesh används i datacenter för att det aldrig får gå ner.",
+      "Buss används för internetleverantörer; Mesh används enbart hemma i sovrummet.",
+      "Buss används i ubåtar; Mesh används endast i enkla leksaker.",
+      "Buss används för trådlösa nät; Mesh används för gamla telegrafledningar.",
+      "Buss används i stjärnnätverk; Mesh används enbart mellan skrivare.",
+      "Buss kräver alltid fiber; Mesh kan enbart byggas med koaxialkablar."
+    ],
+    correct: 0,
+    expl: "Buss: alla delar samma kabel, vanligt i fordon för att spara kabel. Mesh: alla har kontakt via flera vägar, används i datacenter för att förhindra driftstopp."
+  },
+  // 4 (L3 - MC)
+  {
+    id: 4,
+    type: "mc",
+    module: "L3: Nätverksmedia",
+    q: "Vilka är de tre typerna av nätverksmedia och vad skickar de för signaler?",
+    hint: "Koppar, fiber och trådlöst.",
+    options: [
+      "Koppar (skickar el), Fiber (skickar ljus) och Trådlöst (skickar radiovågor).",
+      "Koax (ljud), Akustisk (ultraljud) och Laser (värme).",
+      "Magnetband (magnetism), Infrarött (värme) och Koppar (el).",
+      "Optisk disk (reflektion), Partvinnad (el) och Bluetooth (ljud).",
+      "Mikrovågor (el), Batteri (ström) och Koax (ljus).",
+      "Ethernet (el), IP (paket) och MAC (ramar)."
+    ],
+    correct: 0,
+    expl: "Koppar (TP/koax) skickar el, Fiber (glas/plast) skickar ljus, och Trådlöst (Wi-Fi, 4G/5G, radio) skickar radiovågor."
+  },
+  // 5 (L3 - Text)
+  {
+    id: 5,
+    type: "text",
+    module: "L3: Bunden kommunikation",
+    q: "Vad är bunden kommunikation?",
+    hint: "Allt som går via en fysisk kabel gentemot luften.",
+    fullCheck: (txt) => (txt.includes("kabel") || txt.includes("fysisk")) && (txt.includes("inte trådlös") || txt.includes("tråd") || txt.includes("fiber") || txt.includes("tp") || txt.includes("luften")),
+    partialCheck: (txt) => txt.includes("kabel") || txt.includes("sladd") || txt.includes("fysisk"),
+    expl: "Allt som går via en fysisk kabel (t.ex. vanlig nätverkskabel eller fiber), alltså inte trådlöst via luften."
+  },
+  // 6 (L3 - MC)
+  {
+    id: 6,
+    type: "mc",
+    module: "L3: TP-kablar",
+    q: "Vad skiljer UTP från STP och vad är TP-kabelns absoluta maxlängd?",
+    hint: "U = Unshielded, S = Shielded, max 100 meter.",
+    options: [
+      "UTP saknar skärm (billigast); STP har metallskärm mot elstörningar. Maxlängd: Alltid max 100 meter.",
+      "UTP är optisk; STP är elektrisk. Maxlängd: 500 meter.",
+      "UTP är för utomhusbruk; STP är för inomhusbruk. Maxlängd: 50 meter.",
+      "UTP klarar 100 Gbps; STP klarar 1 Gbps. Maxlängd: 1 000 meter.",
+      "UTP är halogenfri; STP innehåller bly. Maxlängd: 10 meter.",
+      "UTP kräver PoE; STP kräver fiberomvandlare. Maxlängd: 250 meter."
+    ],
+    correct: 0,
+    expl: "UTP saknar skärm (billigast). STP har metallskärm mot elstörningar. Maxlängden är alltid max 100 meter."
+  },
+  // 7 (L3 - MC)
+  {
+    id: 7,
+    type: "mc",
+    module: "L3: Koaxialkabel",
+    q: "Beskriv en koaxialkabel samt dess främsta för- och nackdelar:",
+    hint: "Tjock koppartråd i mitten, skärm runt, tål stryk men styv.",
+    options: [
+      "Tjock koppartråd i mitten, plastisolering och metallskärm runtom. Fördel: tål yttre störningar och stryk. Nackdel: styv och lägre kapacitet än fiber.",
+      "Tunn glastråd med plastmantel. Fördel: lätt att böja. Nackdel: extremt känslig för åska.",
+      "Två partvinnade silverledare. Fördel: böjbar. Nackdel: dyr.",
+      "Koaxialkabel har 8 tunna koppartrådar. Fördel: billig. Nackdel: max 10 meter.",
+      "Aluminiumkärna med gummi. Fördel: tål vatten. Nackdel: tål ej ström.",
+      "Plastkärna för laser. Fördel: ingen fördröjning. Nackdel: går sönder vid 10 Mbps."
+    ],
+    correct: 0,
+    expl: "Koax har en tjock koppartråd i mitten, plastisolering och metallskärm runtom (klassisk TV-sladd). Tål yttre störningar och stryk jättebra, men är styv, svårböjd och har lägre kapacitet än fiber."
+  },
+  // 8 (L3 - MC)
+  {
+    id: 8,
+    type: "mc",
+    module: "L3: Fiberkablar",
+    q: "Vad är skillnaden mellan Singlemode och Multimode fiber?",
+    hint: "Laser på milsvida sträckor gentemot LED för korta avstånd.",
+    options: [
+      "Singlemode: supertunn kärna med laser för flera mil; Multimode: tjockare kärna med LED för korta sträckor (hus/datacenter).",
+      "Singlemode: för kopparnät; Multimode: för radionät.",
+      "Singlemode: böjbar plast; Multimode: stelt glas.",
+      "Singlemode: skickar 1 bit i taget; Multimode: skickar 8 bitar parallellt.",
+      "Singlemode: max 100 meter; Multimode: max 50 mil.",
+      "Singlemode: för hemmabruk; Multimode: enbart för rymdstationer."
+    ],
+    correct: 0,
+    expl: "Singlemode har supertunn kärna med laser för jättelånga sträckor (flera mil). Multimode har tjockare kärna med enklare ljus (LED) för korta sträckor inom hus eller datacenter."
+  },
+  // 9 (L3 - Text)
+  {
+    id: 9,
+    type: "text",
+    module: "L3: Fiberfunktion",
+    q: "Hur fungerar en fiberkabel tekniskt?",
+    hint: "Data blir ljusblixtar som studsar (totalreflektion) till en fotodiod.",
+    fullCheck: (txt) => (txt.includes("ljus") || txt.includes("blixt")) && (txt.includes("studs") || txt.includes("totalreflektion") || txt.includes("reflektion")) && (txt.includes("mottag") || txt.includes("fotodiod") || txt.includes("ettor och nollor") || txt.includes("data")),
+    partialCheck: (txt) => txt.includes("ljus") && (txt.includes("studs") || txt.includes("totalreflektion") || txt.includes("fotodiod")),
+    expl: "Data görs om till ljusblixtar. Ljuset studsar inuti glastråden (totalreflektion) hela vägen till en mottagare (fotodiod) som gör om ljuset till ettor och nollor igen."
+  },
+  // 10 (L3 - Text)
+  {
+    id: 10,
+    type: "text",
+    module: "L3: Fiberfördelar",
+    q: "Vilka stora fördelar finns det med fiberkabel? (Nämn minst två)",
+    hint: "Snabbhet, okänsligt för el/åska, räckvidd utan signalförlust, omöjligt att avlyssna.",
+    fullCheck: (txt) => {
+      let count = 0;
+      if (txt.includes("snabb") || txt.includes("kapacitet") || txt.includes("mycket data")) count++;
+      if (txt.includes("åska") || txt.includes("störning") || txt.includes("elektrisk")) count++;
+      if (txt.includes("lång") || txt.includes("mil") || txt.includes("svag")) count++;
+      if (txt.includes("avlyssna") || txt.includes("bryts")) count++;
+      return count >= 2;
+    },
+    partialCheck: (txt) => txt.includes("snabb") || txt.includes("åska") || txt.includes("störning") || txt.includes("lång"),
+    expl: "1) Blixtsnabbt och klarar enorma mängder data. 2) Helt okänsligt för åska och elektriska störningar. 3) Ljuset kan färdas mil utan att signalen blir svag. 4) Går inte att avlyssna utan att länken bryts."
+  },
+  // 11 (L4 - Text)
+  {
+    id: 11,
+    type: "text",
+    module: "L4: MAC-struktur",
+    q: "Hur är en MAC-adress uppbyggd?",
+    hint: "Storlek i bytes/bitar och vad de två halvorna (första 3 resp sista 3 bytes) visar.",
+    fullCheck: (txt) => (txt.includes("6 byte") || txt.includes("48 bit")) && (txt.includes("tillverk") || txt.includes("oui")) && (txt.includes("serie") || txt.includes("nic") || txt.includes("unik") || txt.includes("kort")),
+    partialCheck: (txt) => (txt.includes("6 byte") || txt.includes("48 bit")) || txt.includes("oui") || txt.includes("tillverkare"),
+    expl: "Den är på 6 bytes (48 bitar). De 3 första byten visar vem som är tillverkare (OUI). De 3 sista byten är ett unikt serienummer för nätverkskortet (NIC)."
+  },
+  // 12 (L4 - Text)
+  {
+    id: 12,
+    type: "text",
+    module: "L4: Vad är en MAC-adress",
+    q: "Vad är en MAC-adress?",
+    hint: "Nätverkskortets unika fysiska personnummer.",
+    fullCheck: (txt) => (txt.includes("personnummer") || txt.includes("fysisk") || txt.includes("hårdvar")) && (txt.includes("kort") || txt.includes("fabrik") || txt.includes("ändras aldrig") || txt.includes("inbränd")),
+    partialCheck: (txt) => txt.includes("personnummer") || txt.includes("kort") || txt.includes("fysisk"),
+    expl: "Nätverkskortets unika fysiska 'personnummer'. Den är inbränd på kortet från fabriken och ändras aldrig."
+  },
+  // 13 (L4 - MC)
+  {
+    id: 13,
+    type: "mc",
+    module: "L4: Nätverksklasser",
+    q: "Vilka intervall och användningsområden har klasserna A, B och C?",
+    hint: "1–126, 128–191, 192–223.",
+    options: [
+      "Klass A: 1–126 (jättestora företag), Klass B: 128–191 (mellanstora nät/hybrid), Klass C: 192–223 (små nät/hemmanätverk).",
+      "Klass A: 10–50 (små nät), Klass B: 60–120 (stadsnät), Klass C: 130–255 (internationella nät).",
+      "Klass A: 0–127 (datacenter), Klass B: 128–200 (skolor), Klass C: 201–254 (hemdatorer).",
+      "Klass A: 1–100 (statliga nät), Klass B: 101–200 (kommuner), Klass C: 201–255 (privatpersoner).",
+      "Klass A: 192–223 (stora nät), Klass B: 128–191 (medel), Klass C: 1–126 (små).",
+      "Klass A: 1–128 (alla routrar), Klass B: 129–192 (alla switchar), Klass C: 193–256 (alla datorer)."
+    ],
+    correct: 0,
+    expl: "Klass A: 1–126 (t.ex. 10.0.0.1) – för jättestora företag. Klass B: 128–191 (t.ex. 172.16.0.1) – mellanstora nät. Klass C: 192–223 (t.ex. 192.168.1.1) – små nät/hemmanätverk."
+  },
+  // 14 (L4 - Text)
+  {
+    id: 14,
+    type: "text",
+    module: "L4: Host-ID",
+    q: "Hur räknar man ut Host-ID (husnumret)? Ge gärna ett exempel.",
+    hint: "Ta bort nätverksdelen – siffrorna som blir över är Host-ID.",
+    fullCheck: (txt) => (txt.includes("kvar") || txt.includes("över") || txt.includes("rest") || txt.includes("ta bort")) && (txt.includes("nät") || txt.includes("mask") || txt.includes("ip") || txt.includes(".25")),
+    partialCheck: (txt) => txt.includes("kvar") || txt.includes("husnummer") || txt.includes("nätverk"),
+    expl: "Man tar IP-adressen och tar bort nätverksdelen – siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med mask 255.255.255.0 -> Kvar blir: .25 (Host-ID)."
+  },
+  // 15 (L4 - Text)
+  {
+    id: 15,
+    type: "text",
+    module: "L4: Net-ID",
+    q: "Hur räknar man ut Net-ID (gatunamnet)?",
+    hint: "Matematisk AND-jämförelse med subnätmasken. Där masken har 255 behåller man siffrorna, resten blir nollor.",
+    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("behåll") || txt.includes("255") || txt.includes("noll")),
+    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("nätverk"),
+    expl: "Man jämför IP-adressen med subnätmasken (en matematisk AND-jämförelse). Där masken har 255 behåller man siffrorna, resten blir nollor. Ex: 192.168.1.25 AND 255.255.255.0 = 192.168.1.0."
+  },
+  // 16 (L4 - MC)
+  {
+    id: 16,
+    type: "mc",
+    module: "L4: Klass A nät & mask",
+    q: "Vilka adresser och vilken standardmask har Klass A?",
+    hint: "Börjar på 1–126, mask /8.",
+    options: [
+      "Adresser som börjar på 1–126; Standardmask: 255.0.0.0 (eller /8).",
+      "Adresser som börjar på 1–128; Standardmask: 255.255.0.0 (eller /16).",
+      "Adresser som börjar på 0–127; Standardmask: 255.255.255.0 (eller /24).",
+      "Adresser som börjar på 10–126; Standardmask: 255.255.255.255 (eller /32).",
+      "Adresser som börjar på 128–191; Standardmask: 255.0.0.0 (eller /8).",
+      "Adresser som börjar på 1–254; Standardmask: 255.240.0.0 (eller /12)."
+    ],
+    correct: 0,
+    expl: "Klass A har adresser som börjar på 1 – 126 med standardmask 255.0.0.0 (eller /8)."
+  },
+  // 17 (L4 - MC)
+  {
+    id: 17,
+    type: "mc",
+    module: "L4: Klass A kapacitet",
+    q: "Hur många nätverk respektive värdenheter kan Klass A maximalt ha?",
+    hint: "126 nätverk och cirka 16,7 miljoner värdar per nät.",
+    options: [
+      "126 st nätverk (2^7 minus 0 och 127); Cirka 16,7 miljoner värdar per nätverk (exakt 16 777 214 st).",
+      "256 st nätverk; 65 534 värdar per nätverk.",
+      "16 384 st nätverk; 254 värdar per nätverk.",
+      "2 miljoner nätverk; 10 miljoner värdar per nätverk.",
+      "128 st nätverk; 4 miljarder värdar per nätverk.",
+      "1 024 st nätverk; 1 miljon värdar per nätverk."
+    ],
+    correct: 0,
+    expl: "Nätverk: 126 st (2^7 minus 0 och 127 som är reserverade). Värdenheter: cirka 16,7 miljoner per nätverk (exakt 16 777 214 st, dvs 2^24 - 2)."
+  },
+  // 18 (L4 - MC)
+  {
+    id: 18,
+    type: "mc",
+    module: "L4: Klass B nät & mask",
+    q: "Vilka adresser och standardmask har Klass B, och varför hoppas 127 över?",
+    hint: "128–191, mask /16, loopback 127.0.0.1.",
+    options: [
+      "128–191 (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 för att det är reserverat för loopback (127.0.0.1).",
+      "127–192 (Standardmask: 255.0.0.0). 127 är reserverat för default gateway.",
+      "128–223 (Standardmask: 255.255.255.0). 127 används uteslutande för broadcast.",
+      "120–180 (Standardmask: 255.255.0.0). 127 är reserverat för DHCP.",
+      "128–191 (Standardmask: 255.255.255.0). 127 reserverades av misstag i standarden.",
+      "100–150 (Standardmask: 255.0.0.0). 127 är en hemlig militär adress."
+    ],
+    correct: 0,
+    expl: "Adresser 128 – 191 (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 för att det är reserverat för loopback (127.0.0.1) där datorn testar sig själv."
+  },
+  // 19 (L4 - MC)
+  {
+    id: 19,
+    type: "mc",
+    module: "L4: Klass B nät & värdar",
+    q: "Hur många nätverk och hur många värdenheter kan Klass B ha?",
+    hint: "16 384 nätverk och 65 534 värdenheter.",
+    options: [
+      "16 384 st nätverk (cirka 16 tusen); 65 534 st värdenheter per nätverk.",
+      "126 st nätverk; 16 miljoner värdenheter.",
+      "2 097 152 st nätverk; 254 värdenheter.",
+      "32 768 st nätverk; 32 768 värdenheter.",
+      "65 534 st nätverk; 16 384 värdenheter.",
+      "1 024 st nätverk; 65 536 värdenheter."
+    ],
+    correct: 0,
+    expl: "Nätverk: 16 384 stycken (cirka 16 tusen, 2^14). Värdenheter: 65 534 stycken per nätverk (2^16 - 2)."
+  },
+  // 20 (L4 - MC)
+  {
+    id: 20,
+    type: "mc",
+    module: "L4: Klass C nät & mask",
+    q: "Vilka adresser och vilken standardmask har Klass C (och vad är viktigt att tänka på)?",
+    hint: "Börjar på 192 och slutar på 223 (inte 256!).",
+    options: [
+      "Börjar på 192–223 (Standardmask: 255.255.255.0 eller /24). Obs: Slutar på 223, inte 256!",
+      "Börjar på 192–256 (Standardmask: 255.255.255.0).",
+      "Börjar på 192–224 (Standardmask: 255.255.0.0).",
+      "Börjar på 190–220 (Standardmask: 255.255.255.255).",
+      "Börjar på 192–240 (Standardmask: 255.0.0.0).",
+      "Börjar på 192–254 (Standardmask: 255.255.255.128)."
+    ],
+    correct: 0,
+    expl: "Adresser som börjar på 192 – 223 (Standardmask: 255.255.255.0 eller /24). Obs: Slutar på 223, inte 256!"
+  },
+  // 21 (L4 - MC)
+  {
+    id: 21,
+    type: "mc",
+    module: "L4: Klass C nät & värdar",
+    q: "Hur många nätverk och hur många värdenheter kan Klass C ha?",
+    hint: "Cirka 2,1 miljoner nätverk och 254 värdar.",
+    options: [
+      "Cirka 2,1 miljoner nätverk (exakt 2 097 152 st); 254 st värdenheter per nätverk (256 minus 2 = 254).",
+      "126 st nätverk; 16 777 214 värdenheter.",
+      "16 384 st nätverk; 65 534 värdenheter.",
+      "4 miljoner nätverk; 128 värdenheter.",
+      "256 st nätverk; 256 värdenheter.",
+      "1 miljon nätverk; 512 värdenheter."
+    ],
+    correct: 0,
+    expl: "Nätverk: cirka 2,1 miljoner stycken (exakt 2 097 152 st, 2^21). Värdenheter: 254 stycken per nätverk (256 minus 2 = 254)."
+  },
+  // 22 (L4 - Text)
+  {
+    id: 22,
+    type: "text",
+    module: "L4: Default Gateway",
+    q: "Vad är en Default Gateway?",
+    hint: "Routerns IP på det lokala nätet, 'dörren ut' när mottagaren finns på ett annat nät eller Internet.",
+    fullCheck: (txt) => (txt.includes("router") || txt.includes("ip") || txt.includes("dörr")) && (txt.includes("annat nät") || txt.includes("internet") || txt.includes("trafik") || txt.includes("skicka")),
+    partialCheck: (txt) => txt.includes("router") || txt.includes("gateway") || txt.includes("dörr"),
+    expl: "Routerns IP-adress på det lokala nätet. Det är 'dörren ut' som datorn skickar all trafik till när mottagaren finns på ett annat nätverk eller på Internet."
+  },
+  // 23 (L4 - MC)
+  {
+    id: 23,
+    type: "mc",
+    module: "L4: Unicast",
+    q: "Vad innebär Unicast och ge ett exempel på hur det kan se ut:",
+    hint: "Skickar till EN specifik dator.",
+    options: [
+      "Skickar till en enskild dator (t.ex. 192.168.1.50).",
+      "Skickar till alla i hela världen samtidigt.",
+      "Skickar enbart till routerns default gateway.",
+      "Skickar till alla datorer med samma MAC-adress.",
+      "Skickar data enbart via bluetooth.",
+      "Skickar till en fördefinierad videostreaminggrupp."
+    ],
+    correct: 0,
+    expl: "Unicast innebär att man skickar till en specifik dator (en-till-en, t.ex. 192.168.1.50)."
+  },
+  // 24 (L4 - MC)
+  {
+    id: 24,
+    type: "mc",
+    module: "L4: Multicast",
+    q: "Vad innebär Multicast och vilket adressintervall används?",
+    hint: "Skickar till en grupp (224.0.0.0 till 239.255.255.255).",
+    options: [
+      "Skickar till en grupp (224.0.0.0 till 239.255.255.255).",
+      "Skickar till alla på kabeln (255.255.255.255).",
+      "Skickar till den egna datorn internt (127.0.0.1).",
+      "Skickar till en dator (192.168.1.1).",
+      "Skickar till okänd dator (0.0.0.0).",
+      "Skickar enbart mellan virtuella servrar (10.0.0.0 till 10.255.255.255)."
+    ],
+    correct: 0,
+    expl: "Multicast skickar till en specifik grupp av mottagare, och använder Klass D-adresserna 224.0.0.0 till 239.255.255.255."
+  },
+  // 25 (L4 - MC)
+  {
+    id: 25,
+    type: "mc",
+    module: "L4: Broadcast",
+    q: "Vad innebär Broadcast och hur ser en lokal broadcastadress typiskt ut?",
+    hint: "Skickar till ALLA i det lokala nätet (slutar på .255).",
+    options: [
+      "Skickar till alla i det lokala nätet (t.ex. 192.168.1.255).",
+      "Skickar till en hemlig mottagare (0.0.0.0).",
+      "Skickar till grannens trådlösa router.",
+      "Skickar krypterad data till DNS-servern.",
+      "Skickar till en sluten abonnentgrupp (224.0.0.1).",
+      "Skickar enbart till datorer med Windows."
+    ],
+    correct: 0,
+    expl: "Broadcast skickar till alla datorer i det lokala nätet (t.ex. 192.168.1.255 i ett /24-nät)."
+  },
+  // 26 (L4 - MC)
+  {
+    id: 26,
+    type: "mc",
+    module: "L4: Loopback",
+    q: "Vad innebär Loopback och vilken är standardadressen?",
+    hint: "Datorn pratar med sig själv internt (127.0.0.1).",
+    options: [
+      "Datorn pratar med sig själv internt (127.0.0.1).",
+      "Datorn ropar ut på hela internet efter svar (255.255.255.255).",
+      "Routern loopar paket tills de försvinner (0.0.0.0).",
+      "Switchporten stängs av automatiskt vid kabelbrott.",
+      "Datorn felsöker IP-adressen hos internetleverantören.",
+      "Datorn synkroniserar klockan med en tidsserver."
+    ],
+    correct: 0,
+    expl: "Loopback innebär att datorn pratar med sig själv internt (127.0.0.1) för att verifiera att nätverkskortet och TCP/IP-stacken fungerar."
+  },
+  // 27 (L4 - MC)
+  {
+    id: 27,
+    type: "mc",
+    module: "L4: Link-local (APIPA)",
+    q: "Vad är Link-local och vilken adress tilldelas?",
+    hint: "Automatisk felsökningsadress när DHCP saknas (169.254.x.x).",
+    options: [
+      "Automatisk felsökningsadress när DHCP saknas (169.254.x.x).",
+      "Adressen man får när man ansluter till fiber (192.168.0.1).",
+      "DNS-serverns reservadress vid strömavbrott (10.0.0.1).",
+      "En fast publik IP-adress från Bahnhof eller Telia.",
+      "En krypteringsadress för VPN-tunnlar (172.16.x.x).",
+      "Adressen som routern använder för trådlösa gäster."
+    ],
+    correct: 0,
+    expl: "Link-local (APIPA) är en automatisk felsökningsadress (169.254.x.x) som datorn ger sig själv när den inte får svar från någon DHCP-server."
+  },
+  // 28 (L4 - Text)
+  {
+    id: 28,
+    type: "text",
+    module: "L4: Unspecified adress",
+    q: "Vad betyder adressen 0.0.0.0 (Unspecified)?",
+    hint: "Okänd adress under uppstart innan datorn fått en IP från DHCP.",
+    fullCheck: (txt) => (txt.includes("okänd") || txt.includes("start") || txt.includes("uppstart") || txt.includes("saknar") || txt.includes("dhcp") || txt.includes("ingen ip")),
+    partialCheck: (txt) => txt.includes("okänd") || txt.includes("start") || txt.includes("dhcp"),
+    expl: "Okänd adress under uppstart (0.0.0.0). Används av datorn innan den har hunnit få en tilldelad IP-adress från DHCP."
+  },
+  // 29 (L4 - MC)
+  {
+    id: 29,
+    type: "mc",
+    module: "L4: All-hosts broadcast",
+    q: "Vad innebär All-hosts broadcast och vilken adress har den?",
+    hint: "Ropar till alla på den fysiska kabeln (255.255.255.255).",
+    options: [
+      "Ropar till alla på den fysiska kabeln (255.255.255.255).",
+      "Ropar till alla servrar i hela världen (127.0.0.1).",
+      "Ropar enbart till nätverkets switchar (0.0.0.0).",
+      "Ropar till alla klienter i grannkommunen.",
+      "Ropar till en slumpmässig dator på nätet.",
+      "Ropar enbart till trådlösa mobiler."
+    ],
+    correct: 0,
+    expl: "All-hosts broadcast innebär att man ropar till precis alla på den lokala fysiska kabeln, och adressen är 255.255.255.255."
+  },
+  // 30 (L4 - MC)
+  {
+    id: 30,
+    type: "mc",
+    module: "L4: Directed broadcast",
+    q: "Vad innebär Directed broadcast och ge ett exempel:",
+    hint: "Ropar till alla i ett annat specifikt nätverk (t.ex. 192.168.2.255).",
+    options: [
+      "Ropar till alla i ett annat specifikt nätverk (t.ex. 192.168.2.255).",
+      "Skickar data direkt till en specifik skrivare via USB.",
+      "Skickar till den egna datorns lokala loopback.",
+      "Skickar krypterade meddelanden mellan två routrar.",
+      "Ropar på alla enheter på samma fysiska kabel utan subnät.",
+      "Skickar ping-signaler direkt till Google."
+    ],
+    correct: 0,
+    expl: "Directed broadcast innebär att man ropar till alla enheter i ett annat specifikt nätverk (t.ex. 192.168.2.255)."
+  }
+];
+
+let currentIndex = 0;
+let userAnswers = {};
+
+function initSegments() {
+  const segContainer = document.getElementById("segments");
+  segContainer.innerHTML = questions.map((_, i) => `<div class="seg" id="seg-${i}"></div>`).join("");
+}
+
+function updateProgress() {
+  const total = questions.length;
+  document.getElementById("stepCounter").textContent = `${currentIndex + 1}/${total}`;
+
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  questions.forEach((_, i) => {
+    const seg = document.getElementById(`seg-${i}`);
+    seg.className = "seg";
+    if (userAnswers[i] !== undefined) {
+      if (userAnswers[i].isCorrect) {
+        seg.classList.add("correct");
+        correctCount++;
+      } else {
+        seg.classList.add("wrong");
+        wrongCount++;
+      }
+    } else if (i === currentIndex) {
+      seg.classList.add("current");
+    }
+  });
+
+  document.getElementById("pillCorrect").textContent = `✓ ${correctCount}`;
+  document.getElementById("pillWrong").textContent = `✕ ${wrongCount}`;
+}
+
+function toggleHint() {
+  const box = document.getElementById("hintBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function normalize(str) {
+  return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function loadQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById("qBadge").textContent = q.module;
+  document.getElementById("qTypeBadge").textContent = (q.type === "mc") ? "Flerval (6 alternativ)" : "Fritext (skriv själv)";
+  document.getElementById("qText").textContent = `${idx + 1}. ${q.q}`;
+  document.getElementById("hintBox").textContent = q.hint;
+  document.getElementById("hintBox").style.display = "none";
+
+  const container = document.getElementById("questionContainer");
+  container.innerHTML = "";
+
+  const answerData = userAnswers[idx];
+
+  if (q.type === "mc") {
+    const list = document.createElement("div");
+    list.className = "options-list";
+
+    q.options.forEach((optText, optIdx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "opt-card";
+
+      let badgeHtml = "";
+      let isSelected = (answerData && answerData.selected === optIdx);
+      let isCorrectOpt = (optIdx === q.correct);
+
+      if (answerData) {
+        btn.disabled = true;
+        if (isCorrectOpt) {
+          btn.classList.add("correct-opt");
+          badgeHtml = `<span class="badge-result">✓ Rätt svar</span>`;
+        } else if (isSelected) {
+          btn.classList.add("wrong-opt");
+          badgeHtml = `<span class="badge-result">✕ Fel svar</span>`;
+        }
+      } else {
+        btn.onclick = () => chooseMcOption(optIdx);
+      }
+
+      let extraText = isSelected ? " (Ditt svar)" : "";
+      let explHtml = (answerData && (isCorrectOpt || isSelected)) ? `<div class="opt-explanation">${q.expl}</div>` : "";
+
+      btn.innerHTML = `
+        <div class="opt-header">
+          <span>${optText}<strong>${extraText}</strong></span>
+          ${badgeHtml}
+        </div>
+        ${explHtml}
+      `;
+      list.appendChild(btn);
+    });
+    container.appendChild(list);
+
+  } else if (q.type === "text") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "text-input-wrapper";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "textInput";
+    input.placeholder = "Skriv ditt svar här och tryck Enter / Rätta svar...";
+    input.autocomplete = "off";
+
+    const resBox = document.createElement("div");
+    resBox.id = "textResBox";
+    resBox.className = "text-result-box";
+
+    if (answerData) {
+      input.value = answerData.textVal;
+      input.disabled = true;
+      resBox.style.display = "block";
+      if (answerData.score >= 1.0) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
+      } else if (answerData.score >= 0.5) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Delvis rätt! (0.5 p)</strong><br>${q.expl}`;
+      } else {
+        resBox.className = "text-result-box text-result-wrong";
+        resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      }
+    } else {
+      input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
+    }
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(resBox);
+
+    if (!answerData) {
+      const submitBtn = document.createElement("button");
+      submitBtn.type = "button";
+      submitBtn.className = "btn-action btn-next";
+      submitBtn.style.marginTop = "12px";
+      submitBtn.textContent = "Rätta svar";
+      submitBtn.onclick = submitTextAnswer;
+      wrapper.appendChild(submitBtn);
+    }
+
+    container.appendChild(wrapper);
+  }
+
+  document.getElementById("btnBack").disabled = (idx === 0);
+  document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Slutför" : "Nästa";
+  updateProgress();
+}
+
+function chooseMcOption(selectedIdx) {
+  if (userAnswers[currentIndex] !== undefined) return;
+  const q = questions[currentIndex];
+  userAnswers[currentIndex] = {
+    selected: selectedIdx,
+    isCorrect: (selectedIdx === q.correct)
+  };
+  loadQuestion(currentIndex);
+}
+
+function submitTextAnswer() {
+  const input = document.getElementById("textInput");
+  const val = input.value.trim();
+  if (!val) return;
+
+  const q = questions[currentIndex];
+  const clean = normalize(val);
+  let score = 0;
+
+  if (q.fullCheck(clean)) score = 1.0;
+  else if (q.partialCheck(clean)) score = 0.5;
+
+  userAnswers[currentIndex] = {
+    textVal: val,
+    score: score,
+    isCorrect: (score >= 0.5)
+  };
+  loadQuestion(currentIndex);
+}
+
+function nextQuestion() {
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    loadQuestion(currentIndex);
+  } else {
+    showSummary();
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion(currentIndex);
+  }
+}
+
+function showSummary() {
+  document.getElementById("quizContent").style.display = "none";
+  document.getElementById("progressRow").style.display = "none";
+  document.getElementById("bottomBar").style.display = "none";
+
+  let correctCount = 0;
+  questions.forEach((_, i) => {
+    if (userAnswers[i] && userAnswers[i].isCorrect) correctCount++;
+  });
+
+  document.getElementById("summaryView").style.display = "block";
+  document.getElementById("finalScore").textContent = `${correctCount} / ${questions.length}`;
+
+  const pct = (correctCount / questions.length) * 100;
+  const fb = document.getElementById("finalFeedback");
+  if (pct >= 85) fb.textContent = "Fantastiskt bra! Du har full kontroll på alla 30 instuderingsfrågor inför provet på onsdag.";
+  else if (pct >= 60) fb.textContent = "Bra jobbat! Grunderna sitter, läs igenom facit på frågorna du missade så sätter du toppbetyg på onsdag.";
+  else fb.textContent = "Kör gärna igenom provet en gång till så sitter alla begrepp och adresser som ett smäck!";
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  userAnswers = {};
+  document.getElementById("summaryView").style.display = "none";
+  document.getElementById("quizContent").style.display = "block";
+  document.getElementById("progressRow").style.display = "flex";
+  document.getElementById("bottomBar").style.display = "flex";
+  loadQuestion(0);
+}
+
+window.onload = () => {
+  initSegments();
+  loadQuestion(0);
+};
+</script>
+</body>
+</html>
