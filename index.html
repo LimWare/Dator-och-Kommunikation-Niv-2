@@ -1,1 +1,507 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nätverksquiz L4 - IP & MAC</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+      --correct: #22c55e;
+      --partial: #eab308;
+      --wrong: #ef4444;
+      --hint-bg: #1e293b;
+      --hint-border: #f59e0b;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .q-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+
+    .q-badge {
+      background: #0f172a;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+
+    .input-wrapper {
+      margin-top: 12px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0b1120;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    .hint-toggle {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: #fbbf24;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    .hint-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid var(--hint-border);
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: #fde68a;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .result-correct {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid var(--correct);
+      color: #86efac;
+    }
+
+    .result-partial {
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid var(--partial);
+      color: #fde047;
+    }
+
+    .result-wrong {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid var(--wrong);
+      color: #fca5a5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button.btn-primary {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--accent);
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button.btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    button.btn-secondary {
+      padding: 14px 20px;
+      background: #334155;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button.btn-secondary:hover {
+      background: #475569;
+    }
+
+    .summary-card {
+      display: none;
+      background: #1e293b;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .summary-score {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Nätverksquiz: L4</h1>
+    <p class="subtitle">IP-adresser, nätverksklasser, MAC och grundläggande nätverksberäkningar</p>
+  </header>
+
+  <div id="summary" class="summary-card">
+    <h2>Resultat</h2>
+    <div class="summary-score" id="scoreText">0 / 16</div>
+    <p id="gradeText" style="color: var(--text-muted);"></p>
+  </div>
+
+  <form id="quizForm" onsubmit="return false;">
+    <div id="questionsContainer"></div>
+
+    <div class="actions">
+      <button type="button" class="btn-primary" onclick="gradeQuiz()">Rätta svar</button>
+      <button type="button" class="btn-secondary" onclick="resetQuiz()">Börja om</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const questions = [
+  {
+    id: 1,
+    q: "Hur är en MAC-adress uppbyggd?",
+    hint: "Tänk på hur många bitar/bytes den består av och vad de två halvorna (första resp. sista 3 bytes) representerar.",
+    fullCriteria: ["48", "6 byte", "12 hex", "oui", "tillverk", "produkt", "unik", "kort"],
+    partialCriteria: ["halva", "två delar", "3 första", "3 sista", "tecken"],
+    expl: "En MAC-adress består av 48 bitar (6 bytes / 12 hex-tecken). Första halvan (3 bytes) är OUI (tillverkarens kod) och sista halvan (3 bytes) är unikt tillverkat enhets-ID."
+  },
+  {
+    id: 2,
+    q: "Vad är en MAC-adress?",
+    hint: "Vilket lager i OSI-modellen tillhör den och vad har den för funktion för en fysisk enhet?",
+    fullCriteria: ["fysisk adress", "personnummer", "hårdvaruadress", "lager 2", "unik identifierare", "nätverkskort"],
+    partialCriteria: ["adress", "enhet", "identifiera", "id"],
+    expl: "MAC (Media Access Control) är en unik fysisk hårdvaruadress som är inbränd i nätverkskortet (Lager 2 i OSI-modellen)."
+  },
+  {
+    id: 3,
+    q: "Vilka historiska nätverksklasser för unicast finns det och ge exempel på deras adressintervall?",
+    hint: "Klasserna har bokstäver. Tänk på vad första oktetten börjar på för Klass A, B och C.",
+    fullCriteria: ["klass a", "klass b", "klass c", "1-126", "128-191", "192-223"],
+    partialCriteria: ["klass a", "klass b", "klass c", "127", "255"],
+    expl: "Klass A (1–126), Klass B (128–191) och Klass C (192–223). (127 är reserverat för loopback, och 224+ är Klass D/E)."
+  },
+  {
+    id: 4,
+    q: "Hur kan man beräkna Host-ID? (Förklara kort)",
+    hint: "Vilka bitar i nätmasken är dedikerade till host-delen (ettor eller nollor)?",
+    fullCriteria: ["noll", "inverterad mask", "host-del", "sista bitarna", "där masken är 0"],
+    partialCriteria: ["nätmask", "subnät", "räkna bort nät"],
+    expl: "Host-ID motsvarar de bitar i IP-adressen där nätmasken har binära nollor (dvs. den del som identifierar den specifika värdenheten i nätet)."
+  },
+  {
+    id: 5,
+    q: "Hur kan man beräkna Net-ID? (Förklara kort)",
+    hint: "Vilken logisk operation (grind) görs bit för bit mellan IP-adressen och nätmasken?",
+    fullCriteria: ["and", "bitvis and", "logisk and", "masken har ettor", "där masken är 1", "255"],
+    partialCriteria: ["nätmask", "maska", "ettor"],
+    expl: "Net-ID beräknas genom en bitvis AND-operation mellan IP-adressen och nätmasken (där masken har ettor/255 behålls adressens bitar)."
+  },
+  {
+    id: 6,
+    q: "Vilket adressintervall har Klass A och vad är dess typiska användningsområde?",
+    hint: "Det börjar på 1 och slutar precis före loopback-adressen. Tänk mycket stora organisationer.",
+    fullCriteria: ["1-126", "stora organisationer", "få nätverk", "många host", "företag", "multinationella"],
+    partialCriteria: ["1-126", "stora", "företag"],
+    expl: "Klass A har intervallet 1.0.0.0 – 126.255.255.255. Används för mycket stora organisationer som behöver få nätverk men enormt många värdenheter."
+  },
+  {
+    id: 7,
+    q: "Hur många nätverk kan Klass A maximalt ha?",
+    hint: "7 bitar används för nätverksdelen (den första biten är alltid 0), och loopback räknas bort.",
+    fullCriteria: ["126", "128"],
+    partialCriteria: ["120", "127"],
+    expl: "Klass A kan ha 126 användbara nätverk (2^7 = 128 totalt, minus nätverk 0 och loopback-nätverk 127)."
+  },
+  {
+    id: 8,
+    q: "Hur många värdenheter (hosts) kan ett Klass A-nätverk ha?",
+    hint: "Formeln är 2^24 minus de 2 reserverade adresserna (nätadress och broadcast). Tänk runt 16 miljoner.",
+    fullCriteria: ["16 777 214", "16777214", "16 miljoner", "ca 16 miljoner", "16777216"],
+    partialCriteria: ["16", "miljoner"],
+    expl: "2^24 - 2 = 16 777 214 användbara värdenheter per Klass A-nätverk."
+  },
+  {
+    id: 9,
+    q: "Vilket adressintervall har Klass B och varför hoppas adressen 127 över?",
+    hint: "127 har ett särskilt tekniskt syfte för tester på den egna maskinen (localhost).",
+    fullCriteria: ["128-191", "loopback", "localhost", "testa internt", "egen maskin"],
+    partialCriteria: ["128-191", "127", "loopback"],
+    expl: "Klass B spänner över 128.0.0.0 – 191.255.255.255. Hela 127.0.0.0/8 hoppas över då det är reserverat för loopback (diagnostik och test av lokal TCP/IP-stack)."
+  },
+  {
+    id: 10,
+    q: "Hur många nätverk kan Klass B ha?",
+    hint: "14 bitar är tillgängliga för nätverksdelen (2^14). Tänk drygt 16 tusen.",
+    fullCriteria: ["16 384", "16384", "16 tusen", "16380", "ca 16000"],
+    partialCriteria: ["16", "tusen"],
+    expl: "Klass B har 2^14 = 16 384 nätverk."
+  },
+  {
+    id: 11,
+    q: "Hur många användbara värdenheter (hosts) kan ett Klass B-nätverk ha?",
+    hint: "16 bitar för hostdelen: formeln 2^16 - 2. Tänk strax över 65 tusen.",
+    fullCriteria: ["65 534", "65534", "65536", "ca 65000", "65 tusen"],
+    partialCriteria: ["65", "tusen"],
+    expl: "Klass B har 2^16 - 2 = 65 534 användbara värdenheter (nät-ID och broadcast-ID dras bort)."
+  },
+  {
+    id: 12,
+    q: "Vilket adressintervall har Klass C?",
+    hint: "Börjar direkt efter Klass B (191) och slutar vid 223 (där multicast Klass D tar vid).",
+    fullCriteria: ["192-223", "192 till 223"],
+    partialCriteria: ["192-255", "192-254", "192", "223"],
+    expl: "Klass C sträcker sig från 192.0.0.0 till 223.255.255.255. (224–239 är Klass D / Multicast)."
+  },
+  {
+    id: 13,
+    q: "Hur många nätverk kan Klass C ha?",
+    hint: "21 bitar används för nätverksdelen (2^21). Det motsvarar drygt 2 miljoner.",
+    fullCriteria: ["2 097 152", "2097152", "2 miljoner", "ca 2 miljoner"],
+    partialCriteria: ["2", "miljoner"],
+    expl: "Klass C har 2^21 = 2 097 152 nätverk."
+  },
+  {
+    id: 14,
+    q: "Hur många användbara värdenheter (hosts) kan ett Klass C-nätverk ha?",
+    hint: "8 bitar för hostdelen (2^8 = 256), minus nätverksadressen och broadcastadressen.",
+    fullCriteria: ["254"],
+    partialCriteria: ["256"],
+    expl: "2^8 - 2 = 254 användbara värdenheter (adress .0 och .255 reserveras för nätverk respektive broadcast)."
+  },
+  {
+    id: 15,
+    q: "Vad är en Default Gateway och vilken enhet agerar oftast som detta?",
+    hint: "Vart skickar en dator trafik som ska ut på internet eller ett annat subnät? Vilken hårdvara står för dörren ut?",
+    fullCriteria: ["router", "annat nätverk", "utanför", "skicka trafik", "väg ut", "standard gateway"],
+    partialCriteria: ["router", "gateway", "skicka paket"],
+    expl: "En Default Gateway är den nod (oftast en router) som datorn skickar datatrafik till när destinationsadressen ligger utanför det lokala nätverket."
+  },
+  {
+    id: 16,
+    q: "Nämn minst tre olika typer av IPv4-adresser/sändningstyper.",
+    hint: "Tänk på sändningssätt (till en, till alla, till en grupp) eller specialadresser som 127.0.0.1.",
+    fullCriteria: ["unicast", "multicast", "broadcast", "loopback", "link-local", "private", "anycast"],
+    partialCriteria: ["unicast", "broadcast", "multicast"],
+    expl: "Exempel på typer: Unicast (en-till-en), Multicast (en-till-grupp), Broadcast (en-till-alla), Loopback (127.0.0.1) och Link-Local (APIPA / 169.254.x.x)."
+  }
+];
+
+function renderQuestions() {
+  const container = document.getElementById("questionsContainer");
+  container.innerHTML = questions.map((item, index) => `
+    <div class="card" id="card-${item.id}">
+      <div class="q-header">
+        <span class="q-title">${index + 1}. ${item.q}</span>
+        <span class="q-badge" id="badge-${item.id}">1.0 p</span>
+      </div>
+      
+      <button type="button" class="hint-toggle" onclick="toggleHint(${item.id})">💡 Visa ledtråd</button>
+      <div class="hint-box" id="hint-${item.id}">${item.hint}</div>
+
+      <div class="input-wrapper">
+        <input type="text" id="ans-${item.id}" placeholder="Skriv ditt svar här..." autocomplete="off" />
+      </div>
+
+      <div class="result-box" id="res-${item.id}"></div>
+    </div>
+  `).join("");
+}
+
+function toggleHint(id) {
+  const hintEl = document.getElementById(`hint-${id}`);
+  hintEl.style.display = hintEl.style.display === "block" ? "none" : "block";
+}
+
+function normalize(str) {
+  return str.toLowerCase().replace(/[.,\/#!$%^&*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function checkScore(ans, q) {
+  if (!ans || ans.trim().length === 0) return { score: 0, status: "wrong" };
+  const user = normalize(ans);
+
+  if (q.id === 16) {
+    let matches = 0;
+    q.fullCriteria.forEach(k => { if (user.includes(k)) matches++; });
+    if (matches >= 3) return { score: 1.0, status: "correct" };
+    if (matches >= 1) return { score: 0.5, status: "partial" };
+    return { score: 0, status: "wrong" };
+  }
+
+  let fullHits = 0;
+  for (let crit of q.fullCriteria) {
+    if (user.includes(crit.toLowerCase())) fullHits++;
+  }
+
+  if (fullHits >= (q.id === 1 || q.id === 3 || q.id === 6 || q.id === 9 || q.id === 15 ? 2 : 1)) {
+    return { score: 1.0, status: "correct" };
+  }
+
+  let partialHits = 0;
+  for (let crit of (q.partialCriteria || [])) {
+    if (user.includes(crit.toLowerCase())) partialHits++;
+  }
+
+  if (fullHits >= 1 || partialHits >= 1) {
+    return { score: 0.5, status: "partial" };
+  }
+
+  return { score: 0, status: "wrong" };
+}
+
+function gradeQuiz() {
+  let totalScore = 0;
+  const maxScore = questions.length;
+
+  questions.forEach(q => {
+    const inputEl = document.getElementById(`ans-${q.id}`);
+    const resEl = document.getElementById(`res-${q.id}`);
+    const badgeEl = document.getElementById(`badge-${q.id}`);
+    const userVal = inputEl.value;
+
+    const result = checkScore(userVal, q);
+    totalScore += result.score;
+
+    resEl.style.display = "block";
+    if (result.score === 1.0) {
+      resEl.className = "result-box result-correct";
+      resEl.innerHTML = `<strong>Rätt! (1.0 p)</strong><br>${q.expl}`;
+      badgeEl.textContent = "1.0 / 1.0 p";
+      badgeEl.style.borderColor = "var(--correct)";
+      badgeEl.style.color = "#86efac";
+    } else if (result.score === 0.5) {
+      resEl.className = "result-box result-partial";
+      resEl.innerHTML = `<strong>Delvis rätt / nära! (0.5 p)</strong><br>${q.expl}`;
+      badgeEl.textContent = "0.5 / 1.0 p";
+      badgeEl.style.borderColor = "var(--partial)";
+      badgeEl.style.color = "#fde047";
+    } else {
+      resEl.className = "result-box result-wrong";
+      resEl.innerHTML = `<strong>Fel (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      badgeEl.textContent = "0.0 / 1.0 p";
+      badgeEl.style.borderColor = "var(--wrong)";
+      badgeEl.style.color = "#fca5a5";
+    }
+  });
+
+  const summary = document.getElementById("summary");
+  const scoreText = document.getElementById("scoreText");
+  const gradeText = document.getElementById("gradeText");
+
+  summary.style.display = "block";
+  scoreText.textContent = `${totalScore} / ${maxScore} poäng`;
+
+  const pct = (totalScore / maxScore) * 100;
+  if (pct >= 85) {
+    gradeText.textContent = "Grymt jobbat! Du har stenkoll på nätverksgrunderna!";
+  } else if (pct >= 55) {
+    gradeText.textContent = "Bra jobbat! Vissa delar sitter fint, repetera detaljerna kring intervall och formler.";
+  } else {
+    gradeText.textContent = "Kämpa på! Gå igenom facit och förklaringarna ovan och testa igen.";
+  }
+
+  summary.scrollIntoView({ behavior: "smooth" });
+}
+
+function resetQuiz() {
+  questions.forEach(q => {
+    document.getElementById(`ans-${q.id}`).value = "";
+    document.getElementById(`res-${q.id}`).style.display = "none";
+    document.getElementById(`hint-${q.id}`).style.display = "none";
+    const badge = document.getElementById(`badge-${q.id}`);
+    badge.textContent = "1.0 p";
+    badge.style.borderColor = "var(--border)";
+    badge.style.color = "var(--accent)";
+  });
+  document.getElementById("summary").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+window.onload = renderQuestions;
+</script>
+</body>
+</html>
