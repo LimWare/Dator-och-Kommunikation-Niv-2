@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nätverksquiz L4 - IP & MAC</title>
+  <title>Nätverksquiz L4 - AI-Rättning</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -16,15 +16,14 @@
       --correct: #22c55e;
       --partial: #eab308;
       --wrong: #ef4444;
-      --hint-bg: #1e293b;
-      --hint-border: #f59e0b;
+      --gemini-purple: #c084fc;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -34,73 +33,175 @@
       padding: 24px 16px;
       display: flex;
       justify-content: center;
+      min-height: 100vh;
+      align-items: center;
     }
 
     .container {
       width: 100%;
-      max-width: 800px;
+      max-width: 760px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     h1 {
-      font-size: 1.85rem;
+      font-size: 1.75rem;
       color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .ai-badge {
+      display: inline-block;
+      background: rgba(192, 132, 252, 0.15);
+      border: 1px solid var(--gemini-purple);
+      color: var(--gemini-purple);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 999px;
       margin-bottom: 8px;
     }
 
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    /* Progress bar */
+    .progress-container {
+      margin-bottom: 18px;
     }
 
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--gemini-purple));
+      transition: width 0.3s ease;
+    }
+
+    /* API Config box */
+    .config-card {
+      background: #111c35;
+      border: 1px dashed var(--accent);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+
+    .config-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .config-row input {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #0b1120;
+      color: #fff;
+      font-family: monospace;
+      font-size: 0.88rem;
+    }
+
+    .config-row button {
+      padding: 9px 14px;
+      border-radius: 6px;
+      border: none;
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Question card */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      transition: border-color 0.2s;
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .q-header {
+    .q-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
       gap: 12px;
+      margin-bottom: 12px;
     }
 
     .q-title {
       font-weight: 600;
-      font-size: 1.05rem;
+      font-size: 1.2rem;
+      line-height: 1.4;
     }
 
     .q-badge {
       background: #0f172a;
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--accent);
       white-space: nowrap;
       border: 1px solid var(--border);
     }
 
+    .hint-toggle {
+      background: none;
+      border: none;
+      color: #fbbf24;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 12px;
+      align-self: flex-start;
+      padding: 0;
+    }
+
+    .hint-box {
+      display: none;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid #f59e0b;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #fde68a;
+    }
+
     .input-wrapper {
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 12px 14px;
+      padding: 14px;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: #0b1120;
       color: #fff;
-      font-size: 0.95rem;
+      font-size: 1rem;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -109,35 +210,13 @@
       border-color: var(--accent);
     }
 
-    .hint-toggle {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 0.82rem;
-      color: #fbbf24;
-      cursor: pointer;
-      background: transparent;
-      border: none;
-      padding: 0;
-      text-decoration: underline;
-    }
-
-    .hint-box {
-      display: none;
-      margin-top: 10px;
-      padding: 10px 14px;
-      background: rgba(245, 158, 11, 0.08);
-      border-left: 3px solid var(--hint-border);
-      border-radius: 4px;
-      font-size: 0.88rem;
-      color: #fde68a;
-    }
-
     .result-box {
       display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
+      margin-top: 16px;
+      padding: 14px;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
     }
 
     .result-correct {
@@ -158,59 +237,64 @@
       color: #fca5a5;
     }
 
-    .actions {
+    /* Nav buttons */
+    .card-actions {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
       gap: 12px;
-      margin-top: 24px;
     }
 
-    button.btn-primary {
-      flex: 1;
-      padding: 14px 20px;
-      background: var(--accent);
-      color: #0f172a;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
+    .btn {
+      padding: 12px 20px;
       border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      border: none;
+      transition: all 0.2s;
     }
 
-    button.btn-primary:hover {
-      background: var(--accent-hover);
+    .btn-submit {
+      background: linear-gradient(135deg, var(--accent), var(--gemini-purple));
+      color: #0f172a;
+      font-weight: 700;
     }
 
-    button.btn-secondary {
-      padding: 14px 20px;
+    .btn-submit:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+
+    .btn-nav {
       background: #334155;
       color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
     }
 
-    button.btn-secondary:hover {
+    .btn-nav:hover:not(:disabled) {
       background: #475569;
     }
 
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Summary view */
     .summary-card {
       display: none;
-      background: #1e293b;
+      background: var(--card-bg);
       border: 2px solid var(--accent);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 36px 20px;
       text-align: center;
-      margin-bottom: 24px;
     }
 
     .summary-score {
-      font-size: 2.2rem;
+      font-size: 3rem;
       font-weight: 800;
       color: var(--accent);
-      margin: 8px 0;
+      margin: 12px 0;
     }
   </style>
 </head>
@@ -218,24 +302,66 @@
 
 <div class="container">
   <header>
+    <div class="ai-badge">✨ Drivs av Google Gemini AI</div>
     <h1>Nätverksquiz: L4</h1>
-    <p class="subtitle">IP-adresser, nätverksklasser, MAC och grundläggande nätverksberäkningar</p>
   </header>
 
-  <div id="summary" class="summary-card">
-    <h2>Resultat</h2>
-    <div class="summary-score" id="scoreText">0 / 16</div>
-    <p id="gradeText" style="color: var(--text-muted);"></p>
+  <!-- API-nyckelhantering -->
+  <div class="config-card" id="apiCard">
+    <div style="font-weight: 600; font-size: 0.9rem; color: var(--accent);">🔑 Google Gemini API-nyckel</div>
+    <div style="font-size: 0.8rem; color: var(--text-muted);">
+      Hämta gratis på <a href="https://aistudio.google.com" target="_blank" style="color: var(--accent);">aistudio.google.com</a>. Nyckeln sparas bara lokalt i din webbläsare.
+    </div>
+    <div class="config-row">
+      <input type="password" id="apiKeyInput" placeholder="Klistra in din nyckel (AIzaSy...)" />
+      <button type="button" onclick="saveApiKey()">Spara</button>
+    </div>
+    <div id="apiMsg" style="font-size: 0.8rem; color: #86efac; display: none; margin-top: 4px;">✓ Nyckel sparad!</div>
   </div>
 
-  <form id="quizForm" onsubmit="return false;">
-    <div id="questionsContainer"></div>
-
-    <div class="actions">
-      <button type="button" class="btn-primary" onclick="gradeQuiz()">Rätta svar</button>
-      <button type="button" class="btn-secondary" onclick="resetQuiz()">Börja om</button>
+  <!-- Progress -->
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-labels">
+      <span id="stepLabel">Fråga 1 av 16</span>
+      <span id="scoreLabel">Poäng: 0.0</span>
     </div>
-  </form>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- Frågekort -->
+  <div class="card" id="quizCard">
+    <div>
+      <div class="q-top">
+        <div class="q-title" id="qTitle">Laddar fråga...</div>
+        <div class="q-badge" id="qBadge">1.0 p</div>
+      </div>
+
+      <button type="button" class="hint-toggle" onclick="toggleHint()">💡 Visa ledtråd</button>
+      <div class="hint-box" id="qHint"></div>
+
+      <div class="input-wrapper">
+        <input type="text" id="ansInput" placeholder="Skriv ditt svar här..." autocomplete="off" onkeydown="handleKey(event)" />
+      </div>
+
+      <div class="result-box" id="resBox"></div>
+    </div>
+
+    <div class="card-actions">
+      <button type="button" class="btn btn-nav" id="btnPrev" onclick="prevQuestion()" disabled>← Föregående</button>
+      <button type="button" class="btn btn-submit" id="btnCheck" onclick="submitAnswer()">✨ Rätta med AI</button>
+      <button type="button" class="btn btn-nav" id="btnNext" onclick="nextQuestion()">Nästa →</button>
+    </div>
+  </div>
+
+  <!-- Sammanställning -->
+  <div class="summary-card" id="summaryCard">
+    <h2>Bra kämpat!</h2>
+    <div class="summary-score" id="finalScore">0 / 16</div>
+    <p id="finalFeedback" style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 24px;"></p>
+    <button type="button" class="btn btn-submit" onclick="restartQuiz()">🔄 Gör om quizet</button>
+  </div>
 </div>
 
 <script>
@@ -244,264 +370,318 @@ const questions = [
     id: 1,
     q: "Hur är en MAC-adress uppbyggd?",
     hint: "Tänk på hur många bitar/bytes den består av och vad de två halvorna (första resp. sista 3 bytes) representerar.",
-    fullCriteria: ["48", "6 byte", "12 hex", "oui", "tillverk", "produkt", "unik", "kort"],
-    partialCriteria: ["halva", "två delar", "3 första", "3 sista", "tecken"],
-    expl: "En MAC-adress består av 48 bitar (6 bytes / 12 hex-tecken). Första halvan (3 bytes) är OUI (tillverkarens kod) och sista halvan (3 bytes) är unikt tillverkat enhets-ID."
+    ideal: "En MAC-adress består av 48 bitar (6 bytes / 12 hexadecimala tecken). De 3 första bytes (OUI) identifierar tillverkaren och de sista 3 bytes är ett unikt ID för nätverkskortet/produkten."
   },
   {
     id: 2,
     q: "Vad är en MAC-adress?",
     hint: "Vilket lager i OSI-modellen tillhör den och vad har den för funktion för en fysisk enhet?",
-    fullCriteria: ["fysisk adress", "personnummer", "hårdvaruadress", "lager 2", "unik identifierare", "nätverkskort"],
-    partialCriteria: ["adress", "enhet", "identifiera", "id"],
-    expl: "MAC (Media Access Control) är en unik fysisk hårdvaruadress som är inbränd i nätverkskortet (Lager 2 i OSI-modellen)."
+    ideal: "Det är en unik fysisk hårdvaruadress som är inbränd i nätverkskortet och verkar på Datalänkskiktet (Lager 2 i OSI-modellen). Fungerar som ett personnummer för nätverksenheten."
   },
   {
     id: 3,
     q: "Vilka historiska nätverksklasser för unicast finns det och ge exempel på deras adressintervall?",
-    hint: "Klasserna har bokstäver. Tänk på vad första oktetten börjar på för Klass A, B och C.",
-    fullCriteria: ["klass a", "klass b", "klass c", "1-126", "128-191", "192-223"],
-    partialCriteria: ["klass a", "klass b", "klass c", "127", "255"],
-    expl: "Klass A (1–126), Klass B (128–191) och Klass C (192–223). (127 är reserverat för loopback, och 224+ är Klass D/E)."
+    hint: "Klasserna benämns med bokstäverna A, B och C. Tänk på vad första oktetten börjar på för respektive klass.",
+    ideal: "Klass A (1-126), Klass B (128-191) och Klass C (192-223). Observera att 127 är reserverat för loopback och 224+ är multicast/experimentella (Klass D/E)."
   },
   {
     id: 4,
     q: "Hur kan man beräkna Host-ID? (Förklara kort)",
-    hint: "Vilka bitar i nätmasken är dedikerade till host-delen (ettor eller nollor)?",
-    fullCriteria: ["noll", "inverterad mask", "host-del", "sista bitarna", "där masken är 0"],
-    partialCriteria: ["nätmask", "subnät", "räkna bort nät"],
-    expl: "Host-ID motsvarar de bitar i IP-adressen där nätmasken har binära nollor (dvs. den del som identifierar den specifika värdenheten i nätet)."
+    hint: "Vilka bitar i nätmasken är dedikerade till värd-delen (ettor eller nollor)?",
+    ideal: "Host-ID motsvarar de bitar i IP-adressen där nätmasken har binära nollor. Man tar adressen och behåller värdbitarna (eller bitvis AND med inverterad nätmask)."
   },
   {
     id: 5,
     q: "Hur kan man beräkna Net-ID? (Förklara kort)",
-    hint: "Vilken logisk operation (grind) görs bit för bit mellan IP-adressen och nätmasken?",
-    fullCriteria: ["and", "bitvis and", "logisk and", "masken har ettor", "där masken är 1", "255"],
-    partialCriteria: ["nätmask", "maska", "ettor"],
-    expl: "Net-ID beräknas genom en bitvis AND-operation mellan IP-adressen och nätmasken (där masken har ettor/255 behålls adressens bitar)."
+    hint: "Vilken logisk grind/operation görs bit för bit mellan IP-adressen och nätmasken?",
+    ideal: "Net-ID beräknas genom en bitvis logisk AND-operation mellan IP-adressen och nätmasken. Där nätmasken har ettor behålls IP-adressens bitar, medan resten blir nollor."
   },
   {
     id: 6,
     q: "Vilket adressintervall har Klass A och vad är dess typiska användningsområde?",
-    hint: "Det börjar på 1 och slutar precis före loopback-adressen. Tänk mycket stora organisationer.",
-    fullCriteria: ["1-126", "stora organisationer", "få nätverk", "många host", "företag", "multinationella"],
-    partialCriteria: ["1-126", "stora", "företag"],
-    expl: "Klass A har intervallet 1.0.0.0 – 126.255.255.255. Används för mycket stora organisationer som behöver få nätverk men enormt många värdenheter."
+    hint: "Det börjar på 1 och slutar före loopback. Tänk på hur stora organisationerna är.",
+    ideal: "Intervall: 1.0.0.0 till 126.255.255.255. Används för mycket stora organisationer som behöver få nätverk men enormt många värdenheter per nät."
   },
   {
     id: 7,
     q: "Hur många nätverk kan Klass A maximalt ha?",
-    hint: "7 bitar används för nätverksdelen (den första biten är alltid 0), och loopback räknas bort.",
-    fullCriteria: ["126", "128"],
-    partialCriteria: ["120", "127"],
-    expl: "Klass A kan ha 126 användbara nätverk (2^7 = 128 totalt, minus nätverk 0 och loopback-nätverk 127)."
+    hint: "7 bitar används för nätverket (2^7 = 128), men ta bort nät 0 och loopback.",
+    ideal: "126 användbara nätverk (2^7 = 128 minus nätverk 0 och 127 som är loopback)."
   },
   {
     id: 8,
     q: "Hur många värdenheter (hosts) kan ett Klass A-nätverk ha?",
-    hint: "Formeln är 2^24 minus de 2 reserverade adresserna (nätadress och broadcast). Tänk runt 16 miljoner.",
-    fullCriteria: ["16 777 214", "16777214", "16 miljoner", "ca 16 miljoner", "16777216"],
-    partialCriteria: ["16", "miljoner"],
-    expl: "2^24 - 2 = 16 777 214 användbara värdenheter per Klass A-nätverk."
+    hint: "24 bitar för hostdelen: formeln är 2^24 minus 2 reserverade adresser.",
+    ideal: "16 777 214 användbara värdenheter per nätverk (2^24 - 2)."
   },
   {
     id: 9,
     q: "Vilket adressintervall har Klass B och varför hoppas adressen 127 över?",
-    hint: "127 har ett särskilt tekniskt syfte för tester på den egna maskinen (localhost).",
-    fullCriteria: ["128-191", "loopback", "localhost", "testa internt", "egen maskin"],
-    partialCriteria: ["128-191", "127", "loopback"],
-    expl: "Klass B spänner över 128.0.0.0 – 191.255.255.255. Hela 127.0.0.0/8 hoppas över då det är reserverat för loopback (diagnostik och test av lokal TCP/IP-stack)."
+    hint: "Klass B börjar på 128. Vad används 127.0.0.1 till lokalt på datorn?",
+    ideal: "Intervall: 128.0.0.0 till 191.255.255.255. Hela 127.0.0.0/8 hoppas över eftersom det är reserverat för loopback (localhost) för intern testning av TCP/IP-stacken."
   },
   {
     id: 10,
     q: "Hur många nätverk kan Klass B ha?",
-    hint: "14 bitar är tillgängliga för nätverksdelen (2^14). Tänk drygt 16 tusen.",
-    fullCriteria: ["16 384", "16384", "16 tusen", "16380", "ca 16000"],
-    partialCriteria: ["16", "tusen"],
-    expl: "Klass B har 2^14 = 16 384 nätverk."
+    hint: "14 bitar för nätverksdelen (2^14). Cirka 16 tusen.",
+    ideal: "16 384 nätverk (2^14)."
   },
   {
     id: 11,
     q: "Hur många användbara värdenheter (hosts) kan ett Klass B-nätverk ha?",
-    hint: "16 bitar för hostdelen: formeln 2^16 - 2. Tänk strax över 65 tusen.",
-    fullCriteria: ["65 534", "65534", "65536", "ca 65000", "65 tusen"],
-    partialCriteria: ["65", "tusen"],
-    expl: "Klass B har 2^16 - 2 = 65 534 användbara värdenheter (nät-ID och broadcast-ID dras bort)."
+    hint: "16 bitar för värddelen: 2^16 minus 2.",
+    ideal: "65 534 användbara värdenheter (2^16 - 2)."
   },
   {
     id: 12,
     q: "Vilket adressintervall har Klass C?",
-    hint: "Börjar direkt efter Klass B (191) och slutar vid 223 (där multicast Klass D tar vid).",
-    fullCriteria: ["192-223", "192 till 223"],
-    partialCriteria: ["192-255", "192-254", "192", "223"],
-    expl: "Klass C sträcker sig från 192.0.0.0 till 223.255.255.255. (224–239 är Klass D / Multicast)."
+    hint: "Börjar på 192 och slutar där Klass D (multicast) tar vid på 224.",
+    ideal: "192.0.0.0 till 223.255.255.255. (224-239 är Klass D för Multicast)."
   },
   {
     id: 13,
     q: "Hur många nätverk kan Klass C ha?",
-    hint: "21 bitar används för nätverksdelen (2^21). Det motsvarar drygt 2 miljoner.",
-    fullCriteria: ["2 097 152", "2097152", "2 miljoner", "ca 2 miljoner"],
-    partialCriteria: ["2", "miljoner"],
-    expl: "Klass C har 2^21 = 2 097 152 nätverk."
+    hint: "21 bitar för nätverksdelen (2^21). Drygt 2 miljoner.",
+    ideal: "2 097 152 nätverk (2^21)."
   },
   {
     id: 14,
     q: "Hur många användbara värdenheter (hosts) kan ett Klass C-nätverk ha?",
-    hint: "8 bitar för hostdelen (2^8 = 256), minus nätverksadressen och broadcastadressen.",
-    fullCriteria: ["254"],
-    partialCriteria: ["256"],
-    expl: "2^8 - 2 = 254 användbara värdenheter (adress .0 och .255 reserveras för nätverk respektive broadcast)."
+    hint: "8 bitar för host (2^8 = 256), minus nätadress och broadcast.",
+    ideal: "254 användbara värdenheter (2^8 - 2 = 254)."
   },
   {
     id: 15,
     q: "Vad är en Default Gateway och vilken enhet agerar oftast som detta?",
-    hint: "Vart skickar en dator trafik som ska ut på internet eller ett annat subnät? Vilken hårdvara står för dörren ut?",
-    fullCriteria: ["router", "annat nätverk", "utanför", "skicka trafik", "väg ut", "standard gateway"],
-    partialCriteria: ["router", "gateway", "skicka paket"],
-    expl: "En Default Gateway är den nod (oftast en router) som datorn skickar datatrafik till när destinationsadressen ligger utanför det lokala nätverket."
+    hint: "Vart skickar en dator paket som ska ut på internet eller ett annat nätverk?",
+    ideal: "En Default Gateway är den nod (oftast en router) dit trafik skickas när destinationen inte finns på det lokala nätverket."
   },
   {
     id: 16,
     q: "Nämn minst tre olika typer av IPv4-adresser/sändningstyper.",
-    hint: "Tänk på sändningssätt (till en, till alla, till en grupp) eller specialadresser som 127.0.0.1.",
-    fullCriteria: ["unicast", "multicast", "broadcast", "loopback", "link-local", "private", "anycast"],
-    partialCriteria: ["unicast", "broadcast", "multicast"],
-    expl: "Exempel på typer: Unicast (en-till-en), Multicast (en-till-grupp), Broadcast (en-till-alla), Loopback (127.0.0.1) och Link-Local (APIPA / 169.254.x.x)."
+    hint: "Tänk på sändningssätt (till en, alla, grupp) eller specialadresser som loopback.",
+    ideal: "Exempel: Unicast (en-till-en), Multicast (en-till-grupp), Broadcast (en-till-alla), Loopback (127.0.0.1), Link-local / APIPA (169.254.x.x)."
   }
 ];
 
-function renderQuestions() {
-  const container = document.getElementById("questionsContainer");
-  container.innerHTML = questions.map((item, index) => `
-    <div class="card" id="card-${item.id}">
-      <div class="q-header">
-        <span class="q-title">${index + 1}. ${item.q}</span>
-        <span class="q-badge" id="badge-${item.id}">1.0 p</span>
-      </div>
-      
-      <button type="button" class="hint-toggle" onclick="toggleHint(${item.id})">💡 Visa ledtråd</button>
-      <div class="hint-box" id="hint-${item.id}">${item.hint}</div>
+let currentIndex = 0;
+let userAnswers = {};
+let results = {};
 
-      <div class="input-wrapper">
-        <input type="text" id="ans-${item.id}" placeholder="Skriv ditt svar här..." autocomplete="off" />
-      </div>
-
-      <div class="result-box" id="res-${item.id}"></div>
-    </div>
-  `).join("");
+function getApiKey() {
+  return localStorage.getItem("gemini_api_key") || "";
 }
 
-function toggleHint(id) {
-  const hintEl = document.getElementById(`hint-${id}`);
-  hintEl.style.display = hintEl.style.display === "block" ? "none" : "block";
+function saveApiKey() {
+  const val = document.getElementById("apiKeyInput").value.trim();
+  if (!val) {
+    alert("Klistra in en giltig API-nyckel!");
+    return;
+  }
+  localStorage.setItem("gemini_api_key", val);
+  const msg = document.getElementById("apiMsg");
+  msg.style.display = "block";
+  setTimeout(() => { msg.style.display = "none"; }, 3000);
 }
 
-function normalize(str) {
-  return str.toLowerCase().replace(/[.,\/#!$%^&*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+function toggleHint() {
+  const box = document.getElementById("qHint");
+  box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
-function checkScore(ans, q) {
-  if (!ans || ans.trim().length === 0) return { score: 0, status: "wrong" };
-  const user = normalize(ans);
-
-  if (q.id === 16) {
-    let matches = 0;
-    q.fullCriteria.forEach(k => { if (user.includes(k)) matches++; });
-    if (matches >= 3) return { score: 1.0, status: "correct" };
-    if (matches >= 1) return { score: 0.5, status: "partial" };
-    return { score: 0, status: "wrong" };
+function handleKey(e) {
+  if (e.key === "Enter") {
+    submitAnswer();
   }
-
-  let fullHits = 0;
-  for (let crit of q.fullCriteria) {
-    if (user.includes(crit.toLowerCase())) fullHits++;
-  }
-
-  if (fullHits >= (q.id === 1 || q.id === 3 || q.id === 6 || q.id === 9 || q.id === 15 ? 2 : 1)) {
-    return { score: 1.0, status: "correct" };
-  }
-
-  let partialHits = 0;
-  for (let crit of (q.partialCriteria || [])) {
-    if (user.includes(crit.toLowerCase())) partialHits++;
-  }
-
-  if (fullHits >= 1 || partialHits >= 1) {
-    return { score: 0.5, status: "partial" };
-  }
-
-  return { score: 0, status: "wrong" };
 }
 
-function gradeQuiz() {
+function updateProgress() {
+  const total = questions.length;
+  const pct = ((currentIndex + 1) / total) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("stepLabel").textContent = `Fråga ${currentIndex + 1} av ${total}`;
+
   let totalScore = 0;
-  const maxScore = questions.length;
-
-  questions.forEach(q => {
-    const inputEl = document.getElementById(`ans-${q.id}`);
-    const resEl = document.getElementById(`res-${q.id}`);
-    const badgeEl = document.getElementById(`badge-${q.id}`);
-    const userVal = inputEl.value;
-
-    const result = checkScore(userVal, q);
-    totalScore += result.score;
-
-    resEl.style.display = "block";
-    if (result.score === 1.0) {
-      resEl.className = "result-box result-correct";
-      resEl.innerHTML = `<strong>Rätt! (1.0 p)</strong><br>${q.expl}`;
-      badgeEl.textContent = "1.0 / 1.0 p";
-      badgeEl.style.borderColor = "var(--correct)";
-      badgeEl.style.color = "#86efac";
-    } else if (result.score === 0.5) {
-      resEl.className = "result-box result-partial";
-      resEl.innerHTML = `<strong>Delvis rätt / nära! (0.5 p)</strong><br>${q.expl}`;
-      badgeEl.textContent = "0.5 / 1.0 p";
-      badgeEl.style.borderColor = "var(--partial)";
-      badgeEl.style.color = "#fde047";
-    } else {
-      resEl.className = "result-box result-wrong";
-      resEl.innerHTML = `<strong>Fel (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
-      badgeEl.textContent = "0.0 / 1.0 p";
-      badgeEl.style.borderColor = "var(--wrong)";
-      badgeEl.style.color = "#fca5a5";
-    }
-  });
-
-  const summary = document.getElementById("summary");
-  const scoreText = document.getElementById("scoreText");
-  const gradeText = document.getElementById("gradeText");
-
-  summary.style.display = "block";
-  scoreText.textContent = `${totalScore} / ${maxScore} poäng`;
-
-  const pct = (totalScore / maxScore) * 100;
-  if (pct >= 85) {
-    gradeText.textContent = "Grymt jobbat! Du har stenkoll på nätverksgrunderna!";
-  } else if (pct >= 55) {
-    gradeText.textContent = "Bra jobbat! Vissa delar sitter fint, repetera detaljerna kring intervall och formler.";
-  } else {
-    gradeText.textContent = "Kämpa på! Gå igenom facit och förklaringarna ovan och testa igen.";
+  for (let id in results) {
+    totalScore += results[id].score;
   }
-
-  summary.scrollIntoView({ behavior: "smooth" });
+  document.getElementById("scoreLabel").textContent = `Poäng: ${totalScore.toFixed(1)}`;
 }
 
-function resetQuiz() {
-  questions.forEach(q => {
-    document.getElementById(`ans-${q.id}`).value = "";
-    document.getElementById(`res-${q.id}`).style.display = "none";
-    document.getElementById(`hint-${q.id}`).style.display = "none";
-    const badge = document.getElementById(`badge-${q.id}`);
+function loadQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById("qTitle").textContent = `${idx + 1}. ${q.q}`;
+  document.getElementById("qHint").textContent = q.hint;
+  document.getElementById("qHint").style.display = "none";
+
+  const input = document.getElementById("ansInput");
+  input.value = userAnswers[q.id] || "";
+  input.focus();
+
+  const resBox = document.getElementById("resBox");
+  const badge = document.getElementById("qBadge");
+
+  if (results[q.id]) {
+    const res = results[q.id];
+    resBox.style.display = "block";
+    if (res.score >= 1.0) {
+      resBox.className = "result-box result-correct";
+      resBox.innerHTML = `<strong>✨ AI: Helt rätt! (1.0 p)</strong><br>${res.feedback}`;
+      badge.textContent = "1.0 / 1.0 p";
+      badge.style.borderColor = "var(--correct)";
+      badge.style.color = "#86efac";
+    } else if (res.score >= 0.5) {
+      resBox.className = "result-box result-partial";
+      resBox.innerHTML = `<strong>✨ AI: Delvis rätt / nära! (0.5 p)</strong><br>${res.feedback}`;
+      badge.textContent = "0.5 / 1.0 p";
+      badge.style.borderColor = "var(--partial)";
+      badge.style.color = "#fde047";
+    } else {
+      resBox.className = "result-box result-wrong";
+      resBox.innerHTML = `<strong>✨ AI: Inte riktigt (0.0 p)</strong><br>${res.feedback}`;
+      badge.textContent = "0.0 / 1.0 p";
+      badge.style.borderColor = "var(--wrong)";
+      badge.style.color = "#fca5a5";
+    }
+  } else {
+    resBox.style.display = "none";
     badge.textContent = "1.0 p";
     badge.style.borderColor = "var(--border)";
     badge.style.color = "var(--accent)";
-  });
-  document.getElementById("summary").style.display = "none";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  document.getElementById("btnPrev").disabled = (idx === 0);
+  document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Visa resultat →" : "Nästa →";
+  updateProgress();
 }
 
-window.onload = renderQuestions;
+async function callGeminiJudge(questionText, idealAnswer, studentAnswer, apiKey) {
+  const prompt = `Du är en hjälpsam och rättvis lärare i nätverksteknik som bedömer ett elevsvar.
+Fråga: "${questionText}"
+Korrekt facit: "${idealAnswer}"
+Elevens svar: "${studentAnswer}"
+
+Bedömningskriterier:
+- 1.0 poäng: Eleven visar tydlig förståelse eller nämner de väsentliga begreppen (små stavfel tolereras).
+- 0.5 poäng: Elevens svar är delvis rätt, på rätt spår, saknar en detalj (t.ex. glömde reserverade adresser) eller har ett mindre sakfel.
+- 0.0 poäng: Elevens svar är tomt, helt fel eller irrelevant.
+
+Svara ENBART i strikt JSON utan kodblock:
+{"score": 1.0, "feedback": "Kort motivering och rätt svar"}`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.1 }
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(err.error?.message || "Kunde inte ansluta till Gemini API");
+  }
+
+  const data = await resp.json();
+  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+  const cleaned = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+  return JSON.parse(cleaned);
+}
+
+async function submitAnswer() {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    alert("Vänligen skriv in och spara din Gemini API-nyckel högst upp först!");
+    document.getElementById("apiKeyInput").focus();
+    return;
+  }
+
+  const q = questions[currentIndex];
+  const input = document.getElementById("ansInput");
+  const userAns = input.value.trim();
+  userAnswers[q.id] = userAns;
+
+  if (!userAns) {
+    results[q.id] = { score: 0, feedback: `Inget svar angavs. Korrekt svar: ${q.ideal}` };
+    loadQuestion(currentIndex);
+    return;
+  }
+
+  const btnCheck = document.getElementById("btnCheck");
+  btnCheck.disabled = true;
+  btnCheck.textContent = "Tänker...";
+
+  try {
+    const res = await callGeminiJudge(q.q, q.ideal, userAns, apiKey);
+    results[q.id] = res;
+    loadQuestion(currentIndex);
+  } catch (err) {
+    alert("Fel vid AI-rättning: " + err.message);
+  } finally {
+    btnCheck.disabled = false;
+    btnCheck.textContent = "✨ Rätta med AI";
+  }
+}
+
+function nextQuestion() {
+  const q = questions[currentIndex];
+  userAnswers[q.id] = document.getElementById("ansInput").value.trim();
+
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    loadQuestion(currentIndex);
+  } else {
+    showSummary();
+  }
+}
+
+function prevQuestion() {
+  const q = questions[currentIndex];
+  userAnswers[q.id] = document.getElementById("ansInput").value.trim();
+
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion(currentIndex);
+  }
+}
+
+function showSummary() {
+  document.getElementById("quizCard").style.display = "none";
+  document.getElementById("progressContainer").style.display = "none";
+
+  let totalScore = 0;
+  for (let id in results) {
+    totalScore += results[id].score;
+  }
+
+  const summary = document.getElementById("summaryCard");
+  summary.style.display = "block";
+  document.getElementById("finalScore").textContent = `${totalScore.toFixed(1)} / ${questions.length} p`;
+
+  const feedback = document.getElementById("finalFeedback");
+  const pct = (totalScore / questions.length) * 100;
+  if (pct >= 85) feedback.textContent = "Fantastiskt! Du behärskar nätverksgrunderna galant.";
+  else if (pct >= 50) feedback.textContent = "Bra jobbat! Grunderna sitter, men öva gärna på detaljerna kring adressklasser och beräkningar.";
+  else feedback.textContent = "Bra försök! Gå gärna igenom frågorna en gång till för att repetera.";
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  userAnswers = {};
+  results = {};
+  document.getElementById("summaryCard").style.display = "none";
+  document.getElementById("quizCard").style.display = "flex";
+  document.getElementById("progressContainer").style.display = "block";
+  loadQuestion(0);
+}
+
+window.onload = () => {
+  const key = getApiKey();
+  if (key) document.getElementById("apiKeyInput").value = key;
+  loadQuestion(0);
+};
 </script>
 </body>
 </html>
