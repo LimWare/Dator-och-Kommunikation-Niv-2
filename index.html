@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nätverksquiz L4 - Direkt rättning</title>
+  <title>Nätverksquiz L4 - IP & MAC</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -329,27 +329,27 @@ const questions = [
   },
   {
     id: 3,
-    q: "Vilka historiska nätverksklasser för unicast finns det och ge exempel på deras adressintervall?",
-    hint: "Klasserna har bokstäverna A, B och C. Tänk på vad första oktetten börjar på.",
-    fullCheck: (txt) => txt.includes("klass a") && txt.includes("klass b") && txt.includes("klass c") && (txt.includes("126") || txt.includes("191") || txt.includes("192")),
-    partialCheck: (txt) => (txt.includes("klass a") || txt.includes("klass b") || txt.includes("klass c")) || txt.includes("1-126"),
-    expl: "Klass A (1–126), Klass B (128–191) och Klass C (192–223). Adress 127 är loopback, och 224+ är Klass D/E."
+    q: "Vilka tre klasser delades vanliga IPv4-adresser traditionellt in i?",
+    hint: "Det är tre bokstäver i alfabetisk ordning.",
+    fullCheck: (txt) => (txt.includes("a") && txt.includes("b") && txt.includes("c")) || txt.includes("klass a"),
+    partialCheck: (txt) => txt.includes("a") || txt.includes("b") || txt.includes("c"),
+    expl: "De tre huvudklasserna är Klass A, Klass B och Klass C (Klass D används för Multicast och Klass E är experimentell)."
   },
   {
     id: 4,
-    q: "Hur kan man beräkna Host-ID? (Förklara kort)",
-    hint: "Vilka bitar i nätmasken tillhör host-delen (ettor eller nollor)?",
-    fullCheck: (txt) => txt.includes("noll") || txt.includes("inverterad") || (txt.includes("host") && txt.includes("mask")),
-    partialCheck: (txt) => txt.includes("nätmask") || txt.includes("subnät") || txt.includes("sista"),
-    expl: "Host-ID motsvaras av de bitar i IP-adressen där nätmasken har binära nollor."
+    q: "Hur kan man enkelt ta reda på Host-ID från en IP-adress och subnätmask?",
+    hint: "Tänk på att ta bort nätverksdelen – vad blir det som är kvar?",
+    fullCheck: (txt) => (txt.includes("kvar") || txt.includes("rest") || txt.includes("över") || txt.includes("noll")) && (txt.includes("mask") || txt.includes("nät") || txt.includes("ip")),
+    partialCheck: (txt) => txt.includes("mask") || txt.includes("sista") || txt.includes("kvar") || txt.includes("noll"),
+    expl: "Man jämför med subnätmasken och tar bort nätverksdelen. Siffrorna som blir kvar är datorns Host-ID (t.ex. .25 i 192.168.1.25)."
   },
   {
     id: 5,
-    q: "Hur kan man beräkna Net-ID? (Förklara kort)",
-    hint: "Vilken logisk grind/operation görs mellan IP-adressen och nätmasken?",
-    fullCheck: (txt) => txt.includes("and") || (txt.includes("mask") && txt.includes("ettor")) || txt.includes("255"),
-    partialCheck: (txt) => txt.includes("nätmask") || txt.includes("maska") || txt.includes("ettor"),
-    expl: "Net-ID beräknas genom en bitvis logisk AND-operation mellan IP-adressen och nätmasken."
+    q: "Hur kan man räkna ut nätverkets adress (Net-ID)?",
+    hint: "Vilken logisk jämförelse (grind) görs mellan IP-adressen och subnätmasken?",
+    fullCheck: (txt) => (txt.includes("and") || txt.includes("logisk")) && (txt.includes("mask") || txt.includes("subnät") || txt.includes("ip")),
+    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("noll"),
+    expl: "Man gör en logisk AND-jämförelse mellan IP-adressen och subnätmasken (där masken är 255 behålls siffrorna, resten blir .0)."
   },
   {
     id: 6,
