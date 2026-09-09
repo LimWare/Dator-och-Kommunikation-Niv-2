@@ -52,7 +52,6 @@
       justify-content: space-between;
     }
 
-    /* Header med guldstil och fullständig Jensen-logo */
     .header-box {
       display: flex;
       align-items: center;
@@ -93,7 +92,6 @@
       letter-spacing: 0.2px;
     }
 
-    /* Progress bar */
     .progress-row {
       display: flex;
       align-items: center;
@@ -144,7 +142,6 @@
     .pill-red { background: rgba(239, 68, 68, 0.22); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
     .pill-green { background: rgba(34, 197, 94, 0.22); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.4); }
 
-    /* Metadata & Question */
     .q-meta {
       display: flex;
       gap: 10px;
@@ -207,7 +204,6 @@
       margin-bottom: 18px;
     }
 
-    /* Options - Större och tydligare */
     .options-list {
       display: flex;
       flex-direction: column;
@@ -272,7 +268,6 @@
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Text input */
     .text-input-wrapper {
       margin-bottom: 20px;
     }
@@ -305,7 +300,6 @@
     .text-result-correct { background: rgba(34, 197, 94, 0.2); border: 1.5px solid var(--correct); color: #86efac; }
     .text-result-wrong { background: rgba(239, 68, 68, 0.2); border: 1.5px solid var(--wrong); color: #fca5a5; }
 
-    /* Bottom actions */
     .bottom-bar {
       display: flex;
       justify-content: flex-end;
@@ -338,7 +332,6 @@
 
     .btn-action:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* Summary view */
     .summary-view {
       display: none;
       text-align: center;
@@ -367,27 +360,22 @@
 <div class="modal-container">
   <div>
     <div class="header-box">
-      <!-- Jensen Campus Emblem SVG -->
       <div class="jensen-logo-svg">
         <svg viewBox="0 0 100 100" width="100%" height="100%">
           <circle cx="50" cy="50" r="46" fill="none" stroke="#d4af37" stroke-width="2.5" />
           <circle cx="50" cy="50" r="41" fill="none" stroke="#d4af37" stroke-width="1.2" />
-          <!-- Stjärnor -->
           <polygon points="50,16 52,21 57,21 53,24 55,29 50,26 45,29 47,24 43,21 48,21" fill="#d4af37"/>
           <polygon points="63,22 64.5,25.5 68,25.5 65,28 66,31.5 63,29.5 60,31.5 61,28 58,25.5 61.5,25.5" fill="#d4af37"/>
           <polygon points="73,34 74.5,37.5 78,37.5 75,40 76,43.5 73,41.5 70,43.5 71,40 68,37.5 71.5,37.5" fill="#d4af37"/>
           <polygon points="58,35 59.5,38.5 63,38.5 60,41 61,44.5 58,42.5 55,44.5 56,41 53,38.5 56.5,38.5" fill="#d4af37"/>
           <polygon points="68,48 69.5,51.5 73,51.5 70,54 71,57.5 68,55.5 65,57.5 66,54 63,51.5 66.5,51.5" fill="#d4af37"/>
-          <!-- Sköld med bok 1996 -->
           <path d="M 33,26 L 52,26 L 52,40 C 52,45 42,48 33,48 C 24,48 24,40 24,40 L 24,26 Z" fill="none" stroke="#d4af37" stroke-width="1.2"/>
           <text x="38" y="36" fill="#d4af37" font-size="7.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">1996</text>
-          <!-- Bågskytt / Pilbåge -->
           <path d="M 32,70 C 37,58 48,50 63,45" fill="none" stroke="#d4af37" stroke-width="2.2" stroke-linecap="round"/>
           <line x1="32" y1="70" x2="63" y2="45" stroke="#d4af37" stroke-width="1" />
           <line x1="30" y1="67" x2="68" y2="42" stroke="#d4af37" stroke-width="2.2" stroke-linecap="round"/>
           <polygon points="68,42 62,40 64,46" fill="#d4af37" />
           <circle cx="36" cy="62" r="5" fill="none" stroke="#d4af37" stroke-width="1.6" />
-          <!-- Text längst ner i cirkel -->
           <path id="textPath" d="M 20,68 A 38,38 0 0,0 80,68" fill="none" />
           <text fill="#d4af37" font-size="7.2" font-weight="bold" letter-spacing="1.5">
             <textPath href="#textPath" startOffset="50%" text-anchor="middle">JENSEN CAMPUS</textPath>
@@ -662,8 +650,8 @@ const questions = [
     module: "L4: Host-ID",
     q: "Hur räknar man ut Host-ID (husnumret)? Ge gärna ett exempel.",
     hint: "Ta bort nätverksdelen – siffrorna som blir över är Host-ID.",
-    fullCheck: (txt) => (txt.includes("kvar") || txt.includes("över") || txt.includes("rest") || txt.includes("ta bort")) && (txt.includes("nät") || txt.includes("mask") || txt.includes("ip") || txt.includes(".25")),
-    partialCheck: (txt) => txt.includes("kvar") || txt.includes("husnummer") || txt.includes("nätverk"),
+    fullCheck: (txt) => (txt.includes("kvar") || txt.includes("över") || txt.includes("rest") || txt.includes("ta bort") || txt.includes("spar")) && (txt.includes("nät") || txt.includes("mask") || txt.includes("ip") || txt.includes("host") || txt.includes(".25")),
+    partialCheck: (txt) => txt.includes("kvar") || txt.includes("husnummer") || txt.includes("host") || txt.includes("nätverk"),
     expl: "Man tar IP-adressen och tar bort nätverksdelen – siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med mask 255.255.255.0 -> Kvar blir: .25 (Host-ID)."
   },
   // 15 (L4 - Text)
@@ -674,7 +662,7 @@ const questions = [
     q: "Hur räknar man ut Net-ID (gatunamnet)?",
     hint: "Matematisk AND-jämförelse med subnätmasken. Där masken har 255 behåller man siffrorna, resten blir nollor.",
     fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("behåll") || txt.includes("255") || txt.includes("noll")),
-    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("nätverk"),
+    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("255") || txt.includes("nätverk"),
     expl: "Man jämför IP-adressen med subnätmasken (en matematisk AND-jämförelse). Där masken har 255 behåller man siffrorna, resten blir nollor. Ex: 192.168.1.25 AND 255.255.255.0 = 192.168.1.0."
   },
   // 16 (L4 - MC)
@@ -938,6 +926,29 @@ const questions = [
 let currentIndex = 0;
 let userAnswers = {};
 
+// Fisher-Yates slumpfunktion
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function randomizeQuiz() {
+  // 1. Slumpa ordningen på alla 30 frågor
+  shuffleArray(questions);
+
+  // 2. Slumpa svarsalternativen i flervalsfrågorna utan att tappa rätt svar
+  questions.forEach(q => {
+    if (q.type === "mc") {
+      const correctText = q.options[q.correct];
+      shuffleArray(q.options);
+      q.correct = q.options.indexOf(correctText);
+    }
+  });
+}
+
 function initSegments() {
   const segContainer = document.getElementById("segments");
   segContainer.innerHTML = questions.map((_, i) => `<div class="seg" id="seg-${i}"></div>`).join("");
@@ -1154,6 +1165,7 @@ function showSummary() {
 function restartQuiz() {
   currentIndex = 0;
   userAnswers = {};
+  randomizeQuiz();
   document.getElementById("summaryView").style.display = "none";
   document.getElementById("quizContent").style.display = "block";
   document.getElementById("progressRow").style.display = "flex";
@@ -1162,6 +1174,7 @@ function restartQuiz() {
 }
 
 window.onload = () => {
+  randomizeQuiz();
   initSegments();
   loadQuestion(0);
 };
