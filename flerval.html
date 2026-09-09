@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internet L4</title>
+  <style>
+    :root {
+      --bg: #131314;
+      --card-bg: #1e1f20;
+      --opt-bg: #282a2c;
+      --opt-hover: #333537;
+      --text: #e3e3e3;
+      --text-muted: #8e918f;
+      --correct-bg: #1e3a29;
+      --correct-border: #34a853;
+      --correct-pill: #c4eed0;
+      --correct-pill-txt: #072711;
+      --wrong-bg: #3c1e1e;
+      --wrong-border: #ea4335;
+      --wrong-pill: #f9d5d2;
+      --wrong-pill-txt: #3c0c08;
+      --btn-blue: #1b6ef3;
+      --btn-blue-hover: #1557bf;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Google Sans", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .modal-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 680px;
+      border-radius: 28px;
+      padding: 24px 28px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      min-height: 620px;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #f1f3f4;
+    }
+
+    /* Progress bar with segments */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .segments {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .seg {
+      height: 4px;
+      flex: 1;
+      background: #3c4043;
+      border-radius: 2px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .seg.correct {
+      background: #34a853;
+    }
+
+    .seg.wrong {
+      background: #ea4335;
+    }
+
+    .seg.current {
+      background: #8ab4f8;
+    }
+
+    .step-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .pill-counter {
+      display: flex;
+      gap: 6px;
+    }
+
+    .count-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-red {
+      background: rgba(234, 67, 53, 0.2);
+      color: #f28b82;
+    }
+
+    .pill-green {
+      background: rgba(52, 168, 83, 0.2);
+      color: #81c995;
+    }
+
+    /* Question content */
+    .q-number {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .q-text {
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.45;
+      color: #f1f3f4;
+      margin-bottom: 18px;
+    }
+
+    .hint-btn {
+      background: none;
+      border: none;
+      color: #fbbc04;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 16px;
+      display: inline-block;
+      padding: 0;
+    }
+
+    .hint-box {
+      display: none;
+      background: rgba(251, 188, 4, 0.08);
+      border-left: 3px solid #fbbc04;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #fde293;
+      margin-bottom: 16px;
+    }
+
+    /* Options */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .opt-card {
+      background: var(--opt-bg);
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 14px 18px;
+      color: #e3e3e3;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      width: 100%;
+    }
+
+    .opt-card:hover:not(:disabled) {
+      background: var(--opt-hover);
+    }
+
+    .opt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .opt-title {
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .badge-result {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .opt-card.correct-opt {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+    }
+
+    .opt-card.correct-opt .badge-result {
+      background: var(--correct-pill);
+      color: var(--correct-pill-txt);
+    }
+
+    .opt-card.wrong-opt {
+      background: var(--wrong-bg);
+      border-color: var(--wrong-border);
+    }
+
+    .opt-card.wrong-opt .badge-result {
+      background: var(--wrong-pill);
+      color: var(--wrong-pill-txt);
+    }
+
+    .opt-explanation {
+      margin-top: 10px;
+      padding-top: 8px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #c4c7c5;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Bottom actions */
+    .bottom-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .btn-action {
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+
+    .btn-back {
+      background: #282a2c;
+      color: #c4c7c5;
+    }
+
+    .btn-back:hover:not(:disabled) {
+      background: #333537;
+    }
+
+    .btn-next {
+      background: var(--btn-blue);
+      color: #ffffff;
+    }
+
+    .btn-next:hover:not(:disabled) {
+      background: var(--btn-blue-hover);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Summary screen */
+    .summary-view {
+      display: none;
+      text-align: center;
+      padding: 40px 10px;
+    }
+
+    .summary-view h2 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      color: #f1f3f4;
+    }
+
+    .score-badge-large {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #8ab4f8;
+      margin: 16px 0;
+    }
+
+    .summary-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 28px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="modal-container">
+  <div>
+    <div class="top-bar">
+      <div class="quiz-title">Internet L4</div>
+    </div>
+
+    <div class="progress-row" id="progressRow">
+      <div class="segments" id="segments"></div>
+      <div class="step-text" id="stepCounter">1/16</div>
+      <div class="pill-counter">
+        <div class="count-pill pill-red" id="pillWrong">✕ 0</div>
+        <div class="count-pill pill-green" id="pillCorrect">✓ 0</div>
+      </div>
+    </div>
+
+    <div id="quizContent">
+      <div class="q-number" id="qNumber">Fråga 1</div>
+      <div class="q-text" id="qText">Laddar fråga...</div>
+
+      <button type="button" class="hint-btn" onclick="toggleHint()">💡 Visa ledtråd</button>
+      <div class="hint-box" id="hintBox"></div>
+
+      <div class="options-list" id="optionsList"></div>
+    </div>
+
+    <div class="summary-view" id="summaryView">
+      <h2>Quiz genomfört!</h2>
+      <div class="score-badge-large" id="finalScore">0 / 16</div>
+      <p class="summary-desc" id="finalFeedback"></p>
+      <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om quizet</button>
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar">
+    <button type="button" class="btn-action btn-back" id="btnBack" onclick="prevQuestion()" disabled>Tillbaka</button>
+    <button type="button" class="btn-action btn-next" id="btnNext" onclick="nextQuestion()">Nästa</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    id: 1,
+    q: "Hur är en MAC-adress uppbyggd?",
+    hint: "Tänk på 48 bitar (6 bytes) och vad de två halvorna representerar.",
+    options: [
+      "32 bitar: 16 bitar för nätverks-ID och 16 bitar för host-ID.",
+      "48 bitar (6 bytes): 3 bytes för tillverkaren (OUI) och 3 bytes för enhets-ID.",
+      "64 bitar: 4 bytes för router-ID och 4 bytes för serienummer.",
+      "128 bitar uppdelat i 8 hexadecimala grupper.",
+      "24 bitar: 12 bitar för switch-port och 12 bitar för IP-bindning.",
+      "48 bitar: 4 bytes för landskod och 2 bytes för produktkategori."
+    ],
+    correct: 1,
+    expl: "En MAC-adress består av 48 bitar (6 bytes / 12 hex-tecken). Första halvan (3 bytes) är OUI (tillverkare) och sista halvan är enhetens unika ID."
+  },
+  {
+    id: 2,
+    q: "Vad är en MAC-adress?",
+    hint: "Vilket lager i OSI-modellen tillhör den och vad är funktionen på nätverkskortet?",
+    options: [
+      "En logisk mjukvaruadress som tilldelas på Transportskiktet (Lager 4).",
+      "En routingadress på Nätverksskiktet (Lager 3) för paketdirigering över internet.",
+      "En unik fysisk hårdvaruadress som är inbränd i nätverkskortet (Lager 2).",
+      "En dynamisk krypteringsnyckel på Presentationsskiktet (Lager 6).",
+      "En virtuell adress som enbart används internt i brandväggar (Lager 7).",
+      "En binär spänningsnivå som styrs på Fysiska skiktet (Lager 1)."
+    ],
+    correct: 2,
+    expl: "En MAC-adress är en unik fysisk hårdvaruadress som är inbränd i nätverkskortet (Lager 2). Kan liknas vid ett personnummer för nätverksenheten."
+  },
+  {
+    id: 3,
+    q: "Vilka tre klasser delades vanliga IPv4-adresser traditionellt in i?",
+    hint: "Det är tre bokstäver i alfabetisk ordning.",
+    options: [
+      "Klass 1, Klass 2 och Klass 3",
+      "Klass LAN, Klass MAN och Klass WAN",
+      "Klass A, Klass B och Klass C",
+      "Klass D, Klass E och Klass F",
+      "Klass Primär, Klass Sekundär och Klass Tertiär",
+      "Klass Public, Klass Private och Klass Hybrid"
+    ],
+    correct: 2,
+    expl: "De tre huvudklasserna är Klass A, Klass B och Klass C (Klass D används för Multicast och Klass E är experimentell)."
+  },
+  {
+    id: 4,
+    q: "Hur kan man enkelt ta reda på Host-ID från en IP-adress och subnätmask?",
+    hint: "Tänk på att ta bort nätverksdelen – vad blir det som är kvar?",
+    options: [
+      "Man plussar ihop IP-adressens och subnätmaskens sista oktett.",
+      "Man jämför med subnätmasken och tar bort nätverksdelen; siffrorna som blir kvar är Host-ID.",
+      "Man delar alltid IP-adressens sista siffra med 256.",
+      "Man läser alltid av de två första siffrorna i IP-adressen.",
+      "Man gör en logisk OR-operation mellan IP-adressen och default gateway.",
+      "Host-ID motsvarar alltid routerns MAC-adress."
+    ],
+    correct: 1,
+    expl: "Man jämför med subnätmasken och tar bort nätverksdelen. Siffrorna som blir kvar är datorns Host-ID (t.ex. .25 i 192.168.1.25)."
+  },
+  {
+    id: 5,
+    q: "Hur kan man räkna ut nätverkets adress (Net-ID)?",
+    hint: "Vilken logisk jämförelse (grind) görs mellan IP-adressen och subnätmasken?",
+    options: [
+      "Genom en logisk XOR-operation mellan IP och MAC-adressen.",
+      "Genom att invertera subnätmasken och dra bort 1.",
+      "Man gör en logisk AND-jämförelse mellan IP-adressen och subnätmasken.",
+      "Genom att alltid sätta sista oktetten till .255.",
+      "Genom att multiplicera nätmaskens värde med DNS-serverns IP.",
+      "Net-ID slumpas alltid automatiskt fram av DHCP-servern."
+    ],
+    correct: 2,
+    expl: "Man gör en logisk AND-jämförelse mellan IP-adressen och subnätmasken (där masken är 255 behålls siffrorna, resten blir .0)."
+  },
+  {
+    id: 6,
+    q: "Vilket adressintervall har Klass A och vad är dess typiska användningsområde?",
+    hint: "Börjar på 1 och slutar precis före loopback.",
+    options: [
+      "128.0.0.0 – 191.255.255.255 för medelstora företag.",
+      "192.0.0.0 – 223.255.255.255 för små hemnätverk.",
+      "1.0.0.0 – 126.255.255.255 och är avsett för mycket stora organisationer med enormt många värdenheter.",
+      "224.0.0.0 – 239.255.255.255 för multicast och mediastreaming.",
+      "10.0.0.0 – 10.255.255.255 enbart för mobila 5G-enheter.",
+      "0.0.0.0 – 64.255.255.255 för telekomoperatörers backbonenät."
+    ],
+    correct: 2,
+    expl: "Klass A har 1.0.0.0 – 126.255.255.255 och är avsett för mycket stora organisationer med enormt många värdenheter."
+  },
+  {
+    id: 7,
+    q: "Hur många nätverk kan Klass A maximalt ha?",
+    hint: "7 bitar för nätverksdelen (2^7 = 128 minus nätverk 0 och loopback).",
+    options: [
+      "16 384 nätverk",
+      "2 097 152 nätverk",
+      "126 användbara nätverk (2^7 = 128 minus nätverk 0 och loopback 127).",
+      "256 nätverk",
+      "65 536 nätverk",
+      "1 024 nätverk"
+    ],
+    correct: 2,
+    expl: "126 användbara nätverk (2^7 = 128 minus nätverk 0 och loopback 127)."
+  },
+  {
+    id: 8,
+    q: "Hur många värdenheter (hosts) kan ett Klass A-nätverk ha?",
+    hint: "24 bitar för hostdelen (2^24 minus 2 reserverade).",
+    options: [
+      "65 534 användbara värdenheter",
+      "254 användbara värdenheter",
+      "16 777 214 användbara värdenheter per nätverk (2^24 - 2).",
+      "4 294 967 296 värdenheter",
+      "1 048 576 värdenheter",
+      "16 384 värdenheter"
+    ],
+    correct: 2,
+    expl: "16 777 214 användbara värdenheter per nätverk (2^24 - 2)."
+  },
+  {
+    id: 9,
+    q: "Vilket adressintervall har Klass B och varför hoppas adressen 127 över?",
+    hint: "Börjar på 128. Vad används 127 till lokalt på en dator?",
+    options: [
+      "128.0.0.0 – 191.255.255.255. 127.0.0.0/8 hoppas över då det är reserverat för loopback (egen maskin).",
+      "127.0.0.0 – 192.255.255.255; 127 är reserverat för broadcast.",
+      "192.0.0.0 – 223.255.255.255; 127 används uteslutande av brandväggar.",
+      "120.0.0.0 – 180.255.255.255; 127 är reserverat för default gateway.",
+      "128.0.0.0 – 255.255.255.255; 127 är reserverat för multicast.",
+      "100.0.0.0 – 150.255.255.255; 127 används för DNS-roten."
+    ],
+    correct: 0,
+    expl: "Klass B har 128.0.0.0 – 191.255.255.255. 127.0.0.0/8 hoppas över då det är reserverat för loopback (egen maskin)."
+  },
+  {
+    id: 10,
+    q: "Hur många nätverk kan Klass B ha?",
+    hint: "14 bitar är tillgängliga för nätverket (2^14).",
+    options: [
+      "126 nätverk",
+      "16 384 nätverk (2^14).",
+      "65 534 nätverk",
+      "2 097 152 nätverk",
+      "32 768 nätverk",
+      "8 192 nätverk"
+    ],
+    correct: 1,
+    expl: "16 384 nätverk (2^14)."
+  },
+  {
+    id: 11,
+    q: "Hur många användbara värdenheter (hosts) kan ett Klass B-nätverk ha?",
+    hint: "16 bitar för hostdelen (2^16 - 2). Drygt 65 tusen.",
+    options: [
+      "254 användbara värdenheter",
+      "16 777 214 användbara värdenheter",
+      "65 534 användbara värdenheter per nätverk (2^16 - 2).",
+      "65 536 användbara värdenheter",
+      "131 070 användbara värdenheter",
+      "32 766 användbara värdenheter"
+    ],
+    correct: 2,
+    expl: "65 534 användbara värdenheter per nätverk (2^16 - 2)."
+  },
+  {
+    id: 12,
+    q: "Vilket adressintervall har Klass C?",
+    hint: "Börjar direkt efter Klass B (191) och slutar vid 223.",
+    options: [
+      "192.0.0.0 till 223.255.255.255 (224 och uppåt är multicast Klass D/E).",
+      "192.0.0.0 till 255.255.255.255",
+      "192.0.0.0 till 254.255.255.255",
+      "128.0.0.0 till 191.255.255.255",
+      "224.0.0.0 till 239.255.255.255",
+      "190.0.0.0 till 220.255.255.255"
+    ],
+    correct: 0,
+    expl: "Klass C sträcker sig från 192.0.0.0 till 223.255.255.255 (224 och uppåt är multicast Klass D/E)."
+  },
+  {
+    id: 13,
+    q: "Hur många nätverk kan Klass C ha?",
+    hint: "21 bitar används för nätverket (2^21). Drygt 2 miljoner.",
+    options: [
+      "126 nätverk",
+      "16 384 nätverk",
+      "65 534 nätverk",
+      "2 097 152 nätverk (2^21).",
+      "4 194 304 nätverk",
+      "256 nätverk"
+    ],
+    correct: 3,
+    expl: "2 097 152 nätverk (2^21)."
+  },
+  {
+    id: 14,
+    q: "Hur många användbara värdenheter (hosts) kan ett Klass C-nätverk ha?",
+    hint: "8 bitar för host (2^8 = 256), minus nätadress och broadcast.",
+    options: [
+      "256 användbara värdenheter",
+      "254 användbara värdenheter (2^8 - 2 = 254). Adress .0 och .255 är reserverade.",
+      "128 användbara värdenheter",
+      "512 användbara värdenheter",
+      "65 534 användbara värdenheter",
+      "255 användbara värdenheter"
+    ],
+    correct: 1,
+    expl: "254 användbara värdenheter (2^8 - 2 = 254). Adress .0 och .255 är reserverade."
+  },
+  {
+    id: 15,
+    q: "Vad är en Default Gateway och vilken enhet agerar oftast som detta?",
+    hint: "Vart skickas paket som ska ut från det lokala nätet?",
+    options: [
+      "En switch som kopplar samman datorer i samma rum.",
+      "En DNS-server som översätter namn till IP-adresser.",
+      "En Default Gateway är den enhet (oftast en router) som vidarebefordrar trafik till andra nätverk eller internet.",
+      "Ett modem som enbart omvandlar optiska signaler.",
+      "Ett nätverkskort som hanterar trådlös anslutning.",
+      "En server som delar ut IP-adresser automatiskt."
+    ],
+    correct: 2,
+    expl: "En Default Gateway är den enhet (oftast en router) som vidarebefordrar trafik till andra nätverk eller internet."
+  },
+  {
+    id: 16,
+    q: "Nämn minst tre olika typer av IPv4-adresser/sändningstyper.",
+    hint: "Tänk på sändningssätt (till en, till alla, till en grupp) eller loopback.",
+    options: [
+      "Unicast, Anyport, Megacast",
+      "T.ex. Unicast (en-till-en), Multicast (en-till-grupp), Broadcast (en-till-alla) och Loopback (127.0.0.1).",
+      "Dualcast, Omnicast, Sub-broadcast",
+      "Switchcast, Routable, Static-only",
+      "Ethercast, IP-local, Gateway-cast",
+      "DNS-cast, DHCP-cast, ARP-cast"
+    ],
+    correct: 1,
+    expl: "T.ex. Unicast (en-till-en), Multicast (en-till-grupp), Broadcast (en-till-alla) och Loopback (127.0.0.1)."
+  }
+];
+
+let currentIndex = 0;
+let userAnswers = {};
+
+function initSegments() {
+  const segContainer = document.getElementById("segments");
+  segContainer.innerHTML = questions.map((_, i) => `<div class="seg" id="seg-${i}"></div>`).join("");
+}
+
+function updateProgress() {
+  const total = questions.length;
+  document.getElementById("stepCounter").textContent = `${currentIndex + 1}/${total}`;
+
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  questions.forEach((_, i) => {
+    const seg = document.getElementById(`seg-${i}`);
+    seg.className = "seg";
+    if (userAnswers[i] !== undefined) {
+      if (userAnswers[i].isCorrect) {
+        seg.classList.add("correct");
+        correctCount++;
+      } else {
+        seg.classList.add("wrong");
+        wrongCount++;
+      }
+    } else if (i === currentIndex) {
+      seg.classList.add("current");
+    }
+  });
+
+  document.getElementById("pillCorrect").textContent = `✓ ${correctCount}`;
+  document.getElementById("pillWrong").textContent = `✕ ${wrongCount}`;
+}
+
+function toggleHint() {
+  const box = document.getElementById("hintBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function loadQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById("qNumber").textContent = `Fråga ${idx + 1}`;
+  document.getElementById("qText").textContent = q.q;
+  document.getElementById("hintBox").textContent = q.hint;
+  document.getElementById("hintBox").style.display = "none";
+
+  const list = document.getElementById("optionsList");
+  list.innerHTML = "";
+
+  const answerData = userAnswers[idx];
+
+  q.options.forEach((optText, optIdx) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "opt-card";
+
+    let badgeHtml = "";
+    let isSelected = (answerData && answerData.selected === optIdx);
+    let isCorrectOpt = (optIdx === q.correct);
+
+    if (answerData) {
+      btn.disabled = true;
+      if (isCorrectOpt) {
+        btn.classList.add("correct-opt");
+        badgeHtml = `<span class="badge-result">✓ Rätt svar</span>`;
+      } else if (isSelected) {
+        btn.classList.add("wrong-opt");
+        badgeHtml = `<span class="badge-result">✕ Fel svar</span>`;
+      }
+    } else {
+      btn.onclick = () => chooseOption(optIdx);
+    }
+
+    let extraText = isSelected ? " (Ditt svar)" : "";
+    let explHtml = (answerData && (isCorrectOpt || isSelected)) ? `<div class="opt-explanation">${q.expl}</div>` : "";
+
+    btn.innerHTML = `
+      <div class="opt-header">
+        <span class="opt-title">${optText}<strong>${extraText}</strong></span>
+        ${badgeHtml}
+      </div>
+      ${explHtml}
+    `;
+
+    list.appendChild(btn);
+  });
+
+  document.getElementById("btnBack").disabled = (idx === 0);
+  document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Slutför" : "Nästa";
+  updateProgress();
+}
+
+function chooseOption(selectedIdx) {
+  if (userAnswers[currentIndex] !== undefined) return;
+  const q = questions[currentIndex];
+  userAnswers[currentIndex] = {
+    selected: selectedIdx,
+    isCorrect: (selectedIdx === q.correct)
+  };
+  loadQuestion(currentIndex);
+}
+
+function nextQuestion() {
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    loadQuestion(currentIndex);
+  } else {
+    showSummary();
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion(currentIndex);
+  }
+}
+
+function showSummary() {
+  document.getElementById("quizContent").style.display = "none";
+  document.getElementById("progressRow").style.display = "none";
+  document.getElementById("bottomBar").style.display = "none";
+
+  let correctCount = 0;
+  questions.forEach((_, i) => {
+    if (userAnswers[i] && userAnswers[i].isCorrect) correctCount++;
+  });
+
+  document.getElementById("summaryView").style.display = "block";
+  document.getElementById("finalScore").textContent = `${correctCount} / ${questions.length}`;
+
+  const pct = (correctCount / questions.length) * 100;
+  const fb = document.getElementById("finalFeedback");
+  if (pct >= 85) fb.textContent = "Grymt jobbat! Du har full koll på alla nätverksklasser, MAC-adresser och beräkningar!";
+  else if (pct >= 50) fb.textContent = "Bra resultat! Grunderna sitter, men repetera gärna detaljerna kring intervall och formler.";
+  else fb.textContent = "Kämpa på! Gå igenom svaren och förklaringarna och testa igen för att sätta teorin.";
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  userAnswers = {};
+  document.getElementById("summaryView").style.display = "none";
+  document.getElementById("quizContent").style.display = "block";
+  document.getElementById("progressRow").style.display = "flex";
+  document.getElementById("bottomBar").style.display = "flex";
+  loadQuestion(0);
+}
+
+window.onload = () => {
+  initSegments();
+  loadQuestion(0);
+};
+</script>
+</body>
+</html>
