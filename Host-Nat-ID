@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Träning: Net-ID & Host-ID - Jensen Campus</title>
+  <style>
+    :root {
+      --bg: #060b11;
+      --card-bg: #0b1522;
+      --gold-primary: #e6c260;
+      --gold-glow: rgba(230, 194, 96, 0.28);
+      --gold-gradient: linear-gradient(135deg, #fae287 0%, #d4af37 50%, #9e7d23 100%);
+      --gold-border: rgba(212, 175, 55, 0.55);
+      --text: #f8fafc;
+      --text-muted: #9fb0c3;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --opt-bg: #112033;
+      --opt-hover: #182c45;
+      --opt-border: rgba(212, 175, 55, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .modal-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 880px;
+      border-radius: 26px;
+      border: 2px solid var(--gold-border);
+      padding: 34px 38px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--gold-glow);
+      display: flex;
+      flex-direction: column;
+      min-height: 740px;
+      justify-content: space-between;
+    }
+
+    .header-box {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 22px;
+      border-bottom: 1.5px solid var(--gold-border);
+      padding-bottom: 20px;
+      box-shadow: 0 6px 15px -8px var(--gold-glow);
+    }
+
+    .jensen-logo-svg {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #060b11;
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 0 16px var(--gold-glow);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+    }
+
+    .header-titles h1 {
+      font-size: 1.55rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    .header-titles p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .segments {
+      display: flex;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .seg {
+      height: 6px;
+      flex: 1;
+      background: #18283b;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .seg.correct { background: var(--correct); }
+    .seg.wrong { background: var(--wrong); }
+    .seg.current { 
+      background: var(--gold-primary); 
+      box-shadow: 0 0 8px var(--gold-primary);
+    }
+
+    .step-text {
+      font-size: 1rem;
+      color: var(--gold-primary);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill-counter {
+      display: flex;
+      gap: 8px;
+    }
+
+    .count-pill {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .pill-red { background: rgba(239, 68, 68, 0.22); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .pill-green { background: rgba(34, 197, 94, 0.22); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.4); }
+
+    .q-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .q-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #070e17;
+      background: var(--gold-gradient);
+      padding: 3px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      box-shadow: 0 2px 8px var(--gold-glow);
+    }
+
+    .q-type-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #121f30;
+      border: 1px solid var(--gold-border);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .q-text {
+      font-size: 1.28rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .hint-btn {
+      background: none;
+      border: none;
+      color: var(--gold-primary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 18px;
+      display: inline-block;
+      padding: 0;
+    }
+
+    .hint-box {
+      display: none;
+      background: rgba(212, 175, 55, 0.1);
+      border-left: 4px solid var(--gold-primary);
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      color: #fef08a;
+      margin-bottom: 18px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-bottom: 20px;
+    }
+
+    .opt-card {
+      background: var(--opt-bg);
+      border: 1px solid var(--opt-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: #f1f5f9;
+      text-align: left;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .opt-card:hover:not(:disabled) {
+      background: var(--opt-hover);
+      border-color: var(--gold-primary);
+      transform: translateY(-1px);
+    }
+
+    .opt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-result {
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .opt-card.correct-opt {
+      background: rgba(34, 197, 94, 0.22);
+      border-color: var(--correct);
+    }
+    .opt-card.correct-opt .badge-result { background: #22c55e; color: #fff; }
+
+    .opt-card.wrong-opt {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: var(--wrong);
+    }
+    .opt-card.wrong-opt .badge-result { background: #ef4444; color: #fff; }
+
+    .opt-explanation {
+      margin-top: 10px;
+      padding-top: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .text-input-wrapper {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1.5px solid var(--gold-border);
+      background: var(--opt-bg);
+      color: #fff;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 14px var(--gold-glow);
+    }
+
+    .text-result-box {
+      display: none;
+      margin-top: 16px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 1.02rem;
+      line-height: 1.55;
+    }
+    .text-result-correct { background: rgba(34, 197, 94, 0.2); border: 1.5px solid var(--correct); color: #86efac; }
+    .text-result-wrong { background: rgba(239, 68, 68, 0.2); border: 1.5px solid var(--wrong); color: #fca5a5; }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      padding: 12px 30px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-back { background: #132438; color: #cbd5e1; border: 1px solid var(--gold-border); }
+    .btn-back:hover:not(:disabled) { background: #1b324e; }
+
+    .btn-next { 
+      background: var(--gold-gradient); 
+      color: #070e17; 
+      box-shadow: 0 0 16px var(--gold-glow); 
+    }
+    .btn-next:hover:not(:disabled) { 
+      filter: brightness(1.1); 
+      transform: translateY(-1px);
+    }
+
+    .btn-action:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .summary-view {
+      display: none;
+      text-align: center;
+      padding: 40px 16px;
+    }
+    .summary-view h2 { 
+      font-size: 2.2rem; 
+      margin-bottom: 12px; 
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800; 
+    }
+    .score-badge-large { 
+      font-size: 3.8rem; 
+      font-weight: 800; 
+      color: var(--gold-primary); 
+      margin: 16px 0; 
+      text-shadow: 0 0 25px var(--gold-glow); 
+    }
+    .summary-desc { color: var(--text-muted); font-size: 1.15rem; max-width: 600px; margin: 0 auto 28px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<div class="modal-container">
+  <div>
+    <div class="header-box">
+      <div class="jensen-logo-svg">
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#d4af37" stroke-width="2.5" />
+          <circle cx="50" cy="50" r="41" fill="none" stroke="#d4af37" stroke-width="1.2" />
+          <polygon points="50,16 52,21 57,21 53,24 55,29 50,26 45,29 47,24 43,21 48,21" fill="#d4af37"/>
+          <polygon points="63,22 64.5,25.5 68,25.5 65,28 66,31.5 63,29.5 60,31.5 61,28 58,25.5 61.5,25.5" fill="#d4af37"/>
+          <polygon points="73,34 74.5,37.5 78,37.5 75,40 76,43.5 73,41.5 70,43.5 71,40 68,37.5 71.5,37.5" fill="#d4af37"/>
+          <polygon points="58,35 59.5,38.5 63,38.5 60,41 61,44.5 58,42.5 55,44.5 56,41 53,38.5 56.5,38.5" fill="#d4af37"/>
+          <polygon points="68,48 69.5,51.5 73,51.5 70,54 71,57.5 68,55.5 65,57.5 66,54 63,51.5 66.5,51.5" fill="#d4af37"/>
+          <path d="M 33,26 L 52,26 L 52,40 C 52,45 42,48 33,48 C 24,48 24,40 24,40 L 24,26 Z" fill="none" stroke="#d4af37" stroke-width="1.2"/>
+          <text x="38" y="36" fill="#d4af37" font-size="7.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">1996</text>
+          <path d="M 32,70 C 37,58 48,50 63,45" fill="none" stroke="#d4af37" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="32" y1="70" x2="63" y2="45" stroke="#d4af37" stroke-width="1" />
+          <line x1="30" y1="67" x2="68" y2="42" stroke="#d4af37" stroke-width="2.2" stroke-linecap="round"/>
+          <polygon points="68,42 62,40 64,46" fill="#d4af37" />
+          <circle cx="36" cy="62" r="5" fill="none" stroke="#d4af37" stroke-width="1.6" />
+          <path id="textPath" d="M 20,68 A 38,38 0 0,0 80,68" fill="none" />
+          <text fill="#d4af37" font-size="7.2" font-weight="bold" letter-spacing="1.5">
+            <textPath href="#textPath" startOffset="50%" text-anchor="middle">JENSEN CAMPUS</textPath>
+          </text>
+        </svg>
+      </div>
+      <div class="header-titles">
+        <h1>Intensivträning: Net-ID & Host-ID</h1>
+        <p>Jensen Education • 15 Beräkningsfrågor (Klass A, B & C)</p>
+      </div>
+    </div>
+
+    <div class="progress-row" id="progressRow">
+      <div class="segments" id="segments"></div>
+      <div class="step-text" id="stepCounter">1/15</div>
+      <div class="pill-counter">
+        <div class="count-pill pill-red" id="pillWrong">✕ 0</div>
+        <div class="count-pill pill-green" id="pillCorrect">✓ 0</div>
+      </div>
+    </div>
+
+    <div id="quizContent">
+      <div class="q-meta">
+        <span class="q-badge" id="qBadge">Net-ID / Host-ID</span>
+        <span class="q-type-badge" id="qTypeBadge">Flerval</span>
+      </div>
+      <div class="q-text" id="qText">Laddar fråga...</div>
+
+      <button type="button" class="hint-btn" onclick="toggleHint()">💡 Visa ledtråd</button>
+      <div class="hint-box" id="hintBox"></div>
+
+      <div id="questionContainer"></div>
+    </div>
+
+    <div class="summary-view" id="summaryView">
+      <h2>Beräkningsträning genomförd!</h2>
+      <div class="score-badge-large" id="finalScore">0 / 15</div>
+      <p class="summary-desc" id="finalFeedback"></p>
+      <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om träningen</button>
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar">
+    <button type="button" class="btn-action btn-back" id="btnBack" onclick="prevQuestion()" disabled>Tillbaka</button>
+    <button type="button" class="btn-action btn-next" id="btnNext" onclick="nextQuestion()">Nästa</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // 1 (Text - Teori)
+  {
+    id: 1,
+    type: "text",
+    module: "Teori: Net-ID",
+    q: "Hur räknar man ut Net-ID (gatunamnet) med hjälp av IP-adress och subnätmask?",
+    hint: "Bitvis logisk AND-jämförelse; behåll vid 255, nollställ resten.",
+    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("behåll") || txt.includes("255") || txt.includes("noll")),
+    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("255"),
+    expl: "Man gör en bitvis logisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna från IP-adressen, resten nollställs (blir 0)."
+  },
+  // 2 (Text - Teori)
+  {
+    id: 2,
+    type: "text",
+    module: "Teori: Host-ID",
+    q: "Hur tar man reda på en dators Host-ID (husnumret)?",
+    hint: "Identifiera nätverksdelen med masken och ta bort den; siffrorna som blir kvar är Host-ID.",
+    fullCheck: (txt) => (txt.includes("ta bort") || txt.includes("kvar") || txt.includes("spar") || txt.includes("över")) && (txt.includes("nät") || txt.includes("host") || txt.includes("mask")),
+    partialCheck: (txt) => txt.includes("host") || txt.includes("kvar") || txt.includes("ta bort"),
+    expl: "Man identifierar nätverksdelen med hjälp av subnätmasken och tar bort den. Siffrorna som blir över (där masken har nollor) utgör enhetens Host-ID."
+  },
+  // 3 (MC - Klass C Net-ID)
+  {
+    id: 3,
+    type: "mc",
+    module: "Klass C: Net-ID",
+    q: "En dator har IP-adressen 192.168.10.45 med nätmasken 255.255.255.0. Vad är nätverkets Net-ID?",
+    hint: "Masken har 255 på de tre första oktetterna; nollställ sista oktetten.",
+    options: [
+      "192.168.10.0",
+      "192.168.0.0",
+      "192.168.10.45",
+      "192.168.10.255",
+      "192.0.0.0",
+      "255.255.255.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.255.255.0 låser de tre första oktetterna. 192.168.10.45 AND 255.255.255.0 ger Net-ID 192.168.10.0."
+  },
+  // 4 (Text - Klass C Host-ID)
+  {
+    id: 4,
+    type: "text",
+    module: "Klass C: Host-ID",
+    q: "Vad är Host-ID för datorn med IP 192.168.10.45 och nätmask 255.255.255.0?",
+    hint: "Svara bara med siffran eller punkten och siffran (t.ex. 45 eller .45).",
+    fullCheck: (txt) => txt === "45" || txt === ".45" || txt.includes("45"),
+    partialCheck: (txt) => txt.includes("45"),
+    expl: "Nätverksdelen är 192.168.10. Tar man bort den blir endast den sista oktetten kvar: 45 (eller .45)."
+  },
+  // 5 (MC - Klass B Net-ID)
+  {
+    id: 5,
+    type: "mc",
+    module: "Klass B: Net-ID",
+    q: "En server har IP-adressen 172.16.55.120 med nätmasken 255.255.0.0. Vad är dess Net-ID?",
+    hint: "Klass B har 255 på de två första oktetterna.",
+    options: [
+      "172.16.0.0",
+      "172.16.55.0",
+      "172.0.0.0",
+      "172.16.55.120",
+      "172.16.255.255",
+      "255.255.0.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.255.0.0 låser de två första oktetterna. 172.16.55.120 AND 255.255.0.0 ger Net-ID 172.16.0.0."
+  },
+  // 6 (Text - Klass B Host-ID)
+  {
+    id: 6,
+    type: "text",
+    module: "Klass B: Host-ID",
+    q: "Vad är Host-ID för IP-adressen 172.16.55.120 med nätmasken 255.255.0.0?",
+    hint: "De två sista oktetterna utgör host-delen (t.ex. 55.120 eller .55.120).",
+    fullCheck: (txt) => txt === "55.120" || txt === ".55.120" || txt.includes("55.120"),
+    partialCheck: (txt) => txt.includes("55") && txt.includes("120"),
+    expl: "Nätverksdelen är 172.16. Resterande två oktetter utgör enhetens Host-ID: 55.120 (eller .55.120)."
+  },
+  // 7 (MC - Klass A Net-ID)
+  {
+    id: 7,
+    type: "mc",
+    module: "Klass A: Net-ID",
+    q: "En router har IP-adressen 10.200.15.8 med nätmasken 255.0.0.0. Vad är dess Net-ID?",
+    hint: "Klass A låser enbart den allra första oktetten.",
+    options: [
+      "10.0.0.0",
+      "10.200.0.0",
+      "10.200.15.0",
+      "10.200.15.8",
+      "10.255.255.255",
+      "255.0.0.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.0.0.0 låser endast den första oktetten. 10.200.15.8 AND 255.0.0.0 ger Net-ID 10.0.0.0."
+  },
+  // 8 (MC - Klass A Host-ID)
+  {
+    id: 8,
+    type: "mc",
+    module: "Klass A: Host-ID",
+    q: "Vad är Host-ID för IP-adressen 10.200.15.8 med standardmasken 255.0.0.0?",
+    hint: "Ta bort den första oktetten; de tre sista är Host-ID.",
+    options: [
+      ".200.15.8",
+      ".15.8",
+      ".8",
+      "10.200.15.0",
+      "10.0.0.8",
+      "255.0.0.0"
+    ],
+    correct: 0,
+    expl: "Eftersom nätverksdelen är 10, består Host-ID av de tre sista oktetterna: .200.15.8."
+  },
+  // 9 (MC - Samma lokala nätverk)
+  {
+    id: 9,
+    type: "mc",
+    module: "Nätverkstillhörighet",
+    q: "Kan dator A (192.168.1.50) och dator B (192.168.2.50) kommunicera direkt utan router med mask 255.255.255.0?",
+    hint: "Jämför deras Net-ID: är 192.168.1.0 samma gata som 192.168.2.0?",
+    options: [
+      "Nej, de har olika Net-ID (192.168.1.0 och 192.168.2.0) och kräver en router.",
+      "Ja, eftersom de har samma Host-ID (.50) tillhör de samma fysiska länk.",
+      "Ja, alla adresser som inleds med 192.168 kan alltid nå varandra utan router.",
+      "Nej, datorer med identiska Host-ID skapar alltid en omedelbar IP-kollision.",
+      "Ja, förutsatt att de är anslutna till samma patchpanel med Cat6-kablage.",
+      "Nej, Klass C tillåter aldrig mer än en dator per nätverkskabel."
+    ],
+    correct: 0,
+    expl: "Dator A har Net-ID 192.168.1.0 medan dator B har Net-ID 192.168.2.0. De befinner sig på olika nätverk och trafiken måste gå via en router."
+  },
+  // 10 (MC - Samma nätverk Klass B)
+  {
+    id: 10,
+    type: "mc",
+    module: "Nätverkstillhörighet Klass B",
+    q: "Dator A har IP 172.16.1.10 och dator B har IP 172.16.2.20. Båda har nätmask 255.255.0.0. Kan de nå varandra direkt?",
+    hint: "Vad blir Net-ID för båda två när masken är /16 (255.255.0.0)?",
+    options: [
+      "Ja, båda har samma Net-ID (172.16.0.0) och kan kommunicera direkt via switch.",
+      "Nej, den tredje oktetten skiljer sig åt vilket alltid kräver en router.",
+      "Nej, Klass B-adresser kan aldrig kommunicera utan en aktiv DNS-server.",
+      "Ja, men enbart om båda enheterna är trådlöst anslutna över 5 GHz.",
+      "Nej, enheterna måste dela identiska Host-ID för att tillhöra samma nät.",
+      "Ja, men enbart under förutsättning att trafiken går via loopback-adressen."
+    ],
+    correct: 0,
+    expl: "Eftersom masken är 255.255.0.0 låses enbart de två första oktetterna. Båda har Net-ID 172.16.0.0 och befinner sig därför på samma lokala nätverk."
+  },
+  // 11 (Text - Net-ID beräkning)
+  {
+    id: 11,
+    type: "text",
+    module: "Beräkning Net-ID",
+    q: "Vilket Net-ID får en dator med IP 192.168.5.88 och nätmask 255.255.255.0?",
+    hint: "Skriv hela IP-adressen för nätverket (t.ex. 192.168.5.0).",
+    fullCheck: (txt) => txt === "192.168.5.0" || txt.includes("192.168.5.0"),
+    partialCheck: (txt) => txt.includes("192.168.5"),
+    expl: "192.168.5.88 AND 255.255.255.0 ger Net-ID 192.168.5.0."
+  },
+  // 12 (Text - Host-ID beräkning)
+  {
+    id: 12,
+    type: "text",
+    module: "Beräkning Host-ID",
+    q: "Vad är Host-ID för IP-adressen 10.50.60.70 med nätmasken 255.0.0.0?",
+    hint: "Skriv siffrorna som är kvar efter att nätverksdelen tagits bort (t.ex. 50.60.70 eller .50.60.70).",
+    fullCheck: (txt) => txt === "50.60.70" || txt === ".50.60.70" || txt.includes("50.60.70"),
+    partialCheck: (txt) => txt.includes("50") && txt.includes("60") && txt.includes("70"),
+    expl: "Nätverksdelen är 10. Resterande tre oktetter utgör Host-ID: 50.60.70 (eller .50.60.70)."
+  },
+  // 13 (MC - Otillåtna Host-adresser)
+  {
+    id: 13,
+    type: "mc",
+    module: "Regler för Host-ID",
+    q: "Varför kan en enskild dator aldrig tilldelas Host-ID som enbart består av bara nollor eller bara ettor?",
+    hint: "Nätverksadress och broadcastadress.",
+    options: [
+      "Bara nollor är reserverat för nätverks-ID; bara ettor är reserverat för broadcast.",
+      "Bara nollor kraschar nätverkskortet; bara ettor aktiverar alltid loopback.",
+      "Bara nollor används enbart för gateways; bara ettor används enbart av routrar.",
+      "Bara nollor är låst för IPv6; bara ettor är reserverat för switchens MAC-tabell.",
+      "Bara nollor skapar paketkollisioner; bara ettor blockeras av brandväggen.",
+      "Bara nollor tilldelas av DHCP; bara ettor används uteslutande vid ping-anrop."
+    ],
+    correct: 0,
+    expl: "Alla nollor i hostdelen representerar själva nätverksadressen (Net-ID). Alla ettor (t.ex. .255) är reserverat för nätverkets broadcast-adress."
+  },
+  // 14 (MC - CIDR /24 Net-ID)
+  {
+    id: 14,
+    type: "mc",
+    module: "CIDR /24 Beräkning",
+    q: "En server anges med adressen 192.168.100.25/24. Vad är dess Net-ID respektive Host-ID?",
+    hint: "/24 motsvarar 255.255.255.0.",
+    options: [
+      "Net-ID: 192.168.100.0; Host-ID: .25",
+      "Net-ID: 192.168.0.0; Host-ID: .100.25",
+      "Net-ID: 192.0.0.0; Host-ID: .168.100.25",
+      "Net-ID: 192.168.100.25; Host-ID: .0",
+      "Net-ID: 192.168.100.255; Host-ID: .24",
+      "Net-ID: 255.255.255.0; Host-ID: .25"
+    ],
+    correct: 0,
+    expl: "/24 innebär masken 255.255.255.0. Nätverksdelen är de första tre byten (192.168.100.0) och hostdelen är den sista byten (.25)."
+  },
+  // 15 (Text - Broadcastadress)
+  {
+    id: 15,
+    type: "text",
+    module: "Broadcast-beräkning",
+    q: "Vilken blir broadcast-adressen för nätverket 192.168.1.0 med nätmasken 255.255.255.0?",
+    hint: "Sätt alla bitar i host-delen till 1 (blir 255 i sista oktetten).",
+    fullCheck: (txt) => txt === "192.168.1.255" || txt.includes("192.168.1.255"),
+    partialCheck: (txt) => txt.includes("255"),
+    expl: "Broadcast-adressen erhålls när alla host-bitar sätts till 1. För nätverket 192.168.1.0/24 blir broadcast-adressen 192.168.1.255."
+  }
+];
+
+let currentIndex = 0;
+let userAnswers = {};
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function randomizeQuiz() {
+  shuffleArray(questions);
+  questions.forEach(q => {
+    if (q.type === "mc") {
+      const correctText = q.options[q.correct];
+      shuffleArray(q.options);
+      q.correct = q.options.indexOf(correctText);
+    }
+  });
+}
+
+function initSegments() {
+  const segContainer = document.getElementById("segments");
+  segContainer.innerHTML = questions.map((_, i) => `<div class="seg" id="seg-${i}"></div>`).join("");
+}
+
+function updateProgress() {
+  const total = questions.length;
+  document.getElementById("stepCounter").textContent = `${currentIndex + 1}/${total}`;
+
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  questions.forEach((_, i) => {
+    const seg = document.getElementById(`seg-${i}`);
+    seg.className = "seg";
+    if (userAnswers[i] !== undefined) {
+      if (userAnswers[i].isCorrect) {
+        seg.classList.add("correct");
+        correctCount++;
+      } else {
+        seg.classList.add("wrong");
+        wrongCount++;
+      }
+    } else if (i === currentIndex) {
+      seg.classList.add("current");
+    }
+  });
+
+  document.getElementById("pillCorrect").textContent = `✓ ${correctCount}`;
+  document.getElementById("pillWrong").textContent = `✕ ${wrongCount}`;
+}
+
+function toggleHint() {
+  const box = document.getElementById("hintBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function normalize(str) {
+  return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function loadQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById("qBadge").textContent = q.module;
+  document.getElementById("qTypeBadge").textContent = (q.type === "mc") ? "Flerval" : "Fritext (skriv svar)";
+  document.getElementById("qText").textContent = `${idx + 1}. ${q.q}`;
+  document.getElementById("hintBox").textContent = q.hint;
+  document.getElementById("hintBox").style.display = "none";
+
+  const container = document.getElementById("questionContainer");
+  container.innerHTML = "";
+
+  const answerData = userAnswers[idx];
+
+  if (q.type === "mc") {
+    const list = document.createElement("div");
+    list.className = "options-list";
+
+    q.options.forEach((optText, optIdx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "opt-card";
+
+      let badgeHtml = "";
+      let isSelected = (answerData && answerData.selected === optIdx);
+      let isCorrectOpt = (optIdx === q.correct);
+
+      if (answerData) {
+        btn.disabled = true;
+        if (isCorrectOpt) {
+          btn.classList.add("correct-opt");
+          badgeHtml = `<span class="badge-result">✓ Rätt svar</span>`;
+        } else if (isSelected) {
+          btn.classList.add("wrong-opt");
+          badgeHtml = `<span class="badge-result">✕ Fel svar</span>`;
+        }
+      } else {
+        btn.onclick = () => chooseMcOption(optIdx);
+      }
+
+      let extraText = isSelected ? " (Ditt svar)" : "";
+      let explHtml = (answerData && (isCorrectOpt || isSelected)) ? `<div class="opt-explanation">${q.expl}</div>` : "";
+
+      btn.innerHTML = `
+        <div class="opt-header">
+          <span>${optText}<strong>${extraText}</strong></span>
+          ${badgeHtml}
+        </div>
+        ${explHtml}
+      `;
+      list.appendChild(btn);
+    });
+    container.appendChild(list);
+
+  } else if (q.type === "text") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "text-input-wrapper";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "textInput";
+    input.placeholder = "Skriv svaret här och tryck Enter / Rätta...";
+    input.autocomplete = "off";
+
+    const resBox = document.createElement("div");
+    resBox.id = "textResBox";
+    resBox.className = "text-result-box";
+
+    if (answerData) {
+      input.value = answerData.textVal;
+      input.disabled = true;
+      resBox.style.display = "block";
+      if (answerData.score >= 1.0) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
+      } else if (answerData.score >= 0.5) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Delvis rätt! (0.5 p)</strong><br>${q.expl}`;
+      } else {
+        resBox.className = "text-result-box text-result-wrong";
+        resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      }
+    } else {
+      input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
+    }
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(resBox);
+
+    if (!answerData) {
+      const submitBtn = document.createElement("button");
+      submitBtn.type = "button";
+      submitBtn.className = "btn-action btn-next";
+      submitBtn.style.marginTop = "14px";
+      submitBtn.textContent = "Rätta svar";
+      submitBtn.onclick = submitTextAnswer;
+      wrapper.appendChild(submitBtn);
+    }
+
+    container.appendChild(wrapper);
+  }
+
+  document.getElementById("btnBack").disabled = (idx === 0);
+  document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Slutför" : "Nästa";
+  updateProgress();
+}
+
+function chooseMcOption(selectedIdx) {
+  if (userAnswers[currentIndex] !== undefined) return;
+  const q = questions[currentIndex];
+  userAnswers[currentIndex] = {
+    selected: selectedIdx,
+    isCorrect: (selectedIdx === q.correct)
+  };
+  loadQuestion(currentIndex);
+}
+
+function submitTextAnswer() {
+  const input = document.getElementById("textInput");
+  const val = input.value.trim();
+  if (!val) return;
+
+  const q = questions[currentIndex];
+  const clean = normalize(val);
+  let score = 0;
+
+  if (q.fullCheck(clean)) score = 1.0;
+  else if (q.partialCheck(clean)) score = 0.5;
+
+  userAnswers[currentIndex] = {
+    textVal: val,
+    score: score,
+    isCorrect: (score >= 0.5)
+  };
+  loadQuestion(currentIndex);
+}
+
+function nextQuestion() {
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    loadQuestion(currentIndex);
+  } else {
+    showSummary();
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion(currentIndex);
+  }
+}
+
+function showSummary() {
+  document.getElementById("quizContent").style.display = "none";
+  document.getElementById("progressRow").style.display = "none";
+  document.getElementById("bottomBar").style.display = "none";
+
+  let correctCount = 0;
+  questions.forEach((_, i) => {
+    if (userAnswers[i] && userAnswers[i].isCorrect) correctCount++;
+  });
+
+  document.getElementById("summaryView").style.display = "block";
+  document.getElementById("finalScore").textContent = `${correctCount} / ${questions.length}`;
+
+  const pct = (correctCount / questions.length) * 100;
+  const fb = document.getElementById("finalFeedback");
+  if (pct >= 85) fb.textContent = "Perfekt! Du behärskar Net-ID och Host-ID för samtliga adressklasser.";
+  else if (pct >= 60) fb.textContent = "Bra resultat! Kontrollera skillnaden mellan Klass A, B och C i facit så sitter alla beräkningar.";
+  else fb.textContent = "Kör gärna igenom beräkningarna en extra gång så sitter subnätmaskerna till provet!";
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  userAnswers = {};
+  randomizeQuiz();
+  document.getElementById("summaryView").style.display = "none";
+  document.getElementById("quizContent").style.display = "block";
+  document.getElementById("progressRow").style.display = "flex";
+  document.getElementById("bottomBar").style.display = "flex";
+  loadQuestion(0);
+}
+
+window.onload = () => {
+  randomizeQuiz();
+  initSegments();
+  loadQuestion(0);
+};
+</script>
+</body>
+</html>
