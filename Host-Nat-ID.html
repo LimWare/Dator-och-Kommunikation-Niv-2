@@ -48,7 +48,7 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--gold-glow);
       display: flex;
       flex-direction: column;
-      min-height: 740px;
+      min-height: 700px;
       justify-content: space-between;
     }
 
@@ -173,7 +173,7 @@
     }
 
     .q-text {
-      font-size: 1.28rem;
+      font-size: 1.25rem;
       font-weight: 700;
       line-height: 1.5;
       color: #ffffff;
@@ -384,7 +384,7 @@
       </div>
       <div class="header-titles">
         <h1>Intensivträning: Net-ID & Host-ID</h1>
-        <p>Jensen Education • 15 Beräkningsfrågor (Klass A, B & C)</p>
+        <p>Jensen Education • 15 Instuderingsfrågor (Klass A, B & C)</p>
       </div>
     </div>
 
@@ -411,7 +411,7 @@
     </div>
 
     <div class="summary-view" id="summaryView">
-      <h2>Beräkningsträning genomförd!</h2>
+      <h2>Träning genomförd!</h2>
       <div class="score-badge-large" id="finalScore">0 / 15</div>
       <p class="summary-desc" id="finalFeedback"></p>
       <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om träningen</button>
@@ -426,226 +426,226 @@
 
 <script>
 const questions = [
-  // 1 (Text - Teori)
+  // 1 (Text)
   {
     id: 1,
     type: "text",
     module: "Teori: Net-ID",
-    q: "Hur räknar man ut Net-ID (gatunamnet) med hjälp av IP-adress och subnätmask?",
-    hint: "Bitvis logisk AND-jämförelse; behåll vid 255, nollställ resten.",
-    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("behåll") || txt.includes("255") || txt.includes("noll")),
+    q: "Hur räknar man ut Net-ID (gatunamnet)?",
+    hint: "AND-jämförelse med subnätmasken. Där masken har 255 behåller man siffrorna, resten blir nollor.",
+    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("mask") || txt.includes("255") || txt.includes("behåll") || txt.includes("noll")),
     partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("255"),
-    expl: "Man gör en bitvis logisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna från IP-adressen, resten nollställs (blir 0)."
+    expl: "Man jämför IP-adressen med subnätmasken (en matematisk AND-jämförelse). Där masken har 255 behåller man siffrorna, resten blir nollor. Ex: 192.168.1.25 AND 255.255.255.0 = 192.168.1.0."
   },
-  // 2 (Text - Teori)
+  // 2 (Text)
   {
     id: 2,
     type: "text",
     module: "Teori: Host-ID",
-    q: "Hur tar man reda på en dators Host-ID (husnumret)?",
-    hint: "Identifiera nätverksdelen med masken och ta bort den; siffrorna som blir kvar är Host-ID.",
-    fullCheck: (txt) => (txt.includes("ta bort") || txt.includes("kvar") || txt.includes("spar") || txt.includes("över")) && (txt.includes("nät") || txt.includes("host") || txt.includes("mask")),
+    q: "Hur räknar man ut Host-ID (husnumret)? Ge gärna ett exempel.",
+    hint: "Ta bort nätverksdelen – siffrorna som blir över är Host-ID.",
+    fullCheck: (txt) => (txt.includes("ta bort") || txt.includes("kvar") || txt.includes("spar") || txt.includes("över")) && (txt.includes("nät") || txt.includes("host") || txt.includes("mask") || txt.includes("ip")),
     partialCheck: (txt) => txt.includes("host") || txt.includes("kvar") || txt.includes("ta bort"),
-    expl: "Man identifierar nätverksdelen med hjälp av subnätmasken och tar bort den. Siffrorna som blir över (där masken har nollor) utgör enhetens Host-ID."
+    expl: "Man tar IP-adressen och tar bort nätverksdelen – siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med mask 255.255.255.0 -> Kvar blir: .25 (Host-ID)."
   },
-  // 3 (MC - Klass C Net-ID)
+  // 3 (MC)
   {
     id: 3,
     type: "mc",
     module: "Klass C: Net-ID",
-    q: "En dator har IP-adressen 192.168.10.45 med nätmasken 255.255.255.0. Vad är nätverkets Net-ID?",
-    hint: "Masken har 255 på de tre första oktetterna; nollställ sista oktetten.",
+    q: "En dator har IP 192.168.1.25 och mask 255.255.255.0. Vad är dess Net-ID?",
+    hint: "Behåll siffrorna vid 255, nollställ resten.",
     options: [
-      "192.168.10.0",
+      "192.168.1.0",
       "192.168.0.0",
-      "192.168.10.45",
-      "192.168.10.255",
       "192.0.0.0",
+      "192.168.1.25",
+      "192.168.1.255",
       "255.255.255.0"
     ],
     correct: 0,
-    expl: "Masken 255.255.255.0 låser de tre första oktetterna. 192.168.10.45 AND 255.255.255.0 ger Net-ID 192.168.10.0."
+    expl: "Där masken har 255 behåller man siffrorna (192.168.1), och där masken har 0 sätter man en nolla (.0). Net-ID blir 192.168.1.0."
   },
-  // 4 (Text - Klass C Host-ID)
+  // 4 (Text)
   {
     id: 4,
     type: "text",
     module: "Klass C: Host-ID",
-    q: "Vad är Host-ID för datorn med IP 192.168.10.45 och nätmask 255.255.255.0?",
-    hint: "Svara bara med siffran eller punkten och siffran (t.ex. 45 eller .45).",
-    fullCheck: (txt) => txt === "45" || txt === ".45" || txt.includes("45"),
-    partialCheck: (txt) => txt.includes("45"),
-    expl: "Nätverksdelen är 192.168.10. Tar man bort den blir endast den sista oktetten kvar: 45 (eller .45)."
+    q: "En dator har IP 192.168.1.25 och mask 255.255.255.0. Vad är dess Host-ID?",
+    hint: "Ta bort nätverksdelen 192.168.1 – vad blir kvar?",
+    fullCheck: (txt) => txt === "25" || txt === ".25" || txt.includes("25"),
+    partialCheck: (txt) => txt.includes("25"),
+    expl: "Nätverksdelen är 192.168.1. Tar man bort den blir siffran .25 kvar, vilket är datorns Host-ID."
   },
-  // 5 (MC - Klass B Net-ID)
+  // 5 (MC)
   {
     id: 5,
     type: "mc",
     module: "Klass B: Net-ID",
-    q: "En server har IP-adressen 172.16.55.120 med nätmasken 255.255.0.0. Vad är dess Net-ID?",
-    hint: "Klass B har 255 på de två första oktetterna.",
+    q: "En dator har IP 172.16.10.5 och standardmasken 255.255.0.0. Vad är dess Net-ID?",
+    hint: "Klass B behåller de två första siffrorna och nollställer de två sista.",
     options: [
       "172.16.0.0",
-      "172.16.55.0",
+      "172.16.10.0",
       "172.0.0.0",
-      "172.16.55.120",
+      "172.16.10.5",
       "172.16.255.255",
       "255.255.0.0"
     ],
     correct: 0,
-    expl: "Masken 255.255.0.0 låser de två första oktetterna. 172.16.55.120 AND 255.255.0.0 ger Net-ID 172.16.0.0."
+    expl: "Masken 255.255.0.0 behåller de två första oktetterna (172.16) och nollställer resten (.0.0). Net-ID blir 172.16.0.0."
   },
-  // 6 (Text - Klass B Host-ID)
+  // 6 (Text)
   {
     id: 6,
     type: "text",
     module: "Klass B: Host-ID",
-    q: "Vad är Host-ID för IP-adressen 172.16.55.120 med nätmasken 255.255.0.0?",
-    hint: "De två sista oktetterna utgör host-delen (t.ex. 55.120 eller .55.120).",
-    fullCheck: (txt) => txt === "55.120" || txt === ".55.120" || txt.includes("55.120"),
-    partialCheck: (txt) => txt.includes("55") && txt.includes("120"),
-    expl: "Nätverksdelen är 172.16. Resterande två oktetter utgör enhetens Host-ID: 55.120 (eller .55.120)."
+    q: "En dator har IP 172.16.10.5 och mask 255.255.0.0. Vad är dess Host-ID?",
+    hint: "Ta bort nätverksdelen 172.16 – vad blir kvar?",
+    fullCheck: (txt) => txt === "10.5" || txt === ".10.5" || txt.includes("10.5"),
+    partialCheck: (txt) => txt.includes("10") && txt.includes("5"),
+    expl: "Nätverksdelen är 172.16. Tar man bort den blir .10.5 kvar som datorns Host-ID."
   },
-  // 7 (MC - Klass A Net-ID)
+  // 7 (MC)
   {
     id: 7,
     type: "mc",
     module: "Klass A: Net-ID",
-    q: "En router har IP-adressen 10.200.15.8 med nätmasken 255.0.0.0. Vad är dess Net-ID?",
-    hint: "Klass A låser enbart den allra första oktetten.",
+    q: "En dator har IP 10.20.30.40 och standardmasken 255.0.0.0. Vad är dess Net-ID?",
+    hint: "Klass A behåller bara den första siffran och nollställer resten.",
     options: [
       "10.0.0.0",
-      "10.200.0.0",
-      "10.200.15.0",
-      "10.200.15.8",
+      "10.20.0.0",
+      "10.20.30.0",
+      "10.20.30.40",
       "10.255.255.255",
       "255.0.0.0"
     ],
     correct: 0,
-    expl: "Masken 255.0.0.0 låser endast den första oktetten. 10.200.15.8 AND 255.0.0.0 ger Net-ID 10.0.0.0."
+    expl: "Masken 255.0.0.0 behåller bara den allra första siffran (10) och sätter nollor på resten. Net-ID blir 10.0.0.0."
   },
-  // 8 (MC - Klass A Host-ID)
+  // 8 (MC)
   {
     id: 8,
     type: "mc",
     module: "Klass A: Host-ID",
-    q: "Vad är Host-ID för IP-adressen 10.200.15.8 med standardmasken 255.0.0.0?",
-    hint: "Ta bort den första oktetten; de tre sista är Host-ID.",
+    q: "En dator har IP 10.20.30.40 och mask 255.0.0.0. Vad är dess Host-ID?",
+    hint: "Ta bort nätverksdelen 10 – vad blir över?",
     options: [
-      ".200.15.8",
-      ".15.8",
-      ".8",
-      "10.200.15.0",
-      "10.0.0.8",
-      "255.0.0.0"
+      ".20.30.40",
+      ".30.40",
+      ".40",
+      "10.0.0.40",
+      "10.20.30.0",
+      ".0.0.0"
     ],
     correct: 0,
-    expl: "Eftersom nätverksdelen är 10, består Host-ID av de tre sista oktetterna: .200.15.8."
+    expl: "Nätverksdelen är 10. Tar man bort den är det .20.30.40 som blir kvar som datorns Host-ID."
   },
-  // 9 (MC - Samma lokala nätverk)
+  // 9 (Text)
   {
     id: 9,
-    type: "mc",
-    module: "Nätverkstillhörighet",
-    q: "Kan dator A (192.168.1.50) och dator B (192.168.2.50) kommunicera direkt utan router med mask 255.255.255.0?",
-    hint: "Jämför deras Net-ID: är 192.168.1.0 samma gata som 192.168.2.0?",
-    options: [
-      "Nej, de har olika Net-ID (192.168.1.0 och 192.168.2.0) och kräver en router.",
-      "Ja, eftersom de har samma Host-ID (.50) tillhör de samma fysiska länk.",
-      "Ja, alla adresser som inleds med 192.168 kan alltid nå varandra utan router.",
-      "Nej, datorer med identiska Host-ID skapar alltid en omedelbar IP-kollision.",
-      "Ja, förutsatt att de är anslutna till samma patchpanel med Cat6-kablage.",
-      "Nej, Klass C tillåter aldrig mer än en dator per nätverkskabel."
-    ],
-    correct: 0,
-    expl: "Dator A har Net-ID 192.168.1.0 medan dator B har Net-ID 192.168.2.0. De befinner sig på olika nätverk och trafiken måste gå via en router."
+    type: "text",
+    module: "Klass C: Snabbfråga",
+    q: "Vilket Net-ID har en dator med IP 192.168.0.50 och subnätmask 255.255.255.0?",
+    hint: "Skriv hela IP-adressen för nätverket (slutar på .0).",
+    fullCheck: (txt) => txt === "192.168.0.0" || txt.includes("192.168.0.0"),
+    partialCheck: (txt) => txt.includes("192.168.0"),
+    expl: "192.168.0.50 AND 255.255.255.0 ger Net-ID: 192.168.0.0."
   },
-  // 10 (MC - Samma nätverk Klass B)
+  // 10 (Text)
   {
     id: 10,
-    type: "mc",
-    module: "Nätverkstillhörighet Klass B",
-    q: "Dator A har IP 172.16.1.10 och dator B har IP 172.16.2.20. Båda har nätmask 255.255.0.0. Kan de nå varandra direkt?",
-    hint: "Vad blir Net-ID för båda två när masken är /16 (255.255.0.0)?",
-    options: [
-      "Ja, båda har samma Net-ID (172.16.0.0) och kan kommunicera direkt via switch.",
-      "Nej, den tredje oktetten skiljer sig åt vilket alltid kräver en router.",
-      "Nej, Klass B-adresser kan aldrig kommunicera utan en aktiv DNS-server.",
-      "Ja, men enbart om båda enheterna är trådlöst anslutna över 5 GHz.",
-      "Nej, enheterna måste dela identiska Host-ID för att tillhöra samma nät.",
-      "Ja, men enbart under förutsättning att trafiken går via loopback-adressen."
-    ],
-    correct: 0,
-    expl: "Eftersom masken är 255.255.0.0 låses enbart de två första oktetterna. Båda har Net-ID 172.16.0.0 och befinner sig därför på samma lokala nätverk."
+    type: "text",
+    module: "Klass C: Snabbfråga",
+    q: "Vad är Host-ID för IP-adressen 192.168.0.50 med masken 255.255.255.0?",
+    hint: "Bara siffran som blir kvar efter att 192.168.0 tagits bort.",
+    fullCheck: (txt) => txt === "50" || txt === ".50" || txt.includes("50"),
+    partialCheck: (txt) => txt.includes("50"),
+    expl: "Kvar blir bara .50, vilket är Host-ID."
   },
-  // 11 (Text - Net-ID beräkning)
+  // 11 (MC)
   {
     id: 11,
-    type: "text",
-    module: "Beräkning Net-ID",
-    q: "Vilket Net-ID får en dator med IP 192.168.5.88 och nätmask 255.255.255.0?",
-    hint: "Skriv hela IP-adressen för nätverket (t.ex. 192.168.5.0).",
-    fullCheck: (txt) => txt === "192.168.5.0" || txt.includes("192.168.5.0"),
-    partialCheck: (txt) => txt.includes("192.168.5"),
-    expl: "192.168.5.88 AND 255.255.255.0 ger Net-ID 192.168.5.0."
+    type: "mc",
+    module: "Liknelse: Gatunamn & Husnummer",
+    q: "I kursens liknelse med postadresser, vad motsvarar Net-ID respektive Host-ID?",
+    hint: "Gatunamnet visar vilket område man bor på, husnumret visar exakt vem du är.",
+    options: [
+      "Net-ID är gatunamnet (nätverket) och Host-ID är husnumret (den unika datorn).",
+      "Net-ID är postnumret och Host-ID är namnet på staden.",
+      "Net-ID är routerns lösenord och Host-ID är datorns MAC-adress.",
+      "Net-ID är datorns användarnamn och Host-ID är nätverkskortets tillverkare.",
+      "Net-ID är kabelns maxlängd och Host-ID är signalens hastighet.",
+      "Net-ID är webbadressen och Host-ID är portnumret för HTTP."
+    ],
+    correct: 0,
+    expl: "Precis som i liknelsen: Net-ID är gatunamnet (alla på samma gata delar detta) och Host-ID är husnumret (varje hus/dator har ett eget unikt nummer på gatan)."
   },
-  // 12 (Text - Host-ID beräkning)
+  // 12 (MC)
   {
     id: 12,
-    type: "text",
-    module: "Beräkning Host-ID",
-    q: "Vad är Host-ID för IP-adressen 10.50.60.70 med nätmasken 255.0.0.0?",
-    hint: "Skriv siffrorna som är kvar efter att nätverksdelen tagits bort (t.ex. 50.60.70 eller .50.60.70).",
-    fullCheck: (txt) => txt === "50.60.70" || txt === ".50.60.70" || txt.includes("50.60.70"),
-    partialCheck: (txt) => txt.includes("50") && txt.includes("60") && txt.includes("70"),
-    expl: "Nätverksdelen är 10. Resterande tre oktetter utgör Host-ID: 50.60.70 (eller .50.60.70)."
+    type: "mc",
+    module: "Standardmasker",
+    q: "Vilka standardmasker hör ihop med Klass A, Klass B och Klass C?",
+    hint: "Klass A har en 255:a, Klass B har två, Klass C har tre.",
+    options: [
+      "Klass A: 255.0.0.0, Klass B: 255.255.0.0, Klass C: 255.255.255.0.",
+      "Klass A: 255.255.255.0, Klass B: 255.255.0.0, Klass C: 255.0.0.0.",
+      "Klass A: 255.0.0.0, Klass B: 255.0.0.0, Klass C: 255.255.0.0.",
+      "Klass A: 255.255.0.0, Klass B: 255.255.255.0, Klass C: 255.255.255.255.",
+      "Klass A: 126.0.0.0, Klass B: 191.0.0.0, Klass C: 223.0.0.0.",
+      "Klass A: 255.255.255.255, Klass B: 255.255.0.0, Klass C: 0.0.0.0."
+    ],
+    correct: 0,
+    expl: "Klass A = 255.0.0.0 (/8). Klass B = 255.255.0.0 (/16). Klass C = 255.255.255.0 (/24)."
   },
-  // 13 (MC - Otillåtna Host-adresser)
+  // 13 (MC)
   {
     id: 13,
     type: "mc",
-    module: "Regler för Host-ID",
-    q: "Varför kan en enskild dator aldrig tilldelas Host-ID som enbart består av bara nollor eller bara ettor?",
-    hint: "Nätverksadress och broadcastadress.",
+    module: "Kommunicera på samma nät",
+    q: "Två datorer har IP 192.168.1.10 och 192.168.1.20 med mask 255.255.255.0. Har de samma Net-ID?",
+    hint: "Räkna ut Net-ID för båda: blir det 192.168.1.0 för båda?",
     options: [
-      "Bara nollor är reserverat för nätverks-ID; bara ettor är reserverat för broadcast.",
-      "Bara nollor kraschar nätverkskortet; bara ettor aktiverar alltid loopback.",
-      "Bara nollor används enbart för gateways; bara ettor används enbart av routrar.",
-      "Bara nollor är låst för IPv6; bara ettor är reserverat för switchens MAC-tabell.",
-      "Bara nollor skapar paketkollisioner; bara ettor blockeras av brandväggen.",
-      "Bara nollor tilldelas av DHCP; bara ettor används uteslutande vid ping-anrop."
+      "Ja, båda har Net-ID 192.168.1.0 och tillhör därmed samma nätverk.",
+      "Nej, de har olika Net-ID eftersom de har olika siffror i slutet (.10 och .20).",
+      "Nej, för att ha samma Net-ID måste de ha exakt samma Host-ID.",
+      "Ja, men bara om de är kopplade med en korsad STP-kabel.",
+      "Nej, två datorer i Klass C kan aldrig dela samma gatunamn.",
+      "Ja, men trafiken måste alltid gå via Default Gateway för att nå fram."
     ],
     correct: 0,
-    expl: "Alla nollor i hostdelen representerar själva nätverksadressen (Net-ID). Alla ettor (t.ex. .255) är reserverat för nätverkets broadcast-adress."
+    expl: "Båda har Net-ID 192.168.1.0! De bor alltså på samma gata och kan prata med varandra direkt utan router."
   },
-  // 14 (MC - CIDR /24 Net-ID)
+  // 14 (MC)
   {
     id: 14,
     type: "mc",
-    module: "CIDR /24 Beräkning",
-    q: "En server anges med adressen 192.168.100.25/24. Vad är dess Net-ID respektive Host-ID?",
-    hint: "/24 motsvarar 255.255.255.0.",
+    module: "Kommunicera på olika nät",
+    q: "Dator 1 har IP 192.168.1.10 och Dator 2 har IP 192.168.2.10 (mask 255.255.255.0). Vad gäller?",
+    hint: "Jämför deras Net-ID: 192.168.1.0 gentemot 192.168.2.0.",
     options: [
-      "Net-ID: 192.168.100.0; Host-ID: .25",
-      "Net-ID: 192.168.0.0; Host-ID: .100.25",
-      "Net-ID: 192.0.0.0; Host-ID: .168.100.25",
-      "Net-ID: 192.168.100.25; Host-ID: .0",
-      "Net-ID: 192.168.100.255; Host-ID: .24",
-      "Net-ID: 255.255.255.0; Host-ID: .25"
+      "De har olika Net-ID (192.168.1.0 och 192.168.2.0) och behöver en router (Default Gateway) för att nå varandra.",
+      "De har samma Net-ID eftersom båda slutar på .10.",
+      "De kan prata direkt utan router eftersom båda börjar på 192.168.",
+      "De kraschar nätverket eftersom de har samma Host-ID (.10).",
+      "De kan bara kommunicera om man byter till koaxialkabel.",
+      "De kan inte kommunicera alls eftersom Klass C har slut på adresser."
     ],
     correct: 0,
-    expl: "/24 innebär masken 255.255.255.0. Nätverksdelen är de första tre byten (192.168.100.0) och hostdelen är den sista byten (.25)."
+    expl: "Dator 1 tillhör nätet 192.168.1.0 och Dator 2 tillhör nätet 192.168.2.0. De har olika gatunamn och trafiken måste gå via en router (Default Gateway)."
   },
-  // 15 (Text - Broadcastadress)
+  // 15 (Text)
   {
     id: 15,
     type: "text",
-    module: "Broadcast-beräkning",
-    q: "Vilken blir broadcast-adressen för nätverket 192.168.1.0 med nätmasken 255.255.255.0?",
-    hint: "Sätt alla bitar i host-delen till 1 (blir 255 i sista oktetten).",
-    fullCheck: (txt) => txt === "192.168.1.255" || txt.includes("192.168.1.255"),
-    partialCheck: (txt) => txt.includes("255"),
-    expl: "Broadcast-adressen erhålls när alla host-bitar sätts till 1. För nätverket 192.168.1.0/24 blir broadcast-adressen 192.168.1.255."
+    module: "Klass B: Snabbfråga",
+    q: "Vilket Net-ID får IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
+    hint: "Klass B behåller de två första siffrorna och sätter nollor på resten.",
+    fullCheck: (txt) => txt === "172.20.0.0" || txt.includes("172.20.0.0"),
+    partialCheck: (txt) => txt.includes("172.20"),
+    expl: "172.20.5.8 AND 255.255.0.0 ger Net-ID: 172.20.0.0."
   }
 ];
 
@@ -879,9 +879,9 @@ function showSummary() {
 
   const pct = (correctCount / questions.length) * 100;
   const fb = document.getElementById("finalFeedback");
-  if (pct >= 85) fb.textContent = "Perfekt! Du behärskar Net-ID och Host-ID för samtliga adressklasser.";
-  else if (pct >= 60) fb.textContent = "Bra resultat! Kontrollera skillnaden mellan Klass A, B och C i facit så sitter alla beräkningar.";
-  else fb.textContent = "Kör gärna igenom beräkningarna en extra gång så sitter subnätmaskerna till provet!";
+  if (pct >= 85) fb.textContent = "Grymt! Du har full koll på gatunamn (Net-ID) och husnummer (Host-ID) inför provet.";
+  else if (pct >= 60) fb.textContent = "Bra jobbat! Grundprincipen sitter, repetera skillnaden mellan Klass A, B och C en extra gång.";
+  else fb.textContent = "Kör igenom quizet en gång till så sitter beräkningarna i ryggmärgen!";
 }
 
 function restartQuiz() {
