@@ -320,13 +320,13 @@
       </div>
       <div class="header-titles">
         <h1>Intensivträning: Net-ID & Host-ID</h1>
-        <p>Jensen Education • Beräkningsövningar (Net-ID & Host-ID)</p>
+        <p>Jensen Education • Beräkningsövningar (15 Instuderingsfrågor)</p>
       </div>
     </div>
 
     <div class="progress-row" id="progressRow">
       <div class="segments" id="segments"></div>
-      <div class="step-text" id="stepCounter">1/10</div>
+      <div class="step-text" id="stepCounter">1/15</div>
       <div class="pill-counter">
         <div class="count-pill pill-red" id="pillWrong">✕ 0</div>
         <div class="count-pill pill-green" id="pillCorrect">✓ 0</div>
@@ -348,7 +348,7 @@
 
     <div class="summary-view" id="summaryView">
       <h2>Träning genomförd!</h2>
-      <div class="score-badge-large" id="finalScore">0 / 10</div>
+      <div class="score-badge-large" id="finalScore">0 / 15</div>
       <p class="summary-desc" id="finalFeedback"></p>
       <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om övningen</button>
     </div>
@@ -441,6 +441,46 @@ const questions = [
     hint: "De två sista oktetterna.",
     expectedIp: "100.5",
     expl: "Host-ID är de två sista delarna: 100.5."
+  },
+  {
+    id: 11,
+    module: "Klass C: Net-ID",
+    q: "Vad blir Net-ID för IP 192.168.5.100 med subnätmask 255.255.255.0?",
+    hint: "Nollställ den sista delen av IP-adressen.",
+    expectedIp: "192.168.5.0",
+    expl: "192.168.5.100 AND 255.255.255.0 ger Net-ID: 192.168.5.0."
+  },
+  {
+    id: 12,
+    module: "Klass C: Host-ID",
+    q: "Vad blir Host-ID för IP 192.168.5.100 med subnätmask 255.255.255.0?",
+    hint: "Sista oktetten i adressen.",
+    expectedIp: ".100",
+    expl: "Host-ID är det som blir över: .100 (eller 100)."
+  },
+  {
+    id: 13,
+    module: "Klass A: Net-ID",
+    q: "Beräkna Net-ID för IP 12.34.56.78 med standardmasken 255.0.0.0",
+    hint: "Enbart första oktetten behålls i Klass A.",
+    expectedIp: "12.0.0.0",
+    expl: "12.34.56.78 AND 255.0.0.0 ger Net-ID: 12.0.0.0."
+  },
+  {
+    id: 14,
+    module: "Klass A: Host-ID",
+    q: "Beräkna Host-ID för IP 12.34.56.78 med standardmasken 255.0.0.0",
+    hint: "De tre sista oktetterna.",
+    expectedIp: "34.56.78",
+    expl: "Host-ID är de tre sista delarna: 34.56.78."
+  },
+  {
+    id: 15,
+    module: "Klass B: Net-ID",
+    q: "Vilket Net-ID har IP 150.100.20.10 med standardmask 255.255.0.0?",
+    hint: "De två första oktetterna är nätverksdelen i Klass B.",
+    expectedIp: "150.100.0.0",
+    expl: "150.100.20.10 AND 255.255.0.0 ger Net-ID: 150.100.0.0."
   }
 ];
 
@@ -494,10 +534,6 @@ function updateProgress() {
 function toggleHint() {
   const box = document.getElementById("hintBox");
   box.style.display = box.style.display === "block" ? "none" : "block";
-}
-
-function normalize(str) {
-  return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function loadQuestion(idx) {
@@ -570,10 +606,8 @@ function submitTextAnswer() {
   const userClean = val.replace(/\s+/g, "").toLowerCase();
   const expectedClean = q.expectedIp.replace(/\s+/g, "").toLowerCase();
 
-  // Smart kontroll: kollar om användarens svar innehåller det förväntade IP-mönstret/värdet
   let isCorrect = userClean.includes(expectedClean);
 
-  // Extra flexibilitet för punkter (t.ex. om man skriver "50" istället för ".50")
   if (!isCorrect && expectedClean.startsWith(".")) {
     const altExpected = expectedClean.replace(".", "");
     if (userClean === altExpected) {
