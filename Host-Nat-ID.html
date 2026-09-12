@@ -204,6 +204,70 @@
       margin-bottom: 18px;
     }
 
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-bottom: 20px;
+    }
+
+    .opt-card {
+      background: var(--opt-bg);
+      border: 1px solid var(--opt-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: #f1f5f9;
+      text-align: left;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .opt-card:hover:not(:disabled) {
+      background: var(--opt-hover);
+      border-color: var(--gold-primary);
+      transform: translateY(-1px);
+    }
+
+    .opt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-result {
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .opt-card.correct-opt {
+      background: rgba(34, 197, 94, 0.22);
+      border-color: var(--correct);
+    }
+    .opt-card.correct-opt .badge-result { background: #22c55e; color: #fff; }
+
+    .opt-card.wrong-opt {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: var(--wrong);
+    }
+    .opt-card.wrong-opt .badge-result { background: #ef4444; color: #fff; }
+
+    .opt-explanation {
+      margin-top: 10px;
+      padding-top: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     .text-input-wrapper {
       margin-bottom: 20px;
     }
@@ -320,7 +384,7 @@
       </div>
       <div class="header-titles">
         <h1>Intensivträning: Net-ID & Host-ID</h1>
-        <p>Jensen Education • Beräkningsövningar (15 Instuderingsfrågor)</p>
+        <p>Jensen Education • 15 Utvalda beräkningsfrågor (Mixat Flerval & Fritext)</p>
       </div>
     </div>
 
@@ -335,8 +399,8 @@
 
     <div id="quizContent">
       <div class="q-meta">
-        <span class="q-badge" id="qBadge">Beräkning</span>
-        <span class="q-type-badge" id="qTypeBadge">Fritext</span>
+        <span class="q-badge" id="qBadge">Net-ID / Host-ID</span>
+        <span class="q-type-badge" id="qTypeBadge">Fråga</span>
       </div>
       <div class="q-text" id="qText">Laddar fråga...</div>
 
@@ -362,125 +426,212 @@
 
 <script>
 const questions = [
+  // 1. Teori (Fritext)
   {
     id: 1,
-    module: "Klass C: Net-ID",
-    q: "Vilket Net-ID har en dator med IP 192.168.0.50 och subnätmask 255.255.255.0?",
-    hint: "Använd AND-jämförelse. Där masken har 255 behålls siffrorna, resten blir nollor.",
-    expectedIp: "192.168.0.0",
-    expl: "192.168.0.50 AND 255.255.255.0 ger Net-ID: 192.168.0.0."
+    type: "text",
+    module: "Teori: Net-ID",
+    q: "Hur räknar man ut Net-ID (gatunamnet) med hjälp av IP-adress och subnätmask?",
+    hint: "Bitvis logisk AND-jämförelse; behåll vid 255, nollställ resten.",
+    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("behåll") || txt.includes("255") || txt.includes("noll")),
+    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("255"),
+    expl: "Man gör en bitvis logisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna från IP-adressen, resten nollställs (blir 0)."
   },
+  // 2. Klass C: Net-ID (Flerval)
   {
     id: 2,
-    module: "Klass C: Host-ID",
-    q: "Vilket Host-ID har en dator med IP 192.168.0.50 och subnätmask 255.255.255.0?",
-    hint: "Ta bort nätverksdelen (192.168.0) – vad blir kvar?",
-    expectedIp: ".50",
-    expl: "När nätverksdelen (192.168.0) tas bort från 192.168.0.50 blir Host-ID kvar: .50 (eller 50)."
+    type: "mc",
+    module: "Klass C: Net-ID",
+    q: "En dator har IP-adressen 192.168.10.45 med nätmasken 255.255.255.0. Vad är nätverkets Net-ID?",
+    hint: "Masken har 255 på de tre första oktetterna; nollställ sista oktetten.",
+    options: [
+      "192.168.10.0",
+      "192.168.0.0",
+      "192.168.10.45",
+      "192.168.10.255",
+      "192.0.0.0",
+      "255.255.255.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.255.255.0 låser de tre första oktetterna. 192.168.10.45 AND 255.255.255.0 ger Net-ID 192.168.10.0."
   },
+  // 3. Klass C: Host-ID (Fritext)
   {
     id: 3,
-    module: "Klass B: Net-ID",
-    q: "Vilket Net-ID får IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
-    hint: "Klass B har standardmask 255.255.0.0. De första två oktetterna behålls.",
-    expectedIp: "172.20.0.0",
-    expl: "172.20.5.8 AND 255.255.0.0 ger Net-ID: 172.20.0.0."
+    type: "text",
+    module: "Klass C: Host-ID",
+    q: "Vad är Host-ID för datorn med IP 192.168.10.45 och nätmask 255.255.255.0?",
+    hint: "Svara bara med siffran eller punkten och siffran (t.ex. 45 eller .45).",
+    expectedIp: ".45",
+    expl: "Nätverksdelen är 192.168.10. Tar man bort den blir endast den sista oktetten kvar: 45 (eller .45)."
   },
+  // 4. Klass B: Net-ID (Flerval)
   {
     id: 4,
-    module: "Klass B: Host-ID",
-    q: "Vilket Host-ID har IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
-    hint: "Siffrorna som blir över efter nätverksdelen (172.20).",
-    expectedIp: "5.8",
-    expl: "Host-delen är de två sista oktetterna: 5.8."
+    type: "mc",
+    module: "Klass B: Net-ID",
+    q: "En server har IP-adressen 172.16.55.120 med nätmasken 255.255.0.0. Vad är dess Net-ID?",
+    hint: "Klass B har 255 på de två första oktetterna.",
+    options: [
+      "172.16.0.0",
+      "172.16.55.0",
+      "172.0.0.0",
+      "172.16.55.120",
+      "172.16.255.255",
+      "255.255.0.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.255.0.0 låser de två första oktetterna. 172.16.55.120 AND 255.255.0.0 ger Net-ID 172.16.0.0."
   },
+  // 5. Klass B: Host-ID (Fritext)
   {
     id: 5,
-    module: "Klass A: Net-ID",
-    q: "Vilket Net-ID har en dator med IP 10.50.20.5 och standardmasken 255.0.0.0?",
-    hint: "Klass A har standardmask 255.0.0.0. Endast första oktetten behålls.",
-    expectedIp: "10.0.0.0",
-    expl: "10.50.20.5 AND 255.0.0.0 ger Net-ID: 10.0.0.0."
+    type: "text",
+    module: "Klass B: Host-ID",
+    q: "Vilket Host-ID har IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
+    hint: "De två sista oktetterna utgör host-delen (t.ex. 5.8 eller .5.8).",
+    expectedIp: "5.8",
+    expl: "Nätverksdelen är 172.20. Resterande två oktetter utgör enhetens Host-ID: 5.8."
   },
+  // 6. Klass A: Net-ID (Flerval)
   {
     id: 6,
-    module: "Klass A: Host-ID",
-    q: "Vilket Host-ID har en dator med IP 10.50.20.5 och standardmasken 255.0.0.0?",
-    hint: "Ta bort första oktetten (10).",
-    expectedIp: "50.20.5",
-    expl: "Host-delen är de tre sista oktetterna: 50.20.5."
+    type: "mc",
+    module: "Klass A: Net-ID",
+    q: "En router har IP-adressen 10.200.15.8 med nätmasken 255.0.0.0. Vad är dess Net-ID?",
+    hint: "Klass A låser enbart den allra första oktetten.",
+    options: [
+      "10.0.0.0",
+      "10.200.0.0",
+      "10.200.15.0",
+      "10.200.15.8",
+      "10.255.255.255",
+      "255.0.0.0"
+    ],
+    correct: 0,
+    expl: "Masken 255.0.0.0 låser endast den första oktetten. 10.200.15.8 AND 255.0.0.0 ger Net-ID 10.0.0.0."
   },
+  // 7. Klass A: Host-ID (Fritext)
   {
     id: 7,
-    module: "Klass C: Net-ID",
-    q: "Beräkna Net-ID för IP 192.168.10.15 med mask 255.255.255.0",
-    hint: "Klass C mask nollställer den sista oktetten.",
-    expectedIp: "192.168.10.0",
-    expl: "192.168.10.15 AND 255.255.255.0 ger Net-ID: 192.168.10.0."
+    type: "text",
+    module: "Klass A: Host-ID",
+    q: "Vilket Host-ID har en dator med IP 10.50.20.5 och standardmasken 255.0.0.0?",
+    hint: "Ta bort första oktetten (10). Skriv de tre resterande delarna (t.ex. 50.20.5).",
+    expectedIp: "50.20.5",
+    expl: "Nätverksdelen är 10. Resterande tre oktetter utgör enhetens Host-ID: 50.20.5."
   },
+  // 8. Routing / Samma nät (Flerval)
   {
     id: 8,
-    module: "Klass C: Host-ID",
-    q: "Beräkna Host-ID för IP 192.168.10.15 med mask 255.255.255.0",
-    hint: "Sista siffran i IP-adressen.",
-    expectedIp: ".15",
-    expl: "Host-ID är det som blir över efter nätverket: .15 (eller 15)."
+    type: "mc",
+    module: "Nätverkstillhörighet",
+    q: "Kan dator A (192.168.1.50) och dator B (192.168.2.50) kommunicera direkt utan router med mask 255.255.255.0?",
+    hint: "Jämför deras Net-ID: är 192.168.1.0 samma gata som 192.168.2.0?",
+    options: [
+      "Nej, de har olika Net-ID (192.168.1.0 och 192.168.2.0) och kräver en router.",
+      "Ja, eftersom de har samma Host-ID (.50) tillhör de samma fysiska länk.",
+      "Ja, alla adresser som inleds med 192.168 kan alltid nå varandra utan router.",
+      "Nej, datorer med identiska Host-ID skapar alltid en omedelbar IP-kollision.",
+      "Ja, förutsatt att de är anslutna till samma patchpanel med Cat6-kablage.",
+      "Nej, Klass C tillåter aldrig mer än en dator per nätverkskabel."
+    ],
+    correct: 0,
+    expl: "Dator A har Net-ID 192.168.1.0 medan dator B har Net-ID 192.168.2.0. De befinner sig på olika nätverk och trafiken måste gå via en router."
   },
+  // 9. Routing Klass B (Flerval)
   {
     id: 9,
-    module: "Klass B: Net-ID",
-    q: "Vad blir Net-ID för 172.16.100.5 med mask 255.255.0.0?",
-    hint: "Behåll de två första oktetterna, sätt resten till noll.",
-    expectedIp: "172.16.0.0",
-    expl: "172.16.100.5 AND 255.255.0.0 ger Net-ID: 172.16.0.0."
+    type: "mc",
+    module: "Nätverkstillhörighet Klass B",
+    q: "Dator A har IP 172.16.1.10 och dator B har IP 172.16.2.20. Båda har nätmask 255.255.0.0. Kan de nå varandra direkt via en switch?",
+    hint: "Vad blir Net-ID för båda två när masken är /16 (255.255.0.0)?",
+    options: [
+      "Ja, båda har samma Net-ID (172.16.0.0) och kan kommunicera direkt via switch.",
+      "Nej, den tredje oktetten skiljer sig åt vilket alltid kräver en router.",
+      "Nej, Klass B-adresser kan aldrig kommunicera utan en aktiv DNS-server.",
+      "Ja, men enbart om båda enheterna är trådlöst anslutna över 5 GHz.",
+      "Nej, enheterna måste dela identiska Host-ID för att tillhöra samma nät.",
+      "Ja, men enbart under förutsättning att trafiken går via loopback-adressen."
+    ],
+    correct: 0,
+    expl: "Eftersom masken är 255.255.0.0 låses enbart de två första oktetterna. Båda har Net-ID 172.16.0.0 och befinner sig därför på samma lokala nätverk."
   },
+  // 10. Beräkning Net-ID (Fritext)
   {
     id: 10,
-    module: "Klass B: Host-ID",
-    q: "Vad blir Host-ID för 172.16.100.5 med mask 255.255.0.0?",
-    hint: "De två sista oktetterna.",
-    expectedIp: "100.5",
-    expl: "Host-ID är de två sista delarna: 100.5."
+    type: "text",
+    module: "Klass C: Net-ID",
+    q: "Vilket Net-ID får en dator med IP 192.168.5.88 och nätmask 255.255.255.0?",
+    hint: "Skriv hela IP-adressen för nätverket (t.ex. 192.168.5.0).",
+    expectedIp: "192.168.5.0",
+    expl: "192.168.5.88 AND 255.255.255.0 ger Net-ID 192.168.5.0."
   },
+  // 11. Beräkning Host-ID (Fritext)
   {
     id: 11,
-    module: "Klass C: Net-ID",
-    q: "Vad blir Net-ID för IP 192.168.5.100 med subnätmask 255.255.255.0?",
-    hint: "Nollställ den sista delen av IP-adressen.",
-    expectedIp: "192.168.5.0",
-    expl: "192.168.5.100 AND 255.255.255.0 ger Net-ID: 192.168.5.0."
+    type: "text",
+    module: "Klass B: Host-ID",
+    q: "Vad blir Host-ID för IP-adressen 172.16.100.5 med standardmasken 255.255.0.0?",
+    hint: "De två sista oktetterna (t.ex. 100.5).",
+    expectedIp: "100.5",
+    expl: "Host-ID är de två sista delarna som blir över efter nätverket (172.16): 100.5."
   },
+  // 12. Regler för Host-ID (Flerval)
   {
     id: 12,
-    module: "Klass C: Host-ID",
-    q: "Vad blir Host-ID för IP 192.168.5.100 med subnätmask 255.255.255.0?",
-    hint: "Sista oktetten i adressen.",
-    expectedIp: ".100",
-    expl: "Host-ID är det som blir över: .100 (eller 100)."
+    type: "mc",
+    module: "Regler för Host-ID",
+    q: "Varför kan en enskild dator aldrig tilldelas ett Host-ID som enbart består av bara nollor eller bara ettor?",
+    hint: "Nätverksadress och broadcastadress.",
+    options: [
+      "Bara nollor är reserverat för nätverks-ID; bara ettor är reserverat för broadcast.",
+      "Bara nollor kraschar nätverkskortet; bara ettor aktiverar alltid loopback.",
+      "Bara nollor används enbart för gateways; bara ettor används enbart av routrar.",
+      "Bara nollor är låst för IPv6; bara ettor är reserverat för switchens MAC-tabell.",
+      "Bara nollor skapar paketkollisioner; bara ettor blockeras av brandväggen.",
+      "Bara nollor tilldelas av DHCP; bara ettor används uteslutande vid ping-anrop."
+    ],
+    correct: 0,
+    expl: "Alla nollor i hostdelen representerar själva nätverksadressen (Net-ID). Alla ettor (t.ex. .255) är reserverat för nätverkets broadcast-adress."
   },
+  // 13. CIDR /24 (Flerval)
   {
     id: 13,
+    type: "mc",
+    module: "CIDR /24 Beräkning",
+    q: "En server anges med adressen 192.168.100.25/24. Vad är dess Net-ID respektive Host-ID?",
+    hint: "/24 motsvarar 255.255.255.0.",
+    options: [
+      "Net-ID: 192.168.100.0; Host-ID: .25",
+      "Net-ID: 192.168.0.0; Host-ID: .100.25",
+      "Net-ID: 192.0.0.0; Host-ID: .168.100.25",
+      "Net-ID: 192.168.100.25; Host-ID: .0",
+      "Net-ID: 192.168.100.255; Host-ID: .24",
+      "Net-ID: 255.255.255.0; Host-ID: .25"
+    ],
+    correct: 0,
+    expl: "/24 innebär masken 255.255.255.0. Nätverksdelen är de första tre byten (192.168.100.0) och hostdelen är den sista byten (.25)."
+  },
+  // 14. Beräkning Net-ID Klass A (Fritext)
+  {
+    id: 14,
+    type: "text",
     module: "Klass A: Net-ID",
     q: "Beräkna Net-ID för IP 12.34.56.78 med standardmasken 255.0.0.0",
-    hint: "Enbart första oktetten behålls i Klass A.",
+    hint: "Enbart första oktetten behålls i Klass A. Sätt resten till noll.",
     expectedIp: "12.0.0.0",
     expl: "12.34.56.78 AND 255.0.0.0 ger Net-ID: 12.0.0.0."
   },
-  {
-    id: 14,
-    module: "Klass A: Host-ID",
-    q: "Beräkna Host-ID för IP 12.34.56.78 med standardmasken 255.0.0.0",
-    hint: "De tre sista oktetterna.",
-    expectedIp: "34.56.78",
-    expl: "Host-ID är de tre sista delarna: 34.56.78."
-  },
+  // 15. Broadcast-beräkning (Fritext)
   {
     id: 15,
-    module: "Klass B: Net-ID",
-    q: "Vilket Net-ID har IP 150.100.20.10 med standardmask 255.255.0.0?",
-    hint: "De två första oktetterna är nätverksdelen i Klass B.",
-    expectedIp: "150.100.0.0",
-    expl: "150.100.20.10 AND 255.255.0.0 ger Net-ID: 150.100.0.0."
+    type: "text",
+    module: "Broadcast-beräkning",
+    q: "Vilken blir broadcast-adressen för nätverket 192.168.1.0 med nätmasken 255.255.255.0?",
+    hint: "Sätt alla bitar i host-delen till 1 (blir 255 i sista oktetten).",
+    expectedIp: "192.168.1.255",
+    expl: "Broadcast-adressen erhålls när alla host-bitar sätts till 1. För nätverket 192.168.1.0/24 blir broadcast-adressen 192.168.1.255."
   }
 ];
 
@@ -497,6 +648,13 @@ function shuffleArray(arr) {
 
 function randomizeQuiz() {
   shuffleArray(questions);
+  questions.forEach(q => {
+    if (q.type === "mc") {
+      const correctText = q.options[q.correct];
+      shuffleArray(q.options);
+      q.correct = q.options.indexOf(correctText);
+    }
+  });
 }
 
 function initSegments() {
@@ -513,6 +671,7 @@ function updateProgress() {
 
   questions.forEach((_, i) => {
     const seg = document.getElementById(`seg-${i}`);
+    if (!seg) return;
     seg.className = "seg";
     if (userAnswers[i] !== undefined) {
       if (userAnswers[i].isCorrect) {
@@ -536,10 +695,14 @@ function toggleHint() {
   box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
+function normalize(str) {
+  return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function loadQuestion(idx) {
   const q = questions[idx];
   document.getElementById("qBadge").textContent = q.module;
-  document.getElementById("qTypeBadge").textContent = "Fritext (skriv svar)";
+  document.getElementById("qTypeBadge").textContent = (q.type === "mc") ? "Flerval" : "Fritext (skriv svar)";
   document.getElementById("qText").textContent = `${idx + 1}. ${q.q}`;
   document.getElementById("hintBox").textContent = q.hint;
   document.getElementById("hintBox").style.display = "none";
@@ -549,52 +712,107 @@ function loadQuestion(idx) {
 
   const answerData = userAnswers[idx];
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "text-input-wrapper";
+  if (q.type === "mc") {
+    const list = document.createElement("div");
+    list.className = "options-list";
 
-  const input = document.createElement("input");
-  input.type = "text";
-  input.id = "textInput";
-  input.placeholder = "Skriv ditt svar här och tryck Enter / Rätta svar...";
-  input.autocomplete = "off";
+    q.options.forEach((optText, optIdx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "opt-card";
 
-  const resBox = document.createElement("div");
-  resBox.id = "textResBox";
-  resBox.className = "text-result-box";
+      let badgeHtml = "";
+      let isSelected = (answerData && answerData.selected === optIdx);
+      let isCorrectOpt = (optIdx === q.correct);
 
-  if (answerData) {
-    input.value = answerData.textVal;
-    input.disabled = true;
-    resBox.style.display = "block";
-    if (answerData.isCorrect) {
-      resBox.className = "text-result-box text-result-correct";
-      resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
+      if (answerData) {
+        btn.disabled = true;
+        if (isCorrectOpt) {
+          btn.classList.add("correct-opt");
+          badgeHtml = `<span class="badge-result">✓ Rätt svar</span>`;
+        } else if (isSelected) {
+          btn.classList.add("wrong-opt");
+          badgeHtml = `<span class="badge-result">✕ Fel svar</span>`;
+        }
+      } else {
+        btn.onclick = () => chooseMcOption(optIdx);
+      }
+
+      let extraText = isSelected ? " (Ditt svar)" : "";
+      let explHtml = (answerData && (isCorrectOpt || isSelected)) ? `<div class="opt-explanation">${q.expl}</div>` : "";
+
+      btn.innerHTML = `
+        <div class="opt-header">
+          <span>${optText}<strong>${extraText}</strong></span>
+          ${badgeHtml}
+        </div>
+        ${explHtml}
+      `;
+      list.appendChild(btn);
+    });
+    container.appendChild(list);
+
+  } else if (q.type === "text") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "text-input-wrapper";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "textInput";
+    input.placeholder = "Skriv svaret här och tryck Enter / Rätta...";
+    input.autocomplete = "off";
+
+    const resBox = document.createElement("div");
+    resBox.id = "textResBox";
+    resBox.className = "text-result-box";
+
+    if (answerData) {
+      input.value = answerData.textVal;
+      input.disabled = true;
+      resBox.style.display = "block";
+      if (answerData.score >= 1.0) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
+      } else if (answerData.score >= 0.5) {
+        resBox.className = "text-result-box text-result-correct";
+        resBox.innerHTML = `<strong>✓ Delvis rätt! (0.5 p)</strong><br>${q.expl}`;
+      } else {
+        resBox.className = "text-result-box text-result-wrong";
+        resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      }
     } else {
-      resBox.className = "text-result-box text-result-wrong";
-      resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
     }
-  } else {
-    input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(resBox);
+
+    if (!answerData) {
+      const submitBtn = document.createElement("button");
+      submitBtn.type = "button";
+      submitBtn.className = "btn-action btn-next";
+      submitBtn.style.marginTop = "14px";
+      submitBtn.textContent = "Rätta svar";
+      submitBtn.onclick = submitTextAnswer;
+      wrapper.appendChild(submitBtn);
+    }
+
+    container.appendChild(wrapper);
   }
-
-  wrapper.appendChild(input);
-  wrapper.appendChild(resBox);
-
-  if (!answerData) {
-    const submitBtn = document.createElement("button");
-    submitBtn.type = "button";
-    submitBtn.className = "btn-action btn-next";
-    submitBtn.style.marginTop = "14px";
-    submitBtn.textContent = "Rätta svar";
-    submitBtn.onclick = submitTextAnswer;
-    wrapper.appendChild(submitBtn);
-  }
-
-  container.appendChild(wrapper);
 
   document.getElementById("btnBack").disabled = (idx === 0);
   document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Slutför" : "Nästa";
   updateProgress();
+}
+
+function chooseMcOption(selectedIdx) {
+  if (userAnswers[currentIndex] !== undefined) return;
+  const q = questions[currentIndex];
+  userAnswers[currentIndex] = {
+    selected: selectedIdx,
+    isCorrect: (selectedIdx === q.correct)
+  };
+  loadQuestion(currentIndex);
 }
 
 function submitTextAnswer() {
@@ -603,21 +821,28 @@ function submitTextAnswer() {
   if (!val) return;
 
   const q = questions[currentIndex];
-  const userClean = val.replace(/\s+/g, "").toLowerCase();
-  const expectedClean = q.expectedIp.replace(/\s+/g, "").toLowerCase();
+  let score = 0;
 
-  let isCorrect = userClean.includes(expectedClean);
+  if (q.fullCheck) {
+    const clean = normalize(val);
+    if (q.fullCheck(clean)) score = 1.0;
+    else if (q.partialCheck && q.partialCheck(clean)) score = 0.5;
+  } else if (q.expectedIp) {
+    const userClean = val.replace(/\s+/g, "").toLowerCase();
+    const expectedClean = q.expectedIp.replace(/\s+/g, "").toLowerCase();
 
-  if (!isCorrect && expectedClean.startsWith(".")) {
-    const altExpected = expectedClean.replace(".", "");
-    if (userClean === altExpected) {
-      isCorrect = true;
+    let matched = userClean.includes(expectedClean);
+    if (!matched && expectedClean.startsWith(".")) {
+      const altExpected = expectedClean.replace(".", "");
+      if (userClean === altExpected) matched = true;
     }
+    score = matched ? 1.0 : 0.0;
   }
 
   userAnswers[currentIndex] = {
     textVal: val,
-    isCorrect: isCorrect
+    score: score,
+    isCorrect: (score >= 0.5)
   };
   loadQuestion(currentIndex);
 }
@@ -653,9 +878,9 @@ function showSummary() {
 
   const pct = (correctCount / questions.length) * 100;
   const fb = document.getElementById("finalFeedback");
-  if (pct >= 85) fb.textContent = "Fantastiskt bra! Du har full kontroll på hur man räknar ut Net-ID och Host-ID.";
-  else if (pct >= 60) fb.textContent = "Bra jobbat! Grunderna sitter, men kika igenom de du missade en extra gång.";
-  else fb.textContent = "Kör gärna igenom övningen en gång till så sätter sig uträkningarna perfekt!";
+  if (pct >= 85) fb.textContent = "Perfekt! Du behärskar Net-ID och Host-ID för samtliga adressklasser och beräkningar.";
+  else if (pct >= 60) fb.textContent = "Bra resultat! Kontrollera skillnaden mellan Klass A, B och C i facit så sitter alla beräkningar.";
+  else fb.textContent = "Kör gärna igenom beräkningarna en extra gång så sitter subnätmaskerna till provet!";
 }
 
 function restartQuiz() {
