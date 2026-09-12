@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Träning: Net-ID & Host-ID - Jensen Campus</title>
+  <title>Intensivträning: Net-ID & Host-ID - Jensen Campus</title>
   <style>
     :root {
       --bg: #060b11;
@@ -48,7 +48,7 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--gold-glow);
       display: flex;
       flex-direction: column;
-      min-height: 700px;
+      min-height: 740px;
       justify-content: space-between;
     }
 
@@ -173,7 +173,7 @@
     }
 
     .q-text {
-      font-size: 1.25rem;
+      font-size: 1.28rem;
       font-weight: 700;
       line-height: 1.5;
       color: #ffffff;
@@ -202,70 +202,6 @@
       font-size: 0.98rem;
       color: #fef08a;
       margin-bottom: 18px;
-    }
-
-    .options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 11px;
-      margin-bottom: 20px;
-    }
-
-    .opt-card {
-      background: var(--opt-bg);
-      border: 1px solid var(--opt-border);
-      border-radius: 14px;
-      padding: 16px 20px;
-      color: #f1f5f9;
-      text-align: left;
-      font-size: 1.05rem;
-      line-height: 1.45;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-
-    .opt-card:hover:not(:disabled) {
-      background: var(--opt-hover);
-      border-color: var(--gold-primary);
-      transform: translateY(-1px);
-    }
-
-    .opt-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .badge-result {
-      font-size: 0.85rem;
-      font-weight: 800;
-      padding: 4px 12px;
-      border-radius: 999px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .opt-card.correct-opt {
-      background: rgba(34, 197, 94, 0.22);
-      border-color: var(--correct);
-    }
-    .opt-card.correct-opt .badge-result { background: #22c55e; color: #fff; }
-
-    .opt-card.wrong-opt {
-      background: rgba(239, 68, 68, 0.22);
-      border-color: var(--wrong);
-    }
-    .opt-card.wrong-opt .badge-result { background: #ef4444; color: #fff; }
-
-    .opt-explanation {
-      margin-top: 10px;
-      padding-top: 8px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #e2e8f0;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .text-input-wrapper {
@@ -384,13 +320,13 @@
       </div>
       <div class="header-titles">
         <h1>Intensivträning: Net-ID & Host-ID</h1>
-        <p>Jensen Education • 15 Instuderingsfrågor (Klass A, B & C)</p>
+        <p>Jensen Education • Beräkningsövningar (Net-ID & Host-ID)</p>
       </div>
     </div>
 
     <div class="progress-row" id="progressRow">
       <div class="segments" id="segments"></div>
-      <div class="step-text" id="stepCounter">1/15</div>
+      <div class="step-text" id="stepCounter">1/10</div>
       <div class="pill-counter">
         <div class="count-pill pill-red" id="pillWrong">✕ 0</div>
         <div class="count-pill pill-green" id="pillCorrect">✓ 0</div>
@@ -399,8 +335,8 @@
 
     <div id="quizContent">
       <div class="q-meta">
-        <span class="q-badge" id="qBadge">Net-ID / Host-ID</span>
-        <span class="q-type-badge" id="qTypeBadge">Flerval</span>
+        <span class="q-badge" id="qBadge">Beräkning</span>
+        <span class="q-type-badge" id="qTypeBadge">Fritext</span>
       </div>
       <div class="q-text" id="qText">Laddar fråga...</div>
 
@@ -412,9 +348,9 @@
 
     <div class="summary-view" id="summaryView">
       <h2>Träning genomförd!</h2>
-      <div class="score-badge-large" id="finalScore">0 / 15</div>
+      <div class="score-badge-large" id="finalScore">0 / 10</div>
       <p class="summary-desc" id="finalFeedback"></p>
-      <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om träningen</button>
+      <button type="button" class="btn-action btn-next" onclick="restartQuiz()">Gör om övningen</button>
     </div>
   </div>
 
@@ -426,226 +362,85 @@
 
 <script>
 const questions = [
-  // 1 (Text)
   {
     id: 1,
-    type: "text",
-    module: "Teori: Net-ID",
-    q: "Hur räknar man ut Net-ID (gatunamnet)?",
-    hint: "AND-jämförelse med subnätmasken. Där masken har 255 behåller man siffrorna, resten blir nollor.",
-    fullCheck: (txt) => (txt.includes("and") || txt.includes("jämför")) && (txt.includes("mask") || txt.includes("255") || txt.includes("behåll") || txt.includes("noll")),
-    partialCheck: (txt) => txt.includes("and") || txt.includes("mask") || txt.includes("255"),
-    expl: "Man jämför IP-adressen med subnätmasken (en matematisk AND-jämförelse). Där masken har 255 behåller man siffrorna, resten blir nollor. Ex: 192.168.1.25 AND 255.255.255.0 = 192.168.1.0."
-  },
-  // 2 (Text)
-  {
-    id: 2,
-    type: "text",
-    module: "Teori: Host-ID",
-    q: "Hur räknar man ut Host-ID (husnumret)? Ge gärna ett exempel.",
-    hint: "Ta bort nätverksdelen – siffrorna som blir över är Host-ID.",
-    fullCheck: (txt) => (txt.includes("ta bort") || txt.includes("kvar") || txt.includes("spar") || txt.includes("över")) && (txt.includes("nät") || txt.includes("host") || txt.includes("mask") || txt.includes("ip")),
-    partialCheck: (txt) => txt.includes("host") || txt.includes("kvar") || txt.includes("ta bort"),
-    expl: "Man tar IP-adressen och tar bort nätverksdelen – siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med mask 255.255.255.0 -> Kvar blir: .25 (Host-ID)."
-  },
-  // 3 (MC)
-  {
-    id: 3,
-    type: "mc",
     module: "Klass C: Net-ID",
-    q: "En dator har IP 192.168.1.25 och mask 255.255.255.0. Vad är dess Net-ID?",
-    hint: "Behåll siffrorna vid 255, nollställ resten.",
-    options: [
-      "192.168.1.0",
-      "192.168.0.0",
-      "192.0.0.0",
-      "192.168.1.25",
-      "192.168.1.255",
-      "255.255.255.0"
-    ],
-    correct: 0,
-    expl: "Där masken har 255 behåller man siffrorna (192.168.1), och där masken har 0 sätter man en nolla (.0). Net-ID blir 192.168.1.0."
-  },
-  // 4 (Text)
-  {
-    id: 4,
-    type: "text",
-    module: "Klass C: Host-ID",
-    q: "En dator har IP 192.168.1.25 och mask 255.255.255.0. Vad är dess Host-ID?",
-    hint: "Ta bort nätverksdelen 192.168.1 – vad blir kvar?",
-    fullCheck: (txt) => txt === "25" || txt === ".25" || txt.includes("25"),
-    partialCheck: (txt) => txt.includes("25"),
-    expl: "Nätverksdelen är 192.168.1. Tar man bort den blir siffran .25 kvar, vilket är datorns Host-ID."
-  },
-  // 5 (MC)
-  {
-    id: 5,
-    type: "mc",
-    module: "Klass B: Net-ID",
-    q: "En dator har IP 172.16.10.5 och standardmasken 255.255.0.0. Vad är dess Net-ID?",
-    hint: "Klass B behåller de två första siffrorna och nollställer de två sista.",
-    options: [
-      "172.16.0.0",
-      "172.16.10.0",
-      "172.0.0.0",
-      "172.16.10.5",
-      "172.16.255.255",
-      "255.255.0.0"
-    ],
-    correct: 0,
-    expl: "Masken 255.255.0.0 behåller de två första oktetterna (172.16) och nollställer resten (.0.0). Net-ID blir 172.16.0.0."
-  },
-  // 6 (Text)
-  {
-    id: 6,
-    type: "text",
-    module: "Klass B: Host-ID",
-    q: "En dator har IP 172.16.10.5 och mask 255.255.0.0. Vad är dess Host-ID?",
-    hint: "Ta bort nätverksdelen 172.16 – vad blir kvar?",
-    fullCheck: (txt) => txt === "10.5" || txt === ".10.5" || txt.includes("10.5"),
-    partialCheck: (txt) => txt.includes("10") && txt.includes("5"),
-    expl: "Nätverksdelen är 172.16. Tar man bort den blir .10.5 kvar som datorns Host-ID."
-  },
-  // 7 (MC)
-  {
-    id: 7,
-    type: "mc",
-    module: "Klass A: Net-ID",
-    q: "En dator har IP 10.20.30.40 och standardmasken 255.0.0.0. Vad är dess Net-ID?",
-    hint: "Klass A behåller bara den första siffran och nollställer resten.",
-    options: [
-      "10.0.0.0",
-      "10.20.0.0",
-      "10.20.30.0",
-      "10.20.30.40",
-      "10.255.255.255",
-      "255.0.0.0"
-    ],
-    correct: 0,
-    expl: "Masken 255.0.0.0 behåller bara den allra första siffran (10) och sätter nollor på resten. Net-ID blir 10.0.0.0."
-  },
-  // 8 (MC)
-  {
-    id: 8,
-    type: "mc",
-    module: "Klass A: Host-ID",
-    q: "En dator har IP 10.20.30.40 och mask 255.0.0.0. Vad är dess Host-ID?",
-    hint: "Ta bort nätverksdelen 10 – vad blir över?",
-    options: [
-      ".20.30.40",
-      ".30.40",
-      ".40",
-      "10.0.0.40",
-      "10.20.30.0",
-      ".0.0.0"
-    ],
-    correct: 0,
-    expl: "Nätverksdelen är 10. Tar man bort den är det .20.30.40 som blir kvar som datorns Host-ID."
-  },
-  // 9 (Text)
-  {
-    id: 9,
-    type: "text",
-    module: "Klass C: Snabbfråga",
     q: "Vilket Net-ID har en dator med IP 192.168.0.50 och subnätmask 255.255.255.0?",
-    hint: "Skriv hela IP-adressen för nätverket (slutar på .0).",
-    fullCheck: (txt) => txt === "192.168.0.0" || txt.includes("192.168.0.0"),
-    partialCheck: (txt) => txt.includes("192.168.0"),
+    hint: "Använd AND-jämförelse. Där masken har 255 behålls siffrorna, resten blir nollor.",
+    expectedIp: "192.168.0.0",
     expl: "192.168.0.50 AND 255.255.255.0 ger Net-ID: 192.168.0.0."
   },
-  // 10 (Text)
+  {
+    id: 2,
+    module: "Klass C: Host-ID",
+    q: "Vilket Host-ID har en dator med IP 192.168.0.50 och subnätmask 255.255.255.0?",
+    hint: "Ta bort nätverksdelen (192.168.0) – vad blir kvar?",
+    expectedIp: ".50",
+    expl: "När nätverksdelen (192.168.0) tas bort från 192.168.0.50 blir Host-ID kvar: .50 (eller 50)."
+  },
+  {
+    id: 3,
+    module: "Klass B: Net-ID",
+    q: "Vilket Net-ID får IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
+    hint: "Klass B har standardmask 255.255.0.0. De första två oktetterna behålls.",
+    expectedIp: "172.20.0.0",
+    expl: "172.20.5.8 AND 255.255.0.0 ger Net-ID: 172.20.0.0."
+  },
+  {
+    id: 4,
+    module: "Klass B: Host-ID",
+    q: "Vilket Host-ID har IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
+    hint: "Siffrorna som blir över efter nätverksdelen (172.20).",
+    expectedIp: "5.8",
+    expl: "Host-delen är de två sista oktetterna: 5.8."
+  },
+  {
+    id: 5,
+    module: "Klass A: Net-ID",
+    q: "Vilket Net-ID har en dator med IP 10.50.20.5 och standardmasken 255.0.0.0?",
+    hint: "Klass A har standardmask 255.0.0.0. Endast första oktetten behålls.",
+    expectedIp: "10.0.0.0",
+    expl: "10.50.20.5 AND 255.0.0.0 ger Net-ID: 10.0.0.0."
+  },
+  {
+    id: 6,
+    module: "Klass A: Host-ID",
+    q: "Vilket Host-ID har en dator med IP 10.50.20.5 och standardmasken 255.0.0.0?",
+    hint: "Ta bort första oktetten (10).",
+    expectedIp: "50.20.5",
+    expl: "Host-delen är de tre sista oktetterna: 50.20.5."
+  },
+  {
+    id: 7,
+    module: "Klass C: Net-ID",
+    q: "Beräkna Net-ID för IP 192.168.10.15 med mask 255.255.255.0",
+    hint: "Klass C mask nollställer den sista oktetten.",
+    expectedIp: "192.168.10.0",
+    expl: "192.168.10.15 AND 255.255.255.0 ger Net-ID: 192.168.10.0."
+  },
+  {
+    id: 8,
+    module: "Klass C: Host-ID",
+    q: "Beräkna Host-ID för IP 192.168.10.15 med mask 255.255.255.0",
+    hint: "Sista siffran i IP-adressen.",
+    expectedIp: ".15",
+    expl: "Host-ID är det som blir över efter nätverket: .15 (eller 15)."
+  },
+  {
+    id: 9,
+    module: "Klass B: Net-ID",
+    q: "Vad blir Net-ID för 172.16.100.5 med mask 255.255.0.0?",
+    hint: "Behåll de två första oktetterna, sätt resten till noll.",
+    expectedIp: "172.16.0.0",
+    expl: "172.16.100.5 AND 255.255.0.0 ger Net-ID: 172.16.0.0."
+  },
   {
     id: 10,
-    type: "text",
-    module: "Klass C: Snabbfråga",
-    q: "Vad är Host-ID för IP-adressen 192.168.0.50 med masken 255.255.255.0?",
-    hint: "Bara siffran som blir kvar efter att 192.168.0 tagits bort.",
-    fullCheck: (txt) => txt === "50" || txt === ".50" || txt.includes("50"),
-    partialCheck: (txt) => txt.includes("50"),
-    expl: "Kvar blir bara .50, vilket är Host-ID."
-  },
-  // 11 (MC)
-  {
-    id: 11,
-    type: "mc",
-    module: "Liknelse: Gatunamn & Husnummer",
-    q: "I kursens liknelse med postadresser, vad motsvarar Net-ID respektive Host-ID?",
-    hint: "Gatunamnet visar vilket område man bor på, husnumret visar exakt vem du är.",
-    options: [
-      "Net-ID är gatunamnet (nätverket) och Host-ID är husnumret (den unika datorn).",
-      "Net-ID är postnumret och Host-ID är namnet på staden.",
-      "Net-ID är routerns lösenord och Host-ID är datorns MAC-adress.",
-      "Net-ID är datorns användarnamn och Host-ID är nätverkskortets tillverkare.",
-      "Net-ID är kabelns maxlängd och Host-ID är signalens hastighet.",
-      "Net-ID är webbadressen och Host-ID är portnumret för HTTP."
-    ],
-    correct: 0,
-    expl: "Precis som i liknelsen: Net-ID är gatunamnet (alla på samma gata delar detta) och Host-ID är husnumret (varje hus/dator har ett eget unikt nummer på gatan)."
-  },
-  // 12 (MC)
-  {
-    id: 12,
-    type: "mc",
-    module: "Standardmasker",
-    q: "Vilka standardmasker hör ihop med Klass A, Klass B och Klass C?",
-    hint: "Klass A har en 255:a, Klass B har två, Klass C har tre.",
-    options: [
-      "Klass A: 255.0.0.0, Klass B: 255.255.0.0, Klass C: 255.255.255.0.",
-      "Klass A: 255.255.255.0, Klass B: 255.255.0.0, Klass C: 255.0.0.0.",
-      "Klass A: 255.0.0.0, Klass B: 255.0.0.0, Klass C: 255.255.0.0.",
-      "Klass A: 255.255.0.0, Klass B: 255.255.255.0, Klass C: 255.255.255.255.",
-      "Klass A: 126.0.0.0, Klass B: 191.0.0.0, Klass C: 223.0.0.0.",
-      "Klass A: 255.255.255.255, Klass B: 255.255.0.0, Klass C: 0.0.0.0."
-    ],
-    correct: 0,
-    expl: "Klass A = 255.0.0.0 (/8). Klass B = 255.255.0.0 (/16). Klass C = 255.255.255.0 (/24)."
-  },
-  // 13 (MC)
-  {
-    id: 13,
-    type: "mc",
-    module: "Kommunicera på samma nät",
-    q: "Två datorer har IP 192.168.1.10 och 192.168.1.20 med mask 255.255.255.0. Har de samma Net-ID?",
-    hint: "Räkna ut Net-ID för båda: blir det 192.168.1.0 för båda?",
-    options: [
-      "Ja, båda har Net-ID 192.168.1.0 och tillhör därmed samma nätverk.",
-      "Nej, de har olika Net-ID eftersom de har olika siffror i slutet (.10 och .20).",
-      "Nej, för att ha samma Net-ID måste de ha exakt samma Host-ID.",
-      "Ja, men bara om de är kopplade med en korsad STP-kabel.",
-      "Nej, två datorer i Klass C kan aldrig dela samma gatunamn.",
-      "Ja, men trafiken måste alltid gå via Default Gateway för att nå fram."
-    ],
-    correct: 0,
-    expl: "Båda har Net-ID 192.168.1.0! De bor alltså på samma gata och kan prata med varandra direkt utan router."
-  },
-  // 14 (MC)
-  {
-    id: 14,
-    type: "mc",
-    module: "Kommunicera på olika nät",
-    q: "Dator 1 har IP 192.168.1.10 och Dator 2 har IP 192.168.2.10 (mask 255.255.255.0). Vad gäller?",
-    hint: "Jämför deras Net-ID: 192.168.1.0 gentemot 192.168.2.0.",
-    options: [
-      "De har olika Net-ID (192.168.1.0 och 192.168.2.0) och behöver en router (Default Gateway) för att nå varandra.",
-      "De har samma Net-ID eftersom båda slutar på .10.",
-      "De kan prata direkt utan router eftersom båda börjar på 192.168.",
-      "De kraschar nätverket eftersom de har samma Host-ID (.10).",
-      "De kan bara kommunicera om man byter till koaxialkabel.",
-      "De kan inte kommunicera alls eftersom Klass C har slut på adresser."
-    ],
-    correct: 0,
-    expl: "Dator 1 tillhör nätet 192.168.1.0 och Dator 2 tillhör nätet 192.168.2.0. De har olika gatunamn och trafiken måste gå via en router (Default Gateway)."
-  },
-  // 15 (Text)
-  {
-    id: 15,
-    type: "text",
-    module: "Klass B: Snabbfråga",
-    q: "Vilket Net-ID får IP-adressen 172.20.5.8 med standardmasken 255.255.0.0?",
-    hint: "Klass B behåller de två första siffrorna och sätter nollor på resten.",
-    fullCheck: (txt) => txt === "172.20.0.0" || txt.includes("172.20.0.0"),
-    partialCheck: (txt) => txt.includes("172.20"),
-    expl: "172.20.5.8 AND 255.255.0.0 ger Net-ID: 172.20.0.0."
+    module: "Klass B: Host-ID",
+    q: "Vad blir Host-ID för 172.16.100.5 med mask 255.255.0.0?",
+    hint: "De två sista oktetterna.",
+    expectedIp: "100.5",
+    expl: "Host-ID är de två sista delarna: 100.5."
   }
 ];
 
@@ -662,13 +457,6 @@ function shuffleArray(arr) {
 
 function randomizeQuiz() {
   shuffleArray(questions);
-  questions.forEach(q => {
-    if (q.type === "mc") {
-      const correctText = q.options[q.correct];
-      shuffleArray(q.options);
-      q.correct = q.options.indexOf(correctText);
-    }
-  });
 }
 
 function initSegments() {
@@ -715,7 +503,7 @@ function normalize(str) {
 function loadQuestion(idx) {
   const q = questions[idx];
   document.getElementById("qBadge").textContent = q.module;
-  document.getElementById("qTypeBadge").textContent = (q.type === "mc") ? "Flerval" : "Fritext (skriv svar)";
+  document.getElementById("qTypeBadge").textContent = "Fritext (skriv svar)";
   document.getElementById("qText").textContent = `${idx + 1}. ${q.q}`;
   document.getElementById("hintBox").textContent = q.hint;
   document.getElementById("hintBox").style.display = "none";
@@ -725,107 +513,52 @@ function loadQuestion(idx) {
 
   const answerData = userAnswers[idx];
 
-  if (q.type === "mc") {
-    const list = document.createElement("div");
-    list.className = "options-list";
+  const wrapper = document.createElement("div");
+  wrapper.className = "text-input-wrapper";
 
-    q.options.forEach((optText, optIdx) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "opt-card";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.id = "textInput";
+  input.placeholder = "Skriv ditt svar här och tryck Enter / Rätta svar...";
+  input.autocomplete = "off";
 
-      let badgeHtml = "";
-      let isSelected = (answerData && answerData.selected === optIdx);
-      let isCorrectOpt = (optIdx === q.correct);
+  const resBox = document.createElement("div");
+  resBox.id = "textResBox";
+  resBox.className = "text-result-box";
 
-      if (answerData) {
-        btn.disabled = true;
-        if (isCorrectOpt) {
-          btn.classList.add("correct-opt");
-          badgeHtml = `<span class="badge-result">✓ Rätt svar</span>`;
-        } else if (isSelected) {
-          btn.classList.add("wrong-opt");
-          badgeHtml = `<span class="badge-result">✕ Fel svar</span>`;
-        }
-      } else {
-        btn.onclick = () => chooseMcOption(optIdx);
-      }
-
-      let extraText = isSelected ? " (Ditt svar)" : "";
-      let explHtml = (answerData && (isCorrectOpt || isSelected)) ? `<div class="opt-explanation">${q.expl}</div>` : "";
-
-      btn.innerHTML = `
-        <div class="opt-header">
-          <span>${optText}<strong>${extraText}</strong></span>
-          ${badgeHtml}
-        </div>
-        ${explHtml}
-      `;
-      list.appendChild(btn);
-    });
-    container.appendChild(list);
-
-  } else if (q.type === "text") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "text-input-wrapper";
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.id = "textInput";
-    input.placeholder = "Skriv svaret här och tryck Enter / Rätta...";
-    input.autocomplete = "off";
-
-    const resBox = document.createElement("div");
-    resBox.id = "textResBox";
-    resBox.className = "text-result-box";
-
-    if (answerData) {
-      input.value = answerData.textVal;
-      input.disabled = true;
-      resBox.style.display = "block";
-      if (answerData.score >= 1.0) {
-        resBox.className = "text-result-box text-result-correct";
-        resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
-      } else if (answerData.score >= 0.5) {
-        resBox.className = "text-result-box text-result-correct";
-        resBox.innerHTML = `<strong>✓ Delvis rätt! (0.5 p)</strong><br>${q.expl}`;
-      } else {
-        resBox.className = "text-result-box text-result-wrong";
-        resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
-      }
+  if (answerData) {
+    input.value = answerData.textVal;
+    input.disabled = true;
+    resBox.style.display = "block";
+    if (answerData.isCorrect) {
+      resBox.className = "text-result-box text-result-correct";
+      resBox.innerHTML = `<strong>✓ Helt rätt! (1.0 p)</strong><br>${q.expl}`;
     } else {
-      input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
+      resBox.className = "text-result-box text-result-wrong";
+      resBox.innerHTML = `<strong>✕ Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
     }
-
-    wrapper.appendChild(input);
-    wrapper.appendChild(resBox);
-
-    if (!answerData) {
-      const submitBtn = document.createElement("button");
-      submitBtn.type = "button";
-      submitBtn.className = "btn-action btn-next";
-      submitBtn.style.marginTop = "14px";
-      submitBtn.textContent = "Rätta svar";
-      submitBtn.onclick = submitTextAnswer;
-      wrapper.appendChild(submitBtn);
-    }
-
-    container.appendChild(wrapper);
+  } else {
+    input.onkeydown = (e) => { if (e.key === "Enter") submitTextAnswer(); };
   }
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(resBox);
+
+  if (!answerData) {
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "button";
+    submitBtn.className = "btn-action btn-next";
+    submitBtn.style.marginTop = "14px";
+    submitBtn.textContent = "Rätta svar";
+    submitBtn.onclick = submitTextAnswer;
+    wrapper.appendChild(submitBtn);
+  }
+
+  container.appendChild(wrapper);
 
   document.getElementById("btnBack").disabled = (idx === 0);
   document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Slutför" : "Nästa";
   updateProgress();
-}
-
-function chooseMcOption(selectedIdx) {
-  if (userAnswers[currentIndex] !== undefined) return;
-  const q = questions[currentIndex];
-  userAnswers[currentIndex] = {
-    selected: selectedIdx,
-    isCorrect: (selectedIdx === q.correct)
-  };
-  loadQuestion(currentIndex);
 }
 
 function submitTextAnswer() {
@@ -834,16 +567,23 @@ function submitTextAnswer() {
   if (!val) return;
 
   const q = questions[currentIndex];
-  const clean = normalize(val);
-  let score = 0;
+  const userClean = val.replace(/\s+/g, "").toLowerCase();
+  const expectedClean = q.expectedIp.replace(/\s+/g, "").toLowerCase();
 
-  if (q.fullCheck(clean)) score = 1.0;
-  else if (q.partialCheck(clean)) score = 0.5;
+  // Smart kontroll: kollar om användarens svar innehåller det förväntade IP-mönstret/värdet
+  let isCorrect = userClean.includes(expectedClean);
+
+  // Extra flexibilitet för punkter (t.ex. om man skriver "50" istället för ".50")
+  if (!isCorrect && expectedClean.startsWith(".")) {
+    const altExpected = expectedClean.replace(".", "");
+    if (userClean === altExpected) {
+      isCorrect = true;
+    }
+  }
 
   userAnswers[currentIndex] = {
     textVal: val,
-    score: score,
-    isCorrect: (score >= 0.5)
+    isCorrect: isCorrect
   };
   loadQuestion(currentIndex);
 }
@@ -879,9 +619,9 @@ function showSummary() {
 
   const pct = (correctCount / questions.length) * 100;
   const fb = document.getElementById("finalFeedback");
-  if (pct >= 85) fb.textContent = "Grymt! Du har full koll på gatunamn (Net-ID) och husnummer (Host-ID) inför provet.";
-  else if (pct >= 60) fb.textContent = "Bra jobbat! Grundprincipen sitter, repetera skillnaden mellan Klass A, B och C en extra gång.";
-  else fb.textContent = "Kör igenom quizet en gång till så sitter beräkningarna i ryggmärgen!";
+  if (pct >= 85) fb.textContent = "Fantastiskt bra! Du har full kontroll på hur man räknar ut Net-ID och Host-ID.";
+  else if (pct >= 60) fb.textContent = "Bra jobbat! Grunderna sitter, men kika igenom de du missade en extra gång.";
+  else fb.textContent = "Kör gärna igenom övningen en gång till så sätter sig uträkningarna perfekt!";
 }
 
 function restartQuiz() {
