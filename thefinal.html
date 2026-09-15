@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nätverk & Adressering - 26 Frågor (Fritext)</title>
+  <title>Nätverk & Adressering - 26 Frågor (En i taget)</title>
   <style>
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
       --border: #334155;
       --accent: #38bdf8;
+      --accent-hover: #0284c7;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --correct: #22c55e;
       --wrong: #ef4444;
-      --btn-hover: #0284c7;
     }
 
     * {
@@ -30,59 +30,84 @@
       padding: 2rem 1rem;
       display: flex;
       justify-content: center;
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 700px;
       width: 100%;
+      margin: auto;
     }
 
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: var(--accent);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
     }
 
     p.subtitle {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
-    .progress-box {
+    /* Progress bar */
+    .progress-container {
       background: var(--card-bg);
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
       border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .progress-stats {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #0b1120;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    /* Card */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
     }
 
-    .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      color: var(--accent);
-      display: flex;
-      gap: 0.5rem;
+    .question-title {
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+      line-height: 1.4;
     }
 
     textarea {
       width: 100%;
-      height: 90px;
+      height: 100px;
       background: #0b1120;
       color: var(--text);
       border: 1px solid var(--border);
@@ -98,11 +123,17 @@
       border-color: var(--accent);
     }
 
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     .btn {
       background: var(--accent);
       color: #0f172a;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
@@ -111,56 +142,79 @@
     }
 
     .btn:hover {
-      background: var(--btn-hover);
+      background: var(--accent-hover);
       color: #fff;
     }
 
     .solution {
       display: none;
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       padding: 1rem;
-      background: #0f172a;
+      background: #0b1120;
       border-left: 4px solid var(--accent);
       border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       line-height: 1.5;
       color: #e2e8f0;
     }
 
     .self-check {
       display: none;
-      margin-top: 0.8rem;
-      gap: 0.5rem;
+      margin-top: 1rem;
+      gap: 0.75rem;
     }
 
     .btn-correct {
-      background: transparent;
+      flex: 1;
+      background: rgba(34, 197, 94, 0.15);
       border: 1px solid var(--correct);
       color: var(--correct);
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
+      padding: 0.6rem;
+      font-weight: 600;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      text-align: center;
+      transition: all 0.2s;
     }
 
-    .btn-wrong {
-      background: transparent;
-      border: 1px solid var(--wrong);
-      color: var(--wrong);
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    .btn-correct.active {
+    .btn-correct:hover {
       background: var(--correct);
       color: #fff;
     }
 
-    .btn-wrong.active {
+    .btn-wrong {
+      flex: 1;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--wrong);
+      color: var(--wrong);
+      padding: 0.6rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-wrong:hover {
       background: var(--wrong);
       color: #fff;
+    }
+
+    /* Slutresultat */
+    .summary-card {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .summary-score {
+      font-size: 2.2rem;
+      color: var(--accent);
+      font-weight: bold;
+      margin: 1rem 0;
     }
   </style>
 </head>
@@ -169,15 +223,41 @@
 <div class="container">
   <header>
     <h1>Nätverk & Adressering</h1>
-    <p class="subtitle">Skriv dina egna svar, visa facit och markera om du svarade rätt eller fel.</p>
+    <p class="subtitle">Skriv ditt svar, kontrollera mot facit och gå vidare till nästa fråga.</p>
   </header>
 
-  <div class="progress-box">
-    <span>Resultat: <strong id="score">0</strong> / 26 rätt</span>
-    <button class="btn" onclick="resetAll()">Börja om</button>
+  <div class="progress-container" id="progress-container">
+    <div class="progress-stats">
+      <span id="question-indicator">Fråga 1 av 26</span>
+      <span>Poäng: <strong id="score-counter">0</strong></span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
   </div>
 
-  <div id="quiz-container"></div>
+  <div class="card" id="quiz-card">
+    <div class="question-title" id="q-text"></div>
+    <textarea id="user-input" placeholder="Skriv ditt svar här..."></textarea>
+    
+    <div class="btn-row">
+      <button class="btn" id="btn-show-facit" onclick="showSolution()">Visa facit</button>
+    </div>
+
+    <div class="solution" id="solution-box"></div>
+
+    <div class="self-check" id="check-box">
+      <button class="btn-correct" onclick="handleAnswer(true)">✓ Jag kunde detta</button>
+      <button class="btn-wrong" onclick="handleAnswer(false)">✕ Behöver öva mer</button>
+    </div>
+  </div>
+
+  <div class="summary-card" id="summary-card">
+    <h2>Träning klar!</h2>
+    <div class="summary-score" id="final-score"></div>
+    <p id="final-comment" style="color: var(--text-muted); margin-bottom: 1.5rem;"></p>
+    <button class="btn" onclick="restartQuiz()">Starta om omgången</button>
+  </div>
 </div>
 
 <script>
@@ -188,11 +268,11 @@ const questions = [
   },
   {
     q: "Vilka olika typer av topologier finns det och var används de?",
-    a: "<b>Stjärna:</b> Alla kopplas till central switch (standard hemma/kontor).<br><b>Buss:</b> Alla delar på samma kabel (fordon/bilar för att spara kabel).<br><b>Ring:</b> Datan går runt som en stafettpinne (telekom).<br><b>Mesh:</b> Alla har kontakt via flera vägar (datacenter, hög driftsäkerhet).<br><b>Träd:</b> Sammankopplade stjärnnät i nivåer (större företag).<br><b>Hybrid:</b> Blandning av två eller flera topologier."
+    a: "<b>Stjärna:</b> Alla kopplas till central switch (standard hemma/kontor).<br><b>Buss:</b> Alla delar på samma kabel (fordon/bilar för att spara kabel).<br><b>Ring:</b> Datan går runt som en stafettpinne (telekom).<br><b>Mesh:</b> Alla har kontakt via flera vägar (datacenter, hög driftsäkerhet).<br><b>Träd:</b> Sammankopplade stjärnnät i nivåer (större företag).<br><b>Hybrid:</b> Blandning av två eller fler sorter."
   },
   {
-    q: "Vilka typer av nätverksmedia finns det och vilka signaler skickas?",
-    a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar elektricitet.<br><b>Fiber:</b> Glas-/plastkabel – skickar ljus.<br><b>Trådlöst:</b> Wi-Fi, 4G/5G och radio – skickar radiovågor."
+    q: "Vilka typer av nätverksmedia finns det och vad för signaler skickar de?",
+    a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar el.<br><b>Fiber:</b> Glas-/plastkabel – skickar ljus.<br><b>Trådlöst:</b> Wi-Fi, 4G/5G och radio – skickar radiovågor."
   },
   {
     q: "Ge exempel på bunden kommunikation.",
@@ -207,40 +287,40 @@ const questions = [
     a: "<b>Maxlängd:</b> Alltid max 100 meter.<br><b>Hastighet:</b> Cat5e ger 1 Gbps, Cat6/6a ger upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
   },
   {
-    q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar har den?",
-    a: "<b>Uppbyggnad:</b> Tjock koppartråd i mitten, isolering och en yttre metallskärm runtom.<br><b>Fördel:</b> Tål yttre störningar jättebra och tål fysiskt stryk.<br><b>Nackdel:</b> Styv, svår att böja och har lägre kapacitet än fiber."
+    q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar den har.",
+    a: "<b>Uppbyggnad:</b> Tjock koppartråd i mitten, plastisolering och en metallskärm runtom.<br><b>Fördel:</b> Tål yttre störningar jättebra och tål fysiskt stryk.<br><b>Nackdel:</b> Styv, svår att böja och har lägre kapacitet än fiber."
   },
   {
     q: "Vilka typer av fiberkablar finns det?",
-    a: "<b>Singlemode:</b> Supertunn kärna, använder laser, för jättelånga sträckor (flera mil).<br><b>Multimode:</b> Tjockare kärna, enklare ljus (LED), för kortare sträckor (inom hus/datacenter)."
+    a: "<b>Singlemode:</b> Supertunn kärna med laser. För jättelånga sträckor (flera mil).<br><b>Multimode:</b> Tjockare kärna med enklare ljus (LED). För korta sträckor (inom ett hus/datacenter)."
   },
   {
     q: "Hur fungerar en fiberkabel rent tekniskt?",
-    a: "Data omvandlas till ljusblixtar. Ljuset studsar fram inuti glastråden (totalreflektion) till en mottagare (fotodiod) som gör om ljuset till ettor och nollor igen."
+    a: "Data görs om till ljusblixtar. Ljuset studsar inuti glastråden (totalreflektion) hela vägen till en mottagare (fotodiod) som gör om ljuset till ettor och nollor igen."
   },
   {
     q: "Vilka fördelar finns det med fiberkabel?",
-    a: "1. Blixtsnabbt och klarar enorma mängder data.<br>2. Helt okänsligt för elstörningar och åska.<br>3. Ljuset färdas flera mil utan signalförlust.<br>4. Svårt att avlyssna utan att länken bryts."
+    a: "• Blixtsnabbt och klarar enorma mängder data.<br>• Helt okänsligt för åska och elektriska störningar.<br>• Ljuset kan färdas mil utan att signalen blir svag.<br>• Går inte att avlyssna utan att länken bryts."
   },
   {
     q: "Hur är en MAC-adress uppbyggd?",
-    a: "Den består av 6 bytes (48 bitar).<br>• De 3 första byten visar vem som är tillverkare (OUI).<br>• De 3 sista byten är ett unikt serienummer för nätverkskortet (NIC)."
+    a: "Den består av 6 bytes (48 bitar).<br>• De 3 första byten visar tillverkaren (OUI).<br>• De 3 sista byten är nätverkskortets unika serienummer (NIC)."
   },
   {
     q: "Vad är en MAC-adress?",
-    a: "Nätverkskortets unika fysiska 'personnummer'. Den bränns in på kortet från fabriken och ändras i grunden aldrig."
+    a: "Nätverkskortets unika fysiska 'personnummer'. Den är inbränd på kortet från fabriken och ändras i grunden aldrig."
   },
   {
     q: "Vilka nätverksklasser finns det och ge exempel på adresser?",
-    a: "<b>Klass A:</b> 1–126 (Ex: 10.0.0.1) – för jättestora nätverk.<br><b>Klass B:</b> 128–191 (Ex: 172.16.0.1) – för mellanstora nätverk.<br><b>Klass C:</b> 192–223 (Ex: 192.168.1.1) – för små nät/hemmanätverk."
+    a: "<b>Klass A:</b> 1–126 (Ex: 10.0.0.1) – jättestora nätverk.<br><b>Klass B:</b> 128–191 (Ex: 172.16.0.1) – mellanstora nätverk.<br><b>Klass C:</b> 192–223 (Ex: 192.168.1.1) – små nät/hemmanätverk."
   },
   {
     q: "Hur räknar man ut Host-ID? (Husnumret)",
-    a: "Man tar IP-adressen och tar bort nätverksdelen (där masken har 255). Siffrorna som blir över är Host-ID.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Host-ID <b>.25</b>."
+    a: "Man tar bort nätverksdelen (där subnätmasken har 255) från IP-adressen – siffrorna som blir över är Host-ID.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Host-ID <b>.25</b>."
   },
   {
     q: "Hur räknar man ut Net-ID? (Gatunamnet)",
-    a: "Man jämför IP-adressen med nätmasken (AND-operation). Där masken har 255 behåller man siffrorna, resten blir nollor.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Net-ID <b>192.168.1.0</b>."
+    a: "Man jämför IP-adressen med subnätmasken (AND-operation). Där masken har 255 behåller man siffrorna, resten blir nollor.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Net-ID <b>192.168.1.0</b>."
   },
   {
     q: "Vilka adresser har Klass A?",
@@ -256,7 +336,7 @@ const questions = [
   },
   {
     q: "Vilka adresser har Klass B?",
-    a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 då det är loopback."
+    a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 för loopback."
   },
   {
     q: "Hur många nätverk kan Klass B ha?",
@@ -268,7 +348,7 @@ const questions = [
   },
   {
     q: "Vilka adresser har Klass C?",
-    a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: 255.255.255.0 eller /24). Slutar på 223, inte 255/256!"
+    a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: 255.255.255.0 eller /24). Slutar på 223, inte 256!"
   },
   {
     q: "Hur många nätverk kan Klass C ha?",
@@ -276,82 +356,81 @@ const questions = [
   },
   {
     q: "Hur många värdenheter kan Klass C ha?",
-    a: "<b>254 stycken</b> per nätverk (256 minus nätverksadress och broadcast = 254)."
+    a: "<b>254 stycken</b> per nätverk (256 minus 2 = 254)."
   },
   {
     q: "Vad är en Default Gateway?",
-    a: "Routerns lokala IP-adress. Det är 'dörren ut' dit datorn skickar all trafik som ska till andra nätverk eller ut på Internet."
+    a: "Routerns IP-adress på det lokala nätet. Det är 'dörren ut' som datorn skickar all trafik till när mottagaren finns på ett annat nätverk eller på Internet."
   },
   {
     q: "Vilka olika typer av IPv4-adresser finns det?",
-    a: "• <b>Unicast:</b> Skickar till en enskild enhet.<br>• <b>Multicast:</b> Skickar till en grupp (224.0.0.0–239.255.255.255).<br>• <b>Broadcast:</b> Skickar till alla på det lokala nätet (t.ex. .255).<br>• <b>Loopback:</b> Datorn testar sig själv internt (127.0.0.1).<br>• <b>Link-local:</b> Automatisk adress vid saknad DHCP (169.254.x.x / APIPA).<br>• <b>Unspecified:</b> Okänd adress under uppstart (0.0.0.0).<br>• <b>All-hosts broadcast:</b> Ropar till alla på det fysiska segmentet (255.255.255.255)."
+    a: "• <b>Unicast:</b> Skickar till en enskild enhet.<br>• <b>Multicast:</b> Skickar till en grupp (224.0.0.0–239.255.255.255).<br>• <b>Broadcast:</b> Skickar till alla lokalt (t.ex. 192.168.1.255).<br>• <b>Loopback:</b> Datorn pratar med sig själv internt (127.0.0.1).<br>• <b>Link-local:</b> Automatisk felsökningsadress vid saknad DHCP (169.254.x.x).<br>• <b>Unspecified:</b> Okänd adress under uppstart (0.0.0.0).<br>• <b>All-hosts broadcast:</b> Ropar till alla på kabeln (255.255.255.255)."
   }
 ];
 
-const results = {};
+let currentIndex = 0;
+let score = 0;
 
-function renderQuiz() {
-  const container = document.getElementById("quiz-container");
-  container.innerHTML = "";
-
-  questions.forEach((item, index) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <h2><span>${index + 1}.</span> ${item.q}</h2>
-      <textarea placeholder="Skriv ditt svar här..."></textarea>
-      <div>
-        <button class="btn" onclick="toggleSolution(${index})">Visa facit</button>
-      </div>
-      <div class="solution" id="sol-${index}">${item.a}</div>
-      <div class="self-check" id="check-${index}">
-        <button class="btn-correct" id="btn-c-${index}" onclick="markResult(${index}, true)">Jag svarade rätt</button>
-        <button class="btn-wrong" id="btn-w-${index}" onclick="markResult(${index}, false)">Jag svarade fel</button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+function loadQuestion() {
+  const current = questions[currentIndex];
+  document.getElementById("question-indicator").innerText = `Fråga ${currentIndex + 1} av ${questions.length}`;
+  document.getElementById("score-counter").innerText = score;
+  document.getElementById("progress-fill").style.width = `${(currentIndex / questions.length) * 100}%`;
+  
+  document.getElementById("q-text").innerText = `${currentIndex + 1}. ${current.q}`;
+  document.getElementById("user-input").value = "";
+  
+  document.getElementById("solution-box").innerHTML = current.a;
+  document.getElementById("solution-box").style.display = "none";
+  document.getElementById("check-box").style.display = "none";
+  document.getElementById("btn-show-facit").style.display = "inline-block";
 }
 
-function toggleSolution(index) {
-  const sol = document.getElementById(`sol-${index}`);
-  const check = document.getElementById(`check-${index}`);
-  const isHidden = sol.style.display === "" || sol.style.display === "none";
-  
-  sol.style.display = isHidden ? "block" : "none";
-  check.style.display = isHidden ? "flex" : "none";
+function showSolution() {
+  document.getElementById("solution-box").style.display = "block";
+  document.getElementById("check-box").style.display = "flex";
+  document.getElementById("btn-show-facit").style.display = "none";
 }
 
-function markResult(index, isCorrect) {
-  results[index] = isCorrect;
-  
-  const btnC = document.getElementById(`btn-c-${index}`);
-  const btnW = document.getElementById(`btn-w-${index}`);
+function handleAnswer(isCorrect) {
+  if (isCorrect) score++;
+  currentIndex++;
 
-  if (isCorrect) {
-    btnC.classList.add("active");
-    btnW.classList.remove("active");
+  if (currentIndex < questions.length) {
+    loadQuestion();
   } else {
-    btnW.classList.add("active");
-    btnC.classList.remove("active");
+    showSummary();
   }
-
-  updateScore();
 }
 
-function updateScore() {
-  const score = Object.values(results).filter(v => v === true).length;
-  document.getElementById("score").innerText = score;
+function showSummary() {
+  document.getElementById("quiz-card").style.display = "none";
+  document.getElementById("progress-container").style.display = "none";
+  
+  const summaryCard = document.getElementById("summary-card");
+  summaryCard.style.display = "block";
+  
+  const percentage = Math.round((score / questions.length) * 100);
+  document.getElementById("final-score").innerText = `${score} / ${questions.length} rätt (${percentage}%)`;
+  
+  let comment = "";
+  if (percentage >= 90) comment = "Grymt jobbat! Du har stenkoll inför provet.";
+  else if (percentage >= 70) comment = "Riktigt bra resultat! Repetera det lilla som missades så sitter allt.";
+  else comment = "Bra försök! Kör en omgång till för att nöta in detaljerna.";
+  
+  document.getElementById("final-comment").innerText = comment;
 }
 
-function resetAll() {
-  Object.keys(results).forEach(k => delete results[k]);
-  renderQuiz();
-  updateScore();
+function restartQuiz() {
+  currentIndex = 0;
+  score = 0;
+  document.getElementById("quiz-card").style.display = "block";
+  document.getElementById("progress-container").style.display = "flex";
+  document.getElementById("summary-card").style.display = "none";
+  loadQuestion();
 }
 
-renderQuiz();
+loadQuestion();
 </script>
 
 </body>
