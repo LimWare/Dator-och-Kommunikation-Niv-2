@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nätverk & Adressering - 26 Frågor</title>
+  <title>Nätverk & Adressering - Examensläge</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -36,7 +36,7 @@
     }
 
     .container {
-      max-width: 720px;
+      max-width: 760px;
       width: 100%;
       margin: auto;
     }
@@ -103,17 +103,19 @@
       color: var(--text);
       margin-bottom: 1.2rem;
       line-height: 1.4;
+      font-weight: 600;
     }
 
     textarea {
       width: 100%;
-      height: 110px;
+      height: 130px;
       background: #0b1120;
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 0.75rem;
+      padding: 0.85rem;
       font-size: 0.95rem;
+      line-height: 1.4;
       resize: vertical;
       margin-bottom: 1rem;
     }
@@ -127,7 +129,7 @@
       background: var(--accent);
       color: #0f172a;
       border: none;
-      padding: 0.6rem 1.4rem;
+      padding: 0.65rem 1.4rem;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
@@ -140,11 +142,10 @@
       color: #fff;
     }
 
-    /* Feedback box */
     .feedback-box {
       display: none;
       margin-top: 1.2rem;
-      padding: 1rem;
+      padding: 1.2rem;
       border-radius: 6px;
       font-size: 0.95rem;
       line-height: 1.5;
@@ -162,6 +163,7 @@
 
     .feedback-status {
       font-weight: bold;
+      font-size: 1rem;
       margin-bottom: 0.5rem;
     }
 
@@ -176,16 +178,17 @@
     .solution-text {
       margin-top: 0.5rem;
       color: #e2e8f0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.8rem;
     }
 
     .actions-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
-    /* Slutresultat */
     .summary-card {
       display: none;
       background: var(--card-bg);
@@ -208,7 +211,7 @@
 <div class="container">
   <header>
     <h1>Nätverk & Adressering</h1>
-    <p class="subtitle">Skriv ditt svar i rutan och klicka på Svara för automatisk kontroll.</p>
+    <p class="subtitle">Skärpt rättningsläge: Svara utförligt med både termer och förklaringar.</p>
   </header>
 
   <div class="progress-container" id="progress-container">
@@ -223,7 +226,7 @@
 
   <div class="card" id="quiz-card">
     <div class="question-title" id="q-text"></div>
-    <textarea id="user-input" placeholder="Skriv ditt svar här..."></textarea>
+    <textarea id="user-input" placeholder="Skriv ett utförligt svar här..."></textarea>
     
     <div class="actions-row">
       <button class="btn" id="btn-submit" onclick="checkAnswer()">Svara</button>
@@ -248,159 +251,280 @@
 const questions = [
   {
     q: "Vilka olika nätverkstyper finns det och var används de?",
-    keywords: ["pan", "lan", "man", "wan"],
-    minMatches: 3,
-    a: "<b>PAN:</b> Personligt (Bluetooth/klocka).<br><b>LAN:</b> Lokalt (hem, skola, kontor).<br><b>MAN:</b> Stadsnät (stad/kommun).<br><b>WAN:</b> Världsnät/stort nät (Internet)."
+    minLen: 60,
+    groups: [
+      ["pan", "bluetooth", "klocka", "nära"],
+      ["lan", "lokalt", "hem", "skola", "kontor"],
+      ["man", "stad", "kommun", "metropol"],
+      ["wan", "internet", "värld", "land"]
+    ],
+    minGroups: 4,
+    a: "<b>PAN:</b> Personligt och mycket nära (Bluetooth, klockor, hörlurar).<br><b>LAN:</b> Lokalt nätverk i ett hem, en skola eller ett kontor.<br><b>MAN:</b> Stadsnät som täcker en hel stad eller kommun.<br><b>WAN:</b> Stort nätverk över länder/världen (Internet)."
   },
   {
     q: "Vilka olika typer av topologier finns det och var används de?",
-    keywords: ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"],
-    minMatches: 3,
-    a: "<b>Stjärna:</b> Central switch (hemma/kontor).<br><b>Buss:</b> Gemensam kabel (bilar/fordon).<br><b>Ring:</b> Cirkel/stafettpinne (telekom).<br><b>Mesh:</b> Flera vägar för redundans (datacenter).<br><b>Träd:</b> Stjärnnät i nivåer.<br><b>Hybrid:</b> Blandning."
+    minLen: 60,
+    groups: [
+      ["stjärn", "star", "switch"],
+      ["buss", "bus", "fordon", "bil", "kabel"],
+      ["ring", "cirkel", "stafett"],
+      ["mesh", "redundans", "datacenter", "flera"],
+      ["träd", "tree", "hybrid"]
+    ],
+    minGroups: 4,
+    a: "<b>Stjärna:</b> Kopplas till central switch (hem/kontor).<br><b>Buss:</b> Sammankopplad gemensam kabel (bilar/fordon).<br><b>Ring:</b> Cirkulär överföring som stafettpinne (telekom).<br><b>Mesh:</b> Maskor med flera vägar för redundans (datacenter).<br><b>Träd:</b> Stjärnnät ihopkopplade i hierarki.<br><b>Hybrid:</b> Kombination av olika topologier."
   },
   {
     q: "Vilka typer av nätverksmedia finns det och vad för signaler skickar de?",
-    keywords: ["koppar", "fiber", "trådlös", "el", "ljus", "radio"],
-    minMatches: 3,
-    a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar el.<br><b>Fiber:</b> Glas-/plastkabel – skickar ljus.<br><b>Trådlöst:</b> Wi-Fi/4G/5G – skickar radiovågor."
+    minLen: 40,
+    groups: [
+      ["koppar", "el", "ström", "elektrisk"],
+      ["fiber", "ljus"],
+      ["trådlös", "radio", "vågor"]
+    ],
+    minGroups: 3,
+    a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar <b>el/elektriska signaler</b>.<br><b>Fiber:</b> Glas-/plastkabel – skickar <b>ljus</b>.<br><b>Trådlöst:</b> Wi-Fi/mobilnät – skickar <b>radiovågor</b>."
   },
   {
     q: "Ge exempel på bunden kommunikation.",
-    keywords: ["kabel", "fysisk", "tp", "fiber", "koppar"],
-    minMatches: 1,
-    a: "Allt som går via en fysisk kabel (t.ex. TP-kabel eller fiber), alltså inte trådlöst via luften."
+    minLen: 20,
+    groups: [
+      ["kabel", "fysisk", "trådbunden"],
+      ["tp", "fiber", "koppar", "ledare"]
+    ],
+    minGroups: 2,
+    a: "All kommunikation som går via en <b>fysisk kabel</b> (t.ex. TP-kabel, koaxialkabel eller fiber), alltså inte trådlöst via luften."
   },
   {
     q: "Vilka typer av TP-kablar finns det?",
-    keywords: ["utp", "stp", "cat"],
-    minMatches: 2,
-    a: "<b>Skärmning:</b> UTP (oskärmad, billigast) och STP (skärmad mot elstörningar).<br><b>Klasser:</b> Cat5e, Cat6, Cat6a, Cat7 och Cat8."
+    minLen: 30,
+    groups: [
+      ["utp", "oskärmad", "unshielded"],
+      ["stp", "skärmad", "shielded"],
+      ["cat", "cat5", "cat6", "kategor"]
+    ],
+    minGroups: 2,
+    a: "<b>Skärmning:</b> UTP (oskärmad, billigast) och STP (metallskärm mot störningar).<br><b>Klasser:</b> Cat5e, Cat6, Cat6a, Cat7 och Cat8."
   },
   {
     q: "Vilken kapacitet har TP-kabeln och hur långt kan man sända?",
-    keywords: ["100", "meter", "gbps", "1", "10"],
-    minMatches: 2,
-    a: "<b>Maxlängd:</b> Alltid max 100 meter.<br><b>Hastighet:</b> Cat5e ger 1 Gbps, Cat6/6a ger upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
+    minLen: 25,
+    groups: [
+      ["100", "meter"],
+      ["gbps", "gbit", "hastighet", "1", "10"]
+    ],
+    minGroups: 2,
+    a: "<b>Maxlängd:</b> Alltid max <b>100 meter</b>.<br><b>Hastighet:</b> Cat5e klarar 1 Gbps, Cat6/6a upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
   },
   {
     q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar den har.",
-    keywords: ["koppar", "skärm", "störning", "styv", "böj"],
-    minMatches: 2,
-    a: "<b>Uppbyggnad:</b> Tjock koppartråd, isolering och metallskärm.<br><b>Fördel:</b> Tål störningar och stryk bra.<br><b>Nackdel:</b> Styv, svår att böja och lägre kapacitet än fiber."
+    minLen: 40,
+    groups: [
+      ["koppar", "ledare", "skärm"],
+      ["störning", "tål", "stryk", "skydd"],
+      ["styv", "svår", "böja", "långsam", "kapacitet"]
+    ],
+    minGroups: 3,
+    a: "<b>Uppbyggnad:</b> Tjock koppartråd, plastisolering och yttre metallskärm.<br><b>Fördel:</b> Tål störningar jättebra och tål fysiskt stryk.<br><b>Nackdel:</b> Styv, svår att böja och har lägre kapacitet än modern fiber."
   },
   {
     q: "Vilka typer av fiberkablar finns det?",
-    keywords: ["singlemode", "multimode", "laser", "led"],
-    minMatches: 2,
-    a: "<b>Singlemode:</b> Supertunn kärna med laser. För långa sträckor (mil).<br><b>Multimode:</b> Tjockare kärna med LED-ljus. För korta sträckor (byggnad/datacenter)."
+    minLen: 45,
+    groups: [
+      ["singlemode", "single", "smf"],
+      ["multimode", "multi", "mmf"],
+      ["laser"],
+      ["led", "ljusdiod"],
+      ["lång", "mil", "kort"]
+    ],
+    minGroups: 4,
+    a: "<b>Singlemode:</b> Supertunn kärna, använder laser, för långa sträckor (flera mil).<br><b>Multimode:</b> Tjockare kärna, enklare ljus (LED), för korta sträckor (inom byggnad/datacenter)."
   },
   {
     q: "Hur fungerar en fiberkabel rent tekniskt?",
-    keywords: ["ljus", "studs", "totalreflektion", "fotodiod"],
-    minMatches: 2,
-    a: "Data görs om till ljusblixtar. Ljuset studsar inuti glastråden (totalreflektion) hela vägen till en mottagare (fotodiod) som gör om ljuset till ettor och nollor."
+    minLen: 40,
+    groups: [
+      ["ljus", "blixt", "puls"],
+      ["studs", "totalreflektion", "reflek"],
+      ["fotodiod", "mottagare", "diod", "ettor"]
+    ],
+    minGroups: 2,
+    a: "Data görs om till ljusblixtar. Ljuset studsar inuti glastråden genom <b>totalreflektion</b> hela vägen till en <b>fotodiod</b> som omvandlar ljuset till ettor och nollor igen."
   },
   {
     q: "Vilka fördelar finns det med fiberkabel?",
-    keywords: ["snabb", "störning", "åska", "lång", "avlyssn"],
-    minMatches: 2,
-    a: "1. Blixtsnabbt och klarar enormt med data.<br>2. Helt okänsligt för åska och elektriska störningar.<br>3. Färdas flera mil utan signalförlust.<br>4. Svårt att avlyssna."
+    minLen: 30,
+    groups: [
+      ["snabb", "kapacitet", "hastighet"],
+      ["störning", "åska", "el"],
+      ["lång", "mil", "räckvidd"],
+      ["avlyssn", "säker"]
+    ],
+    minGroups: 2,
+    a: "1. Extrem kapacitet och hastighet.<br>2. Helt okänsligt för elstörningar och åska.<br>3. Enorm räckvidd (mil utan repeater).<br>4. Mycket svårt att avlyssna obemärkt."
   },
   {
     q: "Hur är en MAC-adress uppbyggd?",
-    keywords: ["6", "byte", "48", "bit", "oui", "nic", "tillverk"],
-    minMatches: 2,
-    a: "Den är på 6 bytes (48 bitar). De 3 första byten visar tillverkaren (OUI) och de 3 sista är nätverkskortets unika serienummer (NIC)."
+    minLen: 30,
+    groups: [
+      ["6", "sex", "48"],
+      ["byte", "bit"],
+      ["oui", "tillverk"],
+      ["nic", "serienummer", "unik"]
+    ],
+    minGroups: 3,
+    a: "Består av <b>6 bytes (48 bitar)</b>.<br>• De 3 första byten visar vem som är tillverkare (<b>OUI</b>).<br>• De 3 sista byten är nätverkskortets unika serienummer (<b>NIC</b>)."
   },
   {
     q: "Vad är en MAC-adress?",
-    keywords: ["fysisk", "personnummer", "unik", "kort", "inbränd"],
-    minMatches: 2,
-    a: "Nätverkskortets unika fysiska 'personnummer'. Den är inbränd på kortet från fabriken och ändras i grunden aldrig."
+    minLen: 25,
+    groups: [
+      ["fysisk", "hårdvara", "kort"],
+      ["personnummer", "unik", "identifier"],
+      ["inbränd", "fabrik", "ändras inte"]
+    ],
+    minGroups: 2,
+    a: "Nätverkskortets unika <b>fysiska adress ('personnummer')</b> som är inbränd på kortet från fabriken och i grunden aldrig ändras."
   },
   {
     q: "Vilka nätverksklasser finns det och ge exempel på adresser?",
-    keywords: ["klass a", "klass b", "klass c", "126", "191", "223", "192.168", "10."],
-    minMatches: 3,
-    a: "<b>Klass A:</b> 1–126 (t.ex. 10.0.0.1).<br><b>Klass B:</b> 128–191 (t.ex. 172.16.0.1).<br><b>Klass C:</b> 192–223 (t.ex. 192.168.1.1)."
+    minLen: 45,
+    groups: [
+      ["klass a", "a:", "1-126", "1–126", "10."],
+      ["klass b", "b:", "128-191", "128–191", "172."],
+      ["klass c", "c:", "192-223", "192–223", "192.168"]
+    ],
+    minGroups: 3,
+    a: "<b>Klass A:</b> 1–126 (Ex: 10.0.0.1) – för jättestora nätverk.<br><b>Klass B:</b> 128–191 (Ex: 172.16.0.1) – för mellanstora nätverk.<br><b>Klass C:</b> 192–223 (Ex: 192.168.1.1) – för små nät/hemmanätverk."
   },
   {
     q: "Hur räknar man ut Host-ID? (Husnumret)",
-    keywords: ["nätverk", "mask", "255", "kvar", "över", "25"],
-    minMatches: 2,
-    a: "Man tar bort nätverksdelen från IP-adressen (där masken har 255). Siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med /24 ger <b>.25</b>."
+    minLen: 35,
+    groups: [
+      ["ta bort", "nätverk", "där masken", "respektive"],
+      ["kvar", "över", "siffror", "host", "husnummer", ".25"]
+    ],
+    minGroups: 2,
+    a: "Man tar bort nätverksdelen från IP-adressen (där masken har 255) – siffrorna som blir kvar är Host-ID.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Host-ID <b>.25</b>."
   },
   {
     q: "Hur räknar man ut Net-ID? (Gatunamnet)",
-    keywords: ["and", "mask", "255", "noll", "0", "192.168.1.0"],
-    minMatches: 2,
-    a: "Man jämför IP-adressen med subnätmasken (AND-operation). Där masken har 255 behåller man siffrorna, resten nollas. Ex: 192.168.1.25 med mask 255.255.255.0 ger <b>192.168.1.0</b>."
+    minLen: 35,
+    groups: [
+      ["and", "jämför", "mask"],
+      ["255", "behåll", "samma"],
+      ["noll", "0", "192.168.1.0"]
+    ],
+    minGroups: 2,
+    a: "Man gör en AND-operation mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Net-ID <b>192.168.1.0</b>."
   },
   {
     q: "Vilka adresser har Klass A?",
-    keywords: ["1", "126", "255.0.0.0", "/8"],
-    minMatches: 2,
-    a: "Adresser som börjar på <b>1 – 126</b> (Standardmask: 255.0.0.0 eller /8)."
+    minLen: 15,
+    groups: [
+      ["1", "126", "1-126", "1–126"],
+      ["255.0.0.0", "/8"]
+    ],
+    minGroups: 2,
+    a: "Adresser som börjar på <b>1 – 126</b> (Standardmask: <b>255.0.0.0</b> eller /8)."
   },
   {
     q: "Hur många nätverk kan Klass A ha?",
-    keywords: ["126"],
-    minMatches: 1,
+    minLen: 3,
+    groups: [
+      ["126"]
+    ],
+    minGroups: 1,
     a: "<b>126 stycken</b> (2^7 minus 0 och 127 som är reserverade)."
   },
   {
     q: "Hur många värdenheter kan Klass A ha?",
-    keywords: ["16", "miljon", "16777214", "16 777 214"],
-    minMatches: 1,
+    minLen: 4,
+    groups: [
+      ["16", "miljon", "16777214", "16 777 214"]
+    ],
+    minGroups: 1,
     a: "Cirka 16,7 miljoner per nätverk (exakt <b>16 777 214 st</b>)."
   },
   {
     q: "Vilka adresser har Klass B?",
-    keywords: ["128", "191", "255.255.0.0", "/16"],
-    minMatches: 2,
-    a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 för loopback."
+    minLen: 15,
+    groups: [
+      ["128", "191", "128-191", "128–191"],
+      ["255.255.0.0", "/16"]
+    ],
+    minGroups: 2,
+    a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: <b>255.255.0.0</b> eller /16). 127 är reserverat för loopback."
   },
   {
     q: "Hur många nätverk kan Klass B ha?",
-    keywords: ["16 384", "16384", "16 tusen"],
-    minMatches: 1,
+    minLen: 4,
+    groups: [
+      ["16 384", "16384", "16 tusen"]
+    ],
+    minGroups: 1,
     a: "<b>16 384 stycken</b> (cirka 16 tusen)."
   },
   {
     q: "Hur många värdenheter kan Klass B ha?",
-    keywords: ["65 534", "65534"],
-    minMatches: 1,
+    minLen: 4,
+    groups: [
+      ["65 534", "65534"]
+    ],
+    minGroups: 1,
     a: "<b>65 534 stycken</b> per nätverk."
   },
   {
     q: "Vilka adresser har Klass C?",
-    keywords: ["192", "223", "255.255.255.0", "/24"],
-    minMatches: 2,
-    a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: 255.255.255.0 eller /24). Slutar på 223!"
+    minLen: 15,
+    groups: [
+      ["192", "223", "192-223", "192–223"],
+      ["255.255.255.0", "/24"]
+    ],
+    minGroups: 2,
+    a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: <b>255.255.255.0</b> eller /24). Slutar på 223!"
   },
   {
     q: "Hur många nätverk kan Klass C ha?",
-    keywords: ["2,1", "2.1", "miljon", "2097152", "2 097 152"],
-    minMatches: 1,
+    minLen: 4,
+    groups: [
+      ["2,1", "2.1", "miljon", "2097152", "2 097 152"]
+    ],
+    minGroups: 1,
     a: "Cirka 2,1 miljoner stycken (exakt <b>2 097 152 st</b>)."
   },
   {
     q: "Hur många värdenheter kan Klass C ha?",
-    keywords: ["254"],
-    minMatches: 1,
-    a: "<b>254 stycken</b> per nätverk (256 minus nätverksadress och broadcast)."
+    minLen: 3,
+    groups: [
+      ["254"]
+    ],
+    minGroups: 1,
+    a: "<b>254 stycken</b> per nätverk (256 minus Net-ID och Broadcast)."
   },
   {
     q: "Vad är en Default Gateway?",
-    keywords: ["router", "ip", "lokal", "dörr", "internet", "annat"],
-    minMatches: 2,
-    a: "Routerns IP-adress på det lokala nätet. Det är 'dörren ut' dit datorn skickar trafik till andra nätverk eller Internet."
+    minLen: 30,
+    groups: [
+      ["router", "ip"],
+      ["lokal", "eget nät"],
+      ["dörr", "väg ut", "andra nät", "internet"]
+    ],
+    minGroups: 2,
+    a: "Routerns IP-adress på det lokala nätet. Det fungerar som 'dörren ut' dit datorn skickar all trafik som ska till andra nätverk eller Internet."
   },
   {
     q: "Vilka olika typer av IPv4-adresser finns det?",
-    keywords: ["unicast", "multicast", "broadcast", "loopback", "link-local", "127.0.0.1"],
-    minMatches: 3,
-    a: "<b>Unicast:</b> Till en dator.<br><b>Multicast:</b> Till en grupp.<br><b>Broadcast:</b> Till alla lokalt.<br><b>Loopback:</b> Datorn själv (127.0.0.1).<br><b>Link-local:</b> APIPA vid saknad DHCP (169.254.x.x).<br><b>Unspecified:</b> Okänd adress (0.0.0.0)."
+    minLen: 40,
+    groups: [
+      ["unicast"],
+      ["multicast"],
+      ["broadcast"],
+      ["loopback", "127.0.0.1"],
+      ["link-local", "apipa", "169.254"]
+    ],
+    minGroups: 4,
+    a: "• <b>Unicast:</b> Skickar till en enskild enhet.<br>• <b>Multicast:</b> Skickar till en definierad grupp.<br>• <b>Broadcast:</b> Skickar till alla på lokala nätet.<br>• <b>Loopback:</b> Datorn testar sig själv internt (127.0.0.1).<br>• <b>Link-local:</b> Automatisk adress vid DHCP-avbrott (169.254.x.x).<br>• <b>Unspecified:</b> Startadress (0.0.0.0)."
   }
 ];
 
@@ -439,21 +563,26 @@ function checkAnswer() {
     alert("Skriv ett svar först!");
     return;
   }
+
+  // 1. Kontrollera längd
+  if (userText.length < current.minLen) {
+    alert(`Svaret är för kort! Du måste förklara mer utförligt (minst ${current.minLen} tecken).`);
+    return;
+  }
   
   answered = true;
   document.getElementById("user-input").disabled = true;
   document.getElementById("btn-submit").style.display = "none";
   document.getElementById("btn-next").style.display = "inline-block";
 
-  // Kontrollera mot nyckelord
-  let matchCount = 0;
-  current.keywords.forEach(kw => {
-    if (userText.includes(kw.toLowerCase())) {
-      matchCount++;
-    }
+  // 2. Kontrollera att tillräckligt många obligatoriska begrepp/grupper finns med
+  let matchedGroups = 0;
+  current.groups.forEach(group => {
+    const hasMatch = group.some(term => userText.includes(term));
+    if (hasMatch) matchedGroups++;
   });
 
-  const isCorrect = matchCount >= current.minMatches;
+  const isCorrect = matchedGroups >= current.minGroups;
   const feedbackBox = document.getElementById("feedback-box");
   const statusEl = document.getElementById("feedback-status");
   const solutionEl = document.getElementById("solution-text");
@@ -462,13 +591,13 @@ function checkAnswer() {
     score++;
     document.getElementById("score-counter").innerText = score;
     feedbackBox.className = "feedback-box correct";
-    statusEl.innerHTML = "✓ Rätt svar!";
+    statusEl.innerHTML = "✓ Godkänt & utförligt svar!";
   } else {
     feedbackBox.className = "feedback-box wrong";
-    statusEl.innerHTML = "✕ Inte helt rätt / Behöver kompletteras";
+    statusEl.innerHTML = "✕ Ej fullt godkänt: Svaret saknade viktiga förklaringar eller begrepp.";
   }
 
-  solutionEl.innerHTML = `<strong>Facit:</strong><br>${current.a}`;
+  solutionEl.innerHTML = `<strong>Facit / Komplett svar:</strong><br>${current.a}`;
   feedbackBox.style.display = "block";
 }
 
@@ -492,9 +621,9 @@ function showSummary() {
   document.getElementById("final-score").innerText = `${score} / ${questions.length} rätt (${percentage}%)`;
   
   let comment = "";
-  if (percentage >= 90) comment = "Grymt jobbat! Du har stenkoll inför provet.";
-  else if (percentage >= 70) comment = "Riktigt bra resultat! Repetera det lilla som missades så sitter allt.";
-  else comment = "Bra försök! Kör en omgång till för att nöta in detaljerna.";
+  if (percentage >= 90) comment = "Mästerligt! Du behärskar både terminologin och förklaringarna.";
+  else if (percentage >= 70) comment = "Mycket bra! Gå igenom de frågor där detaljer saknades.";
+  else comment = "Kör ett varv till och fokusera på att skriva ut vad termerna faktiskt gör!";
   
   document.getElementById("final-comment").innerText = comment;
 }
