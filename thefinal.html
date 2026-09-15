@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nätverksquiz - 26 Frågor (Media, Topologier & IP)</title>
+  <title>Nätverksquiz - 26 Frågor (Fullständig Repetition)</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -314,232 +314,230 @@ const questions = [
   {
     id: 1,
     q: "Vilka olika nätverkstyper finns det och var används de?",
-    hint: "Fyra förkortningar (P, L, M, W) samt var de används (t.ex. Bluetooth, hem, stad, Internet).",
-    fullCheck: (t) => (t.includes("pan") && t.includes("lan") && t.includes("man") && t.includes("wan")) && (t.includes("bluetooth") || t.includes("lokal") || t.includes("stad") || t.includes("internet") || t.includes("hem")),
-    partialCheck: (t) => t.includes("pan") || t.includes("lan") || t.includes("man") || t.includes("wan"),
-    expl: "PAN (personligt/Bluetooth), LAN (lokalt, hem/kontor), MAN (stadsnät), WAN (stort nätverk över länder/Internet)."
+    hint: "PAN, LAN, MAN, WAN – ange minst vad två av dem används till (t.ex. bluetooth, lokalt/hem, stad, internet).",
+    fullCheck: (t) => (t.includes("pan") && t.includes("lan") && t.includes("man") && t.includes("wan")) && (t.includes("bluetooth") || t.includes("klock") || t.includes("hem") || t.includes("lokal") || t.includes("stad") || t.includes("internet")),
+    partialCheck: (t) => t.includes("pan") && t.includes("lan") && t.includes("man") && t.includes("wan"),
+    expl: "PAN: Personligt och nära (Bluetooth-lurar, smartklocka). LAN: Lokalt nätverk (hem, skola, kontor). MAN: Stadsnät inom en stad/kommun. WAN: Stora geografiska avstånd (stamnät, Internet)."
   },
   {
     id: 2,
     q: "Vilka olika typer av topologier finns det och var används de?",
-    hint: "Nämn minst 3-4 stycken (stjärna, buss, ring, mesh, träd, hybrid) och något användningsområde.",
+    hint: "Stjärna, buss, ring, mesh, träd. Ange minst ett användningsområde (t.ex. switch/kontor, CAN-buss/fordon, datacenter).",
     fullCheck: (t) => {
-      let c = 0;
-      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(x => { if(t.includes(x)) c++; });
-      return c >= 3 && (t.includes("switch") || t.includes("bil") || t.includes("fordon") || t.includes("datacenter") || t.includes("stafett") || t.includes("kontor"));
+      let count = 0;
+      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(w => { if (t.includes(w)) count++; });
+      return count >= 3 && (t.includes("switch") || t.includes("fordon") || t.includes("bil") || t.includes("can") || t.includes("datacenter") || t.includes("telekom") || t.includes("kontor"));
     },
     partialCheck: (t) => {
-      let c = 0;
-      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(x => { if(t.includes(x)) c++; });
-      return c >= 2;
+      let count = 0;
+      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(w => { if (t.includes(w)) count++; });
+      return count >= 3;
     },
-    expl: "Stjärna (switch, hem/kontor), Buss (delad kabel, fordon), Ring (stafettpinne, telekom), Mesh (flera vägar, datacenter), Träd (nivåer), Hybrid (blandning)."
+    expl: "Stjärna: Central switch (dominerar LAN hemma/kontor). Buss: Gemensam kabel (fordon/CAN-bus för att spara kabel). Ring: Stafettpinne/slinga (telekom/FDDI). Mesh: Flera vägar (datacenter/internet). Träd: Flernivå-hierarki av stjärnnät."
   },
   {
     id: 3,
-    q: "Vilka typer av nätverksmedia finns det och vilka signaler skickar de?",
-    hint: "Tre medier: Koppar, fiber och trådlöst – vilka fysiska signaler transporteras?",
-    fullCheck: (t) => (t.includes("koppar") || t.includes("tp")) && t.includes("fiber") && (t.includes("trådlös") || t.includes("wifi")) && (t.includes("el") || t.includes("ljus") || t.includes("radio")),
-    partialCheck: (t) => (t.includes("koppar") && t.includes("fiber")) || t.includes("el") || t.includes("ljus"),
-    expl: "Koppar (TP/koax – el), Fiber (glas/plast – ljus), Trådlöst (Wi-Fi/radio – radiovågor)."
+    q: "Vilka typer av nätverksmedia finns det?",
+    hint: "Kopparkabel, fiberoptik och trådlösa medier. Vilka signaler skickas?",
+    fullCheck: (t) => (t.includes("koppar") || t.includes("tp")) && t.includes("fiber") && (t.includes("trådlös") || t.includes("wifi") || t.includes("radio")),
+    partialCheck: (t) => (t.includes("koppar") && t.includes("fiber")) || t.includes("trådlös"),
+    expl: "Kopparkabel: TP (UTP/STP) och koax (elektriska signaler). Fiberoptik: Singlemode och Multimode (ljussignaler i glas/plast). Trådlösa media: Radiovågor (Wi-Fi, 4G/5G)."
   },
   {
     id: 4,
     q: "Ge exempel på bunden kommunikation.",
-    hint: "Motsatsen till trådlöst. Vilka typer av kablar används?",
-    fullCheck: (t) => (t.includes("kabel") || t.includes("tråd") || t.includes("fysisk")) && (t.includes("tp") || t.includes("fiber") || t.includes("koppar") || t.includes("koax")),
+    hint: "Kommunikation via fysiska kablar till skillnad från obunden (Wi-Fi).",
+    fullCheck: (t) => (t.includes("kabel") || t.includes("fysisk") || t.includes("bunden")) && (t.includes("tp") || t.includes("fiber") || t.includes("koppar") || t.includes("koax")),
     partialCheck: (t) => t.includes("kabel") || t.includes("tp") || t.includes("fiber"),
-    expl: "Allt som går via en fysisk kabel, t.ex. TP-kabel (koppar) eller optisk fiberkabel."
+    expl: "Kommunikation via fysiska kablar: partvinnad nätverkskabel (TP), koaxialkabel eller fiberoptisk kabel (till skillnad från obunden kommunikation som Wi-Fi)."
   },
   {
     id: 5,
-    q: "Vilka typer av TP-kablar finns det gällande skärmning och klasser?",
-    hint: "Två typer av skärmning (U... och S...) samt kategorier (Cat...).",
-    fullCheck: (t) => (t.includes("utp") && t.includes("stp")) && (t.includes("cat") || t.includes("kategori") || t.includes("skärm")),
+    q: "Vilka typer av TP-kablar finns det?",
+    hint: "Skärmning (UTP, STP/FTP) och kategorier (Cat5e, Cat6, Cat6a, etc.).",
+    fullCheck: (t) => (t.includes("utp") && (t.includes("stp") || t.includes("ftp"))) && (t.includes("cat") || t.includes("skärm")),
     partialCheck: (t) => t.includes("utp") || t.includes("stp") || t.includes("cat5") || t.includes("cat6"),
-    expl: "Skärmning: UTP (oskärmad) och STP (skärmad mot störningar). Klasser: Cat5e, Cat6, Cat6a, Cat7, Cat8."
+    expl: "Skärmningstyper: UTP (oskärmad) och STP/FTP (skärmad med metallfolie mot EMI). Prestandaklasser: Cat5e, Cat6, Cat6a, Cat7, Cat8."
   },
   {
     id: 6,
-    q: "Vilken kapacitet har TP-kabeln och hur långt kan man maximalt sända?",
-    hint: "En exakt maxlängd i meter och hastighet för Cat5e/Cat6.",
-    fullCheck: (t) => (t.includes("100") || t.includes("hundra")) && (t.includes("gbps") || t.includes("gbit") || t.includes("1") || t.includes("10")),
+    q: "Vilken kapacitet har TP-kabeln och hur långt kan man sända?",
+    hint: "Standard maxlängd är 100 m. Ange hastighet för Cat5e/Cat6.",
+    fullCheck: (t) => (t.includes("100") || t.includes("hundra")) && (t.includes("gbps") || t.includes("gbit") || t.includes("10") || t.includes("1")),
     partialCheck: (t) => t.includes("100") || t.includes("gbps") || t.includes("gbit"),
-    expl: "Maximal längd är alltid 100 meter. Cat5e klarar 1 Gbps, Cat6/6a upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
+    expl: "Maximal räckvidd är alltid 100 meter (90 m fast installation + 10 m patch). Kapacitet: Cat5e ger 1 Gbps, Cat6 ger 1 Gbps (10 Gbps upp till 55 m), Cat6a ger 10 Gbps hela 100 m, Cat8 ger 25–40 Gbps upp till 30 m."
   },
   {
     id: 7,
-    q: "Beskriv en koaxialkabel samt dess fördelar och nackdelar.",
-    hint: "Koppartråd i mitten med skärm. Tål störningar bra, men hur är böjligheten?",
-    fullCheck: (t) => (t.includes("koppar") || t.includes("skärm")) && (t.includes("störning") || t.includes("tål")) && (t.includes("styv") || t.includes("böj") || t.includes("kapacitet")),
-    partialCheck: (t) => t.includes("koppar") || t.includes("störning") || t.includes("styv"),
-    expl: "Uppbyggd av kopparledare i mitten med metallskärm runtom. Fördel: Tål yttre störningar och stryk. Nackdel: Styv, svårböjd och lägre kapacitet än fiber."
+    q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar den har.",
+    hint: "Centrumledare i koppar med skärm. Tål yttre störningar, men är styv med begränsad bandbredd.",
+    fullCheck: (t) => (t.includes("koppar") || t.includes("skärm")) && (t.includes("störning") || t.includes("tål")) && (t.includes("styv") || t.includes("böj") || t.includes("lägre") || t.includes("dyr")),
+    partialCheck: (t) => (t.includes("koppar") || t.includes("skärm")) && (t.includes("störning") || t.includes("tål") || t.includes("styv")),
+    expl: "Uppbyggnad: Centrumledare i koppar, isolering, skärmande metallfläta och skyddshölje. Fördel: Mycket god immunitet mot elektromagnetiska störningar och tål stryk. Nackdel: Styv, svårböjd och lägre bandbredd än fiber/Cat6a."
   },
   {
     id: 8,
-    q: "Vilka två huvudtyper av fiberkablar finns det och vad skiljer dem åt?",
-    hint: "Single... och Multi... – tänk på ljuskälla (laser vs LED) och räckvidd.",
-    fullCheck: (t) => (t.includes("singlemode") || t.includes("single mode") || t.includes("single")) && (t.includes("multimode") || t.includes("multi mode") || t.includes("multi")) && (t.includes("laser") || t.includes("led") || t.includes("lång") || t.includes("mil")),
-    partialCheck: (t) => t.includes("singlemode") || t.includes("multimode"),
-    expl: "Singlemode: Supertunn kärna, laser som ljuskälla, för mycket långa sträckor (flera mil). Multimode: Tjockare kärna, LED-ljus, för korta sträckor (inom datacenter/hus)."
+    q: "Vilka typer av fiberkablar finns det?",
+    hint: "Singlemode (SMF) och Multimode (MMF). Tänk på kärna, ljuskälla och räckvidd.",
+    fullCheck: (t) => (t.includes("singlemode") || t.includes("smf") || t.includes("single")) && (t.includes("multimode") || t.includes("mmf") || t.includes("multi")) && (t.includes("laser") || t.includes("led") || t.includes("lång") || t.includes("mil") || t.includes("tunn")),
+    partialCheck: (t) => t.includes("singlemode") || t.includes("multimode") || t.includes("smf") || t.includes("mmf"),
+    expl: "Singlemode (SMF): Tunn kärna (~9 µm), använder laserljus för milslånga sträckor (MAN/WAN). Multimode (MMF): Grövre kärna (50/62,5 µm), använder LED/VCSEL för korta sträckor (LAN/datacenter, max ~500 m)."
   },
   {
     id: 9,
-    q: "Hur fungerar en fiberkabel rent tekniskt?",
-    hint: "Hur transporteras ljuset i kärnan och vad omvandlar det vid mottagaren?",
-    fullCheck: (t) => (t.includes("ljus") || t.includes("laser")) && (t.includes("studs") || t.includes("totalreflektion")) && (t.includes("fotodiod") || t.includes("ettor") || t.includes("mottag")),
-    partialCheck: (t) => t.includes("ljus") || t.includes("studs") || t.includes("totalreflektion") || t.includes("fotodiod"),
-    expl: "Data görs om till ljussignaler som studsar inuti glaskärnan genom totalreflektion till en mottagare (fotodiod) som återskapar ettor och nollor."
+    q: "Hur fungerar en fiberkabel?",
+    hint: "Ettor och nollor blir ljus, studsar via totalreflektion till en fotodiod.",
+    fullCheck: (t) => (t.includes("ljus") || t.includes("laser")) && (t.includes("totalreflektion") || t.includes("studs")) && (t.includes("fotodiod") || t.includes("mottag") || t.includes("elektrisk") || t.includes("ettor")),
+    partialCheck: (t) => t.includes("ljus") && (t.includes("totalreflektion") || t.includes("studs") || t.includes("fotodiod")),
+    expl: "Data moduleras om till ljuspulser via laser eller lysdiod. Ljuset stannar kvar i glaskärnan genom totalreflektion mot manteln tills det når en fotodiod som gör om det till en elektrisk signal igen."
   },
   {
     id: 10,
-    q: "Vilka fördelar har fiberkabel jämfört med kopparkablar?",
-    hint: "Tänk på hastighet, störningskänslighet (åska), räckvidd och avlyssning.",
+    q: "Vilka fördelar finns det med fiberkabel?",
+    hint: "Störningsimmunitet mot åska/EMI, bandbredd, räckvidd och avlyssningsskydd.",
     fullCheck: (t) => {
-      let c = 0;
-      ["snabb", "kapacitet", "störning", "åska", "mil", "lång", "avlyssn", "ljus"].forEach(x => { if(t.includes(x)) c++; });
-      return c >= 2;
+      let count = 0;
+      ["störning", "åska", "emi", "snabb", "bandbredd", "mil", "lång", "avlyssn"].forEach(w => { if (t.includes(w)) count++; });
+      return count >= 2;
     },
-    partialCheck: (t) => t.includes("snabb") || t.includes("störning") || t.includes("lång") || t.includes("avlyssn"),
-    expl: "Blixtsnabbt med enorm kapacitet, helt okänsligt för elstörningar och åska, extrem räckvidd (mil) och mycket svårt att avlyssna."
+    partialCheck: (t) => t.includes("störning") || t.includes("snabb") || t.includes("avlyssn") || t.includes("lång"),
+    expl: "Fullständigt okänslig för EMI och åska, extremt hög bandbredd och hastighet, mycket låg dämpning (milslång räckvidd utan förstärkare) samt mycket svår att avlyssna utan avbrott."
   },
   {
     id: 11,
     q: "Hur är en MAC-adress uppbyggd?",
-    hint: "Antal bytes/bitar samt vad första och sista halvan anger (OUI / NIC).",
-    fullCheck: (t) => (t.includes("48") || t.includes("6 byte")) && (t.includes("oui") || t.includes("tillverk")) && (t.includes("nic") || t.includes("serienummer") || t.includes("unik")),
+    hint: "6 bytes (48 bitar). Vad visar de 3 första byten och vad visar de 3 sista?",
+    fullCheck: (t) => (t.includes("6 byte") || t.includes("48 bit") || t.includes("48")) && (t.includes("oui") || t.includes("tillverk")) && (t.includes("nic") || t.includes("serienummer") || t.includes("unik") || t.includes("kort")),
     partialCheck: (t) => t.includes("48") || t.includes("6 byte") || t.includes("oui") || t.includes("tillverk"),
-    expl: "Den är på 6 bytes (48 bitar). De 3 första byten anger tillverkaren (OUI) och de 3 sista byten är nätverkskortets unika serienummer (NIC)."
+    expl: "Den är på 6 bytes (48 bitar / 12 hex-tecken). De 3 första byten är OUI (tillverkaren, tilldelad av IEEE) och de 3 sista byten är nätverkskortets unika serienummer (NIC)."
   },
   {
     id: 12,
     q: "Vad är en MAC-adress?",
-    hint: "Fysisk adress inbränd från fabriken – nätverkskortets...",
-    fullCheck: (t) => (t.includes("fysisk") || t.includes("hårdvar") || t.includes("inbränd")) && (t.includes("personnummer") || t.includes("unik") || t.includes("kort")),
-    partialCheck: (t) => t.includes("personnummer") || t.includes("unik") || t.includes("adress") || t.includes("fysisk"),
-    expl: "Nätverkskortets unika fysiska hårdvaruadress ('personnummer'). Den bränns in på kortet från fabriken och ändras aldrig."
+    hint: "Nätverkskortets unika fysiska adress inbränd från fabriken.",
+    fullCheck: (t) => (t.includes("fysisk") || t.includes("inbränd") || t.includes("hårdvar")) && (t.includes("personnummer") || t.includes("unik") || t.includes("kort")),
+    partialCheck: (t) => t.includes("personnummer") || t.includes("fysisk") || t.includes("unik"),
+    expl: "Nätverkskortets unika fysiska hårdvaruadress ('personnummer'). Den är inbränd på kortet från fabriken och ändras i grunden aldrig."
   },
   {
     id: 13,
-    q: "Vilka nätverksklasser finns det och ge exempel på adresser?",
-    hint: "Klass A, B och C – nämn gärna ett exempel eller startintervall för varje.",
-    fullCheck: (t) => (t.includes("klass a") || t.includes("a")) && (t.includes("klass b") || t.includes("b")) && (t.includes("klass c") || t.includes("c")) && (t.includes("10.") || t.includes("172.") || t.includes("192.168") || t.includes("126") || t.includes("191")),
+    q: "Vilka nätverksklasser finns det och ge exempel?",
+    hint: "Klass A, B och C – ange exempel på adresser som tillhör respektive klass.",
+    fullCheck: (t) => (t.includes("klass a") || t.includes("1-126")) && (t.includes("klass b") || t.includes("128-191")) && (t.includes("klass c") || t.includes("192-223")),
     partialCheck: (t) => t.includes("klass a") || t.includes("klass b") || t.includes("klass c"),
-    expl: "Klass A (1–126, ex 10.0.0.1), Klass B (128–191, ex 172.16.0.1), Klass C (192–223, ex 192.168.1.1)."
+    expl: "Klass A: 1–126 (t.ex. 10.0.0.1) för storföretag. Klass B: 128–191 (t.ex. 172.16.0.1) för mellanstora nät. Klass C: 192–223 (t.ex. 192.168.1.1) för små nät/hemmanät."
   },
   {
     id: 14,
     q: "Hur räknar man ut Host-ID (husnumret)?",
-    hint: "Vad gör man med nätverksdelen och subnätmasken?",
-    fullCheck: (t) => (t.includes("ta bort") || t.includes("kvar") || t.includes("rest") || t.includes("över")) && (t.includes("nätverk") || t.includes("mask") || t.includes("255") || t.includes("25")),
-    partialCheck: (t) => t.includes("kvar") || t.includes("mask") || t.includes("nätverk"),
-    expl: "Man tar bort nätverksdelen (där subnätmasken har 255) från IP-adressen – siffrorna som blir över är Host-ID (t.ex. .25 i 192.168.1.25)."
+    hint: "Ta bort nätverksdelen där subnätmasken har 255.",
+    fullCheck: (t) => (t.includes("ta bort") || t.includes("kvar") || t.includes("rest") || t.includes("över")) && (t.includes("nät") || t.includes("mask") || t.includes("255") || t.includes("25")),
+    partialCheck: (t) => t.includes("kvar") || t.includes("mask") || t.includes("25"),
+    expl: "Man tar IP-adressen och tar bort nätverksdelen (där masken har 255) – siffrorna som blir över är Host-ID. Ex: IP 192.168.1.25 med /24 ger Host-ID .25."
   },
   {
     id: 15,
     q: "Hur räknar man ut Net-ID (gatunamnet)?",
-    hint: "Vilken logisk operation görs med subnätmasken, och vad händer med siffrorna?",
-    fullCheck: (t) => (t.includes("and") || t.includes("jämför")) && (t.includes("mask") || t.includes("255") || t.includes("noll")),
+    hint: "Matematisk jämförelse med subnätmasken – vilken logisk operation används?",
+    fullCheck: (t) => (t.includes("and") || t.includes("logisk")) && (t.includes("mask") || t.includes("255") || t.includes("noll") || t.includes("192.168.1.0")),
     partialCheck: (t) => t.includes("and") || t.includes("mask") || t.includes("255"),
-    expl: "Man gör en logisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor (Net-ID)."
+    expl: "Man gör en matematisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor (t.ex. 192.168.1.0)."
   },
   {
     id: 16,
-    q: "Vilka adresser har Klass A och vilken är dess standardmask?",
-    hint: "Börjar på 1 och slutar vid 126. Masken har 8 bitar.",
+    q: "Vilka adresser har Klass A?",
+    hint: "Intervall som börjar på 1 och standardmasken (/8).",
     fullCheck: (t) => (t.includes("1-126") || (t.includes("1") && t.includes("126"))) && (t.includes("255.0.0.0") || t.includes("/8")),
     partialCheck: (t) => t.includes("1-126") || t.includes("126") || t.includes("255.0.0.0") || t.includes("/8"),
-    expl: "Adresser från 1 till 126 (1.0.0.0 – 126.255.255.255). Standardmask: 255.0.0.0 (/8)."
+    expl: "Adresser som börjar på 1 – 126. Standardmask: 255.0.0.0 (/8). Första biten är alltid låst till 0."
   },
   {
     id: 17,
-    q: "Hur många nätverk kan Klass A maximalt ha?",
-    hint: "2^7 minus de två reserverade nätverken 0 och 127.",
-    fullCheck: (t) => t.includes("126"),
-    partialCheck: (t) => t.includes("128") || t.includes("127"),
-    expl: "126 stycken användbara nätverk (2^7 minus 0 och 127)."
+    q: "Hur många nätverk kan Klass A ha och varför?",
+    hint: "126 stycken (2^7 minus nätverk 0 och 127).",
+    fullCheck: (t) => t.includes("126") && (t.includes("127") || t.includes("loopback") || t.includes("reserverad") || t.includes("2^7")),
+    partialCheck: (t) => t.includes("126"),
+    expl: "126 stycken användbara nät-ID (2^7 = 128 minus nätverk 0 och 127 som är reserverade för loopback)."
   },
   {
     id: 18,
-    q: "Hur många värdenheter (hosts) kan Klass A ha per nätverk?",
+    q: "Hur många värdenheter kan Klass A ha?",
     hint: "2^24 minus 2. Cirka 16,7 miljoner.",
-    fullCheck: (t) => t.includes("16 777 214") || t.includes("16777214") || t.includes("16 777 216") || (t.includes("16") && t.includes("miljon")),
-    partialCheck: (t) => t.includes("16"),
-    expl: "16 777 214 stycken användbara värdenheter per nätverk (2^24 - 2)."
+    fullCheck: (t) => t.includes("16 777 214") || t.includes("16777214") || t.includes("16,7 miljon") || t.includes("16.7 miljon"),
+    partialCheck: (t) => t.includes("16") && (t.includes("miljon") || t.includes("777")),
+    expl: "Cirka 16,7 miljoner per nätverk (exakt 16 777 214 st via formeln 2^24 - 2)."
   },
   {
     id: 19,
-    q: "Vilka adresser har Klass B och vilken är standardmasken?",
-    hint: "Börjar på 128 (eftersom 127 hoppas över) och slutar vid 191. Standardmask med två 255:or.",
-    fullCheck: (t) => (t.includes("128") && t.includes("191")) && (t.includes("255.255.0.0") || t.includes("/16")),
+    q: "Vilka adresser har Klass B?",
+    hint: "Intervall som börjar på 128 (efter loopback) och standardmasken (/16).",
+    fullCheck: (t) => (t.includes("128") && t.includes("191")) && (t.includes("255.255.0.0") || t.includes("/16") || t.includes("loopback")),
     partialCheck: (t) => (t.includes("128") && t.includes("191")) || t.includes("255.255.0.0"),
-    expl: "Adresser från 128 till 191 (128.0.0.0 – 191.255.255.255). Standardmask: 255.255.0.0 (/16). 127 hoppas över pga loopback."
+    expl: "Adresser som börjar på 128 – 191 (Standardmask: 255.255.0.0 eller /16). Man hoppar över 127 för loopback."
   },
   {
     id: 20,
     q: "Hur många nätverk kan Klass B ha?",
-    hint: "2^14. Cirka 16 tusen.",
+    hint: "2^14 – cirka 16 tusen.",
     fullCheck: (t) => t.includes("16 384") || t.includes("16384") || (t.includes("16") && t.includes("tusen")),
     partialCheck: (t) => t.includes("16"),
-    expl: "16 384 stycken nätverk (2^14)."
+    expl: "16 384 stycken nät-ID (2^14)."
   },
   {
     id: 21,
-    q: "Hur många värdenheter (hosts) kan Klass B ha per nätverk?",
-    hint: "2^16 minus 2. Cirka 65 tusen.",
-    fullCheck: (t) => t.includes("65 534") || t.includes("65534") || t.includes("65 536") || (t.includes("65") && t.includes("tusen")),
+    q: "Hur många värdenheter kan Klass B ha?",
+    hint: "2^16 minus 2 – drygt 65 tusen.",
+    fullCheck: (t) => t.includes("65 534") || t.includes("65534") || (t.includes("65") && t.includes("tusen")),
     partialCheck: (t) => t.includes("65"),
     expl: "65 534 stycken användbara värdenheter per nätverk (2^16 - 2)."
   },
   {
     id: 22,
-    q: "Vilka adresser har Klass C och vilken är standardmasken?",
-    hint: "Börjar på 192 och slutar på 223 (inte 255!). Standardmask med tre 255:or.",
-    fullCheck: (t) => (t.includes("192") && t.includes("223")) && (t.includes("255.255.255.0") || t.includes("/24")),
-    partialCheck: (t) => (t.includes("192") && t.includes("223")) || t.includes("255.255.255.0") || t.includes("192"),
-    expl: "Adresser från 192 till 223 (192.0.0.0 – 223.255.255.255). Standardmask: 255.255.255.0 (/24). Slutar vid 223!"
+    q: "Vilka adresser har Klass C?",
+    hint: "Börjar på 192 och slutar på 223 (inte 255/256!). Standardmask /24.",
+    fullCheck: (t) => (t.includes("192") && t.includes("223")) && (t.includes("255.255.255.0") || t.includes("/24") || t.includes("223")),
+    partialCheck: (t) => (t.includes("192") && t.includes("223")) || t.includes("255.255.255.0"),
+    expl: "Adresser som börjar på 192 – 223 (Standardmask: 255.255.255.0 eller /24). Obs: Slutar på 223, inte 256!"
   },
   {
     id: 23,
     q: "Hur många nätverk kan Klass C ha?",
-    hint: "2^21. Cirka 2,1 miljoner.",
+    hint: "2^21 – cirka 2,1 miljoner.",
     fullCheck: (t) => t.includes("2 097 152") || t.includes("2097152") || (t.includes("2") && t.includes("miljon")),
-    partialCheck: (t) => t.includes("2"),
-    expl: "2 097 152 stycken nätverk (cirka 2,1 miljoner)."
+    partialCheck: (t) => t.includes("2") || t.includes("miljon"),
+    expl: "Cirka 2,1 miljoner stycken (exakt 2 097 152 st via 2^21)."
   },
   {
     id: 24,
-    q: "Hur många användbara värdenheter kan Klass C ha per nätverk?",
-    hint: "256 minus Net-ID (.0) och broadcast (.255).",
+    q: "Hur många värdenheter kan Klass C ha?",
+    hint: "2^8 minus 2 (nätverksadress och broadcast borträknade).",
     fullCheck: (t) => t.includes("254"),
     partialCheck: (t) => t.includes("256"),
-    expl: "254 stycken användbara värdenheter (256 minus 2 = 254)."
+    expl: "254 stycken per nätverk (256 minus 2 = 254)."
   },
   {
     id: 25,
-    q: "Vad är en Default Gateway och vilken funktion fyller den?",
-    hint: "Routerns IP-adress på det lokala nätet – fungerar som 'dörren ut'.",
-    fullCheck: (t) => t.includes("router") && (t.includes("lokal") || t.includes("dörr") || t.includes("annat") || t.includes("internet") || t.includes("vidare")),
+    q: "Vad är en Default Gateway?",
+    hint: "Routerns lokala IP-adress som fungerar som dörren ut mot andra nät och internet.",
+    fullCheck: (t) => (t.includes("router") || t.includes("gateway")) && (t.includes("dörr") || t.includes("andra nät") || t.includes("internet") || t.includes("lokal") || t.includes("skicka")),
     partialCheck: (t) => t.includes("router") || t.includes("gateway") || t.includes("dörr"),
-    expl: "Routerns IP-adress på det lokala nätet. Den fungerar som dörren ut dit datorn skickar all trafik som ska till andra nätverk eller Internet."
+    expl: "Routerns IP-adress på det lokala nätet. Det är 'dörren ut' dit datorn skickar all trafik när mottagaren finns på ett annat nätverk eller på Internet."
   },
   {
     id: 26,
-    q: "Nämn minst tre olika typer av IPv4-adresser/sändningssätt.",
-    hint: "T.ex. Unicast, Multicast, Broadcast, Loopback, Link-local.",
+    q: "Vilka olika typer av IPv4-adresser/sändningstyper finns det?",
+    hint: "Nämn minst tre: Unicast, Multicast, Broadcast, Loopback, Link-local, Unspecified.",
     fullCheck: (t) => {
-      const list = ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified", "127.0.0.1"];
-      let c = 0;
-      list.forEach(x => { if (t.includes(x)) c++; });
-      return c >= 3;
+      let count = 0;
+      ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified", "127.0.0.1", "169.254"].forEach(w => { if (t.includes(w)) count++; });
+      return count >= 3;
     },
     partialCheck: (t) => {
-      const list = ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified", "127.0.0.1"];
-      let c = 0;
-      list.forEach(x => { if (t.includes(x)) c++; });
-      return c >= 1;
+      let count = 0;
+      ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified"].forEach(w => { if (t.includes(w)) count++; });
+      return count >= 1;
     },
-    expl: "Unicast (en-till-en), Multicast (till grupp), Broadcast (till alla lokalt), Loopback (127.0.0.1) och Link-local (169.254.x.x / APIPA)."
+    expl: "Unicast (till en dator), Multicast (till en grupp), Broadcast (till alla på lokala nätet), Loopback (interntest 127.0.0.1), Link-local (APIPA 169.254.x.x vid saknad DHCP), Unspecified (0.0.0.0 vid boot)."
   }
 ];
 
