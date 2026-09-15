@@ -1,208 +1,261 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nätverk & Adressering - Strikt Läge</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nätverksquiz - 26 Frågor (Media, Topologier & IP)</title>
   <style>
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
-      --border: #334155;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --correct-bg: rgba(34, 197, 94, 0.15);
-      --correct-border: #22c55e;
-      --wrong-bg: rgba(239, 68, 68, 0.15);
-      --wrong-border: #ef4444;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+      --correct: #22c55e;
+      --partial: #eab308;
+      --wrong: #ef4444;
+      --badge-bg: #1e1b4b;
+      --badge-txt: #818cf8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding: 2rem 1rem;
+      line-height: 1.6;
+      padding: 24px 16px;
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      align-items: center;
     }
 
     .container {
-      max-width: 760px;
       width: 100%;
-      margin: auto;
+      max-width: 760px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 24px;
     }
 
     h1 {
-      font-size: 1.6rem;
+      font-size: 1.85rem;
       color: var(--accent);
-      margin-bottom: 0.3rem;
+      margin-bottom: 6px;
     }
 
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 0.9rem;
+    .smart-badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-txt);
+      color: var(--badge-txt);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 3px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
     }
 
     .progress-container {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      margin-bottom: 18px;
     }
 
-    .progress-stats {
+    .progress-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
+      margin-bottom: 6px;
     }
 
-    .progress-bar {
+    .progress-track {
       width: 100%;
       height: 8px;
-      background: #0b1120;
-      border-radius: 4px;
+      background: #1e293b;
+      border-radius: 999px;
       overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: var(--accent);
+      background: linear-gradient(90deg, var(--accent), #818cf8);
       transition: width 0.3s ease;
     }
 
     .card {
-      background-color: var(--card-bg);
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      min-height: 310px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .question-title {
-      font-size: 1.15rem;
-      color: var(--text);
-      margin-bottom: 1.2rem;
-      line-height: 1.4;
+    .q-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .q-title {
       font-weight: 600;
-    }
-
-    textarea {
-      width: 100%;
-      height: 130px;
-      background: #0b1120;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.85rem;
-      font-size: 0.95rem;
+      font-size: 1.2rem;
       line-height: 1.4;
-      resize: vertical;
-      margin-bottom: 1rem;
     }
 
-    textarea:focus {
+    .q-badge {
+      background: #0f172a;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+
+    .hint-toggle {
+      background: none;
+      border: none;
+      color: #fbbf24;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 12px;
+      align-self: flex-start;
+      padding: 0;
+    }
+
+    .hint-box {
+      display: none;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid #f59e0b;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #fde68a;
+    }
+
+    .input-wrapper {
+      margin-top: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0b1120;
+      color: #fff;
+      font-size: 1rem;
       outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
       border-color: var(--accent);
     }
 
-    .btn {
-      background: var(--accent);
-      color: #0f172a;
-      border: none;
-      padding: 0.65rem 1.4rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: background 0.2s;
-    }
-
-    .btn:hover {
-      background: var(--accent-hover);
-      color: #fff;
-    }
-
-    .feedback-box {
+    .result-box {
       display: none;
-      margin-top: 1.2rem;
-      padding: 1.2rem;
-      border-radius: 6px;
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 8px;
       font-size: 0.95rem;
       line-height: 1.5;
     }
 
-    .feedback-box.correct {
-      background: var(--correct-bg);
-      border: 1px solid var(--correct-border);
+    .result-correct {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid var(--correct);
+      color: #86efac;
     }
 
-    .feedback-box.wrong {
-      background: var(--wrong-bg);
-      border: 1px solid var(--wrong-border);
+    .result-partial {
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid var(--partial);
+      color: #fde047;
     }
 
-    .feedback-status {
-      font-weight: bold;
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
+    .result-wrong {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid var(--wrong);
+      color: #fca5a5;
     }
 
-    .correct .feedback-status {
-      color: var(--correct-border);
-    }
-
-    .wrong .feedback-status {
-      color: var(--wrong-border);
-    }
-
-    .solution-text {
-      margin-top: 0.5rem;
-      color: #e2e8f0;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 0.8rem;
-    }
-
-    .actions-row {
+    .card-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.5rem;
+      margin-top: 22px;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-submit {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-nav {
+      background: #334155;
+      color: #fff;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #475569;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .summary-card {
       display: none;
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 2rem;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      padding: 36px 20px;
       text-align: center;
     }
 
     .summary-score {
-      font-size: 2.2rem;
+      font-size: 3rem;
+      font-weight: 800;
       color: var(--accent);
-      font-weight: bold;
-      margin: 1rem 0;
+      margin: 12px 0;
     }
   </style>
 </head>
@@ -210,397 +263,443 @@
 
 <div class="container">
   <header>
-    <h1>Nätverk & Adressering</h1>
-    <p class="subtitle">Strikt läge: Både begrepp OCH förklaring/användning krävs för att bli godkänd.</p>
+    <div class="smart-badge">⚡ Direkt rättning med tolerans</div>
+    <h1>Nätverksquiz: Fullständig Repetition</h1>
   </header>
 
-  <div class="progress-container" id="progress-container">
-    <div class="progress-stats">
-      <span id="question-indicator">Fråga 1 av 26</span>
-      <span>Poäng: <strong id="score-counter">0</strong></span>
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-labels">
+      <span id="stepLabel">Fråga 1 av 26</span>
+      <span id="scoreLabel">Poäng: 0.0</span>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
-  </div>
-
-  <div class="card" id="quiz-card">
-    <div class="question-title" id="q-text"></div>
-    <textarea id="user-input" placeholder="Skriv ett utförligt svar här..."></textarea>
-    
-    <div class="actions-row">
-      <button class="btn" id="btn-submit" onclick="checkAnswer()">Svara</button>
-      <button class="btn" id="btn-next" style="display: none;" onclick="nextQuestion()">Nästa fråga →</button>
-    </div>
-
-    <div class="feedback-box" id="feedback-box">
-      <div class="feedback-status" id="feedback-status"></div>
-      <div class="solution-text" id="solution-text"></div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
     </div>
   </div>
 
-  <div class="summary-card" id="summary-card">
-    <h2>Träning klar!</h2>
-    <div class="summary-score" id="final-score"></div>
-    <p id="final-comment" style="color: var(--text-muted); margin-bottom: 1.5rem;"></p>
-    <button class="btn" onclick="restartQuiz()">Starta om omgången</button>
+  <div class="card" id="quizCard">
+    <div>
+      <div class="q-top">
+        <div class="q-title" id="qTitle">Laddar fråga...</div>
+        <div class="q-badge" id="qBadge">1.0 p</div>
+      </div>
+
+      <button type="button" class="hint-toggle" onclick="toggleHint()">💡 Visa ledtråd</button>
+      <div class="hint-box" id="qHint"></div>
+
+      <div class="input-wrapper">
+        <input type="text" id="ansInput" placeholder="Skriv ditt svar här..." autocomplete="off" onkeydown="handleKey(event)" />
+      </div>
+
+      <div class="result-box" id="resBox"></div>
+    </div>
+
+    <div class="card-actions">
+      <button type="button" class="btn btn-nav" id="btnPrev" onclick="prevQuestion()" disabled>← Föregående</button>
+      <button type="button" class="btn btn-submit" id="btnCheck" onclick="submitAnswer()">Rätta svar</button>
+      <button type="button" class="btn btn-nav" id="btnNext" onclick="nextQuestion()">Nästa →</button>
+    </div>
+  </div>
+
+  <div class="summary-card" id="summaryCard">
+    <h2>Resultat</h2>
+    <div class="summary-score" id="finalScore">0 / 26</div>
+    <p id="finalFeedback" style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 24px;"></p>
+    <button type="button" class="btn btn-submit" onclick="restartQuiz()">🔄 Gör om quizet</button>
   </div>
 </div>
 
 <script>
-// Varje fråga har 'rules'. För att en rule ska passera måste användarens svar matcha MINST ett ord per sub-array.
 const questions = [
   {
+    id: 1,
     q: "Vilka olika nätverkstyper finns det och var används de?",
-    rules: [
-      [["pan"], ["bluetooth", "klocka", "nära", "personlig", "hörlurar"]],
-      [["lan"], ["lokal", "hem", "skola", "kontor", "byggnad"]],
-      [["man"], ["stad", "kommun", "metropol"]],
-      [["wan"], ["internet", "värld", "land", "global", "länder"]]
-    ],
-    minRulesMet: 3, // Måste ha förklarat minst 3 av dem korrekt
-    a: "<b>PAN:</b> Personligt och mycket nära (Bluetooth, klockor, hörlurar).<br><b>LAN:</b> Lokalt nätverk i ett hem, en skola eller ett kontor.<br><b>MAN:</b> Stadsnät som täcker en hel stad eller kommun.<br><b>WAN:</b> Stort nätverk över länder/världen (Internet)."
+    hint: "Fyra förkortningar (P, L, M, W) samt var de används (t.ex. Bluetooth, hem, stad, Internet).",
+    fullCheck: (t) => (t.includes("pan") && t.includes("lan") && t.includes("man") && t.includes("wan")) && (t.includes("bluetooth") || t.includes("lokal") || t.includes("stad") || t.includes("internet") || t.includes("hem")),
+    partialCheck: (t) => t.includes("pan") || t.includes("lan") || t.includes("man") || t.includes("wan"),
+    expl: "PAN (personligt/Bluetooth), LAN (lokalt, hem/kontor), MAN (stadsnät), WAN (stort nätverk över länder/Internet)."
   },
   {
+    id: 2,
     q: "Vilka olika typer av topologier finns det och var används de?",
-    rules: [
-      [["stjärn", "star"], ["switch", "central"]],
-      [["buss", "bus"], ["kabel", "fordon", "bil"]],
-      [["ring"], ["cirkel", "stafett", "telekom"]],
-      [["mesh"], ["datacenter", "flera", "backup", "redundans"]],
-      [["träd", "tree"], ["stjärn", "nivåer", "hierarki"]]
-    ],
-    minRulesMet: 3,
-    a: "<b>Stjärna:</b> Kopplas till central switch (hem/kontor).<br><b>Buss:</b> Sammankopplad gemensam kabel (bilar/fordon).<br><b>Ring:</b> Cirkulär överföring som stafettpinne (telekom).<br><b>Mesh:</b> Maskor med flera vägar för redundans (datacenter).<br><b>Träd:</b> Stjärnnät ihopkopplade i hierarki.<br><b>Hybrid:</b> Kombination av olika topologier."
+    hint: "Nämn minst 3-4 stycken (stjärna, buss, ring, mesh, träd, hybrid) och något användningsområde.",
+    fullCheck: (t) => {
+      let c = 0;
+      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(x => { if(t.includes(x)) c++; });
+      return c >= 3 && (t.includes("switch") || t.includes("bil") || t.includes("fordon") || t.includes("datacenter") || t.includes("stafett") || t.includes("kontor"));
+    },
+    partialCheck: (t) => {
+      let c = 0;
+      ["stjärn", "buss", "ring", "mesh", "träd", "hybrid"].forEach(x => { if(t.includes(x)) c++; });
+      return c >= 2;
+    },
+    expl: "Stjärna (switch, hem/kontor), Buss (delad kabel, fordon), Ring (stafettpinne, telekom), Mesh (flera vägar, datacenter), Träd (nivåer), Hybrid (blandning)."
   },
   {
-    q: "Vilka typer av nätverksmedia finns det och vad för signaler skickar de?",
-    rules: [
-      [["koppar", "tp", "koax"], ["el", "elektrisk", "ström"]],
-      [["fiber"], ["ljus", "laser"]],
-      [["trådlös", "wifi", "wi-fi"], ["radio", "vågor"]]
-    ],
-    minRulesMet: 3,
-    a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar <b>el/elektriska signaler</b>.<br><b>Fiber:</b> Glas-/plastkabel – skickar <b>ljus</b>.<br><b>Trådlöst:</b> Wi-Fi/mobilnät – skickar <b>radiovågor</b>."
+    id: 3,
+    q: "Vilka typer av nätverksmedia finns det och vilka signaler skickar de?",
+    hint: "Tre medier: Koppar, fiber och trådlöst – vilka fysiska signaler transporteras?",
+    fullCheck: (t) => (t.includes("koppar") || t.includes("tp")) && t.includes("fiber") && (t.includes("trådlös") || t.includes("wifi")) && (t.includes("el") || t.includes("ljus") || t.includes("radio")),
+    partialCheck: (t) => (t.includes("koppar") && t.includes("fiber")) || t.includes("el") || t.includes("ljus"),
+    expl: "Koppar (TP/koax – el), Fiber (glas/plast – ljus), Trådlöst (Wi-Fi/radio – radiovågor)."
   },
   {
+    id: 4,
     q: "Ge exempel på bunden kommunikation.",
-    rules: [
-      [["kabel", "fysisk", "trådbunden"], ["tp", "fiber", "koppar", "koax", "sladd"]]
-    ],
-    minRulesMet: 1,
-    a: "All kommunikation som går via en <b>fysisk kabel</b> (t.ex. TP-kabel, koaxialkabel eller fiber), alltså inte trådlöst via luften."
+    hint: "Motsatsen till trådlöst. Vilka typer av kablar används?",
+    fullCheck: (t) => (t.includes("kabel") || t.includes("tråd") || t.includes("fysisk")) && (t.includes("tp") || t.includes("fiber") || t.includes("koppar") || t.includes("koax")),
+    partialCheck: (t) => t.includes("kabel") || t.includes("tp") || t.includes("fiber"),
+    expl: "Allt som går via en fysisk kabel, t.ex. TP-kabel (koppar) eller optisk fiberkabel."
   },
   {
-    q: "Vilka typer av TP-kablar finns det?",
-    rules: [
-      [["utp"], ["oskärmad", "utan skärm", "unshielded"]],
-      [["stp"], ["skärmad", "skärm", "shielded"]],
-      [["cat", "cat5", "cat6", "cat7", "cat8"], ["kategori", "klasser", "versioner", "cat"]]
-    ],
-    minRulesMet: 2,
-    a: "<b>Skärmning:</b> UTP (oskärmad, billigast) och STP (metallskärm mot störningar).<br><b>Klasser:</b> Cat5e, Cat6, Cat6a, Cat7 och Cat8."
+    id: 5,
+    q: "Vilka typer av TP-kablar finns det gällande skärmning och klasser?",
+    hint: "Två typer av skärmning (U... och S...) samt kategorier (Cat...).",
+    fullCheck: (t) => (t.includes("utp") && t.includes("stp")) && (t.includes("cat") || t.includes("kategori") || t.includes("skärm")),
+    partialCheck: (t) => t.includes("utp") || t.includes("stp") || t.includes("cat5") || t.includes("cat6"),
+    expl: "Skärmning: UTP (oskärmad) och STP (skärmad mot störningar). Klasser: Cat5e, Cat6, Cat6a, Cat7, Cat8."
   },
   {
-    q: "Vilken kapacitet har TP-kabeln och hur långt kan man sända?",
-    rules: [
-      [["100"], ["meter", "m"]],
-      [["gbps", "gbit", "hastighet", "kapacitet"], ["1", "10", "40", "cat5", "cat6"]]
-    ],
-    minRulesMet: 2,
-    a: "<b>Maxlängd:</b> Alltid max <b>100 meter</b>.<br><b>Hastighet:</b> Cat5e klarar 1 Gbps, Cat6/6a upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
+    id: 6,
+    q: "Vilken kapacitet har TP-kabeln och hur långt kan man maximalt sända?",
+    hint: "En exakt maxlängd i meter och hastighet för Cat5e/Cat6.",
+    fullCheck: (t) => (t.includes("100") || t.includes("hundra")) && (t.includes("gbps") || t.includes("gbit") || t.includes("1") || t.includes("10")),
+    partialCheck: (t) => t.includes("100") || t.includes("gbps") || t.includes("gbit"),
+    expl: "Maximal längd är alltid 100 meter. Cat5e klarar 1 Gbps, Cat6/6a upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
   },
   {
-    q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar den har.",
-    rules: [
-      [["koppar", "ledare"], ["mitten", "skärm", "isolering"]],
-      [["tål", "störning", "skydd", "stryk"], ["bra", "hög", "stark"]],
-      [["styv", "svår", "böja", "kapacitet", "långsam"], ["mindre", "sämre", "inte"]]
-    ],
-    minRulesMet: 2,
-    a: "<b>Uppbyggnad:</b> Tjock koppartråd, plastisolering och yttre metallskärm.<br><b>Fördel:</b> Tål störningar jättebra och tål fysiskt stryk.<br><b>Nackdel:</b> Styv, svår att böja och har lägre kapacitet än modern fiber."
+    id: 7,
+    q: "Beskriv en koaxialkabel samt dess fördelar och nackdelar.",
+    hint: "Koppartråd i mitten med skärm. Tål störningar bra, men hur är böjligheten?",
+    fullCheck: (t) => (t.includes("koppar") || t.includes("skärm")) && (t.includes("störning") || t.includes("tål")) && (t.includes("styv") || t.includes("böj") || t.includes("kapacitet")),
+    partialCheck: (t) => t.includes("koppar") || t.includes("störning") || t.includes("styv"),
+    expl: "Uppbyggd av kopparledare i mitten med metallskärm runtom. Fördel: Tål yttre störningar och stryk. Nackdel: Styv, svårböjd och lägre kapacitet än fiber."
   },
   {
-    q: "Vilka typer av fiberkablar finns det?",
-    rules: [
-      [["singlemode", "single-mode", "single mode"], ["laser", "tunn", "lång", "mil"]],
-      [["multimode", "multi-mode", "multimode"], ["led", "ljus", "tjock", "kort"]]
-    ],
-    minRulesMet: 2,
-    a: "<b>Singlemode:</b> Supertunn kärna, använder laser, för långa sträckor (flera mil).<br><b>Multimode:</b> Tjockare kärna, enklare ljus (LED), för korta sträckor (inom byggnad/datacenter)."
+    id: 8,
+    q: "Vilka två huvudtyper av fiberkablar finns det och vad skiljer dem åt?",
+    hint: "Single... och Multi... – tänk på ljuskälla (laser vs LED) och räckvidd.",
+    fullCheck: (t) => (t.includes("singlemode") || t.includes("single mode") || t.includes("single")) && (t.includes("multimode") || t.includes("multi mode") || t.includes("multi")) && (t.includes("laser") || t.includes("led") || t.includes("lång") || t.includes("mil")),
+    partialCheck: (t) => t.includes("singlemode") || t.includes("multimode"),
+    expl: "Singlemode: Supertunn kärna, laser som ljuskälla, för mycket långa sträckor (flera mil). Multimode: Tjockare kärna, LED-ljus, för korta sträckor (inom datacenter/hus)."
   },
   {
+    id: 9,
     q: "Hur fungerar en fiberkabel rent tekniskt?",
-    rules: [
-      [["ljus", "blixt"], ["studsar", "totalreflektion", "kärna"]],
-      [["fotodiod", "mottagare"], ["ettor", "nollor", "omvandlar", "signal"]]
-    ],
-    minRulesMet: 2,
-    a: "Data omvandlas till ljusblixtar. Ljuset studsar inuti glastråden genom <b>totalreflektion</b> hela vägen till en <b>fotodiod</b> som omvandlar ljuset till ettor och nollor igen."
+    hint: "Hur transporteras ljuset i kärnan och vad omvandlar det vid mottagaren?",
+    fullCheck: (t) => (t.includes("ljus") || t.includes("laser")) && (t.includes("studs") || t.includes("totalreflektion")) && (t.includes("fotodiod") || t.includes("ettor") || t.includes("mottag")),
+    partialCheck: (t) => t.includes("ljus") || t.includes("studs") || t.includes("totalreflektion") || t.includes("fotodiod"),
+    expl: "Data görs om till ljussignaler som studsar inuti glaskärnan genom totalreflektion till en mottagare (fotodiod) som återskapar ettor och nollor."
   },
   {
-    q: "Vilka fördelar finns det med fiberkabel?",
-    rules: [
-      [["snabb", "kapacitet", "hastighet"]],
-      [["störning", "åska", "el", "elektricitet"]],
-      [["lång", "mil", "sträcka", "räckvidd"]],
-      [["avlyssn", "säker"]]
-    ],
-    minRulesMet: 2,
-    a: "1. Extrem kapacitet och hastighet.<br>2. Helt okänsligt för elstörningar och åska.<br>3. Enorm räckvidd (mil utan repeater).<br>4. Mycket svårt att avlyssna obemärkt."
+    id: 10,
+    q: "Vilka fördelar har fiberkabel jämfört med kopparkablar?",
+    hint: "Tänk på hastighet, störningskänslighet (åska), räckvidd och avlyssning.",
+    fullCheck: (t) => {
+      let c = 0;
+      ["snabb", "kapacitet", "störning", "åska", "mil", "lång", "avlyssn", "ljus"].forEach(x => { if(t.includes(x)) c++; });
+      return c >= 2;
+    },
+    partialCheck: (t) => t.includes("snabb") || t.includes("störning") || t.includes("lång") || t.includes("avlyssn"),
+    expl: "Blixtsnabbt med enorm kapacitet, helt okänsligt för elstörningar och åska, extrem räckvidd (mil) och mycket svårt att avlyssna."
   },
   {
+    id: 11,
     q: "Hur är en MAC-adress uppbyggd?",
-    rules: [
-      [["6", "sex"], ["byte", "bytes", "48", "bitar"]],
-      [["oui", "första 3", "3 första"], ["tillverk"]],
-      [["nic", "sista 3", "3 sista"], ["serienummer", "kort", "unik"]]
-    ],
-    minRulesMet: 2,
-    a: "Består av <b>6 bytes (48 bitar)</b>.<br>• De 3 första byten visar vem som är tillverkare (<b>OUI</b>).<br>• De 3 sista byten är nätverkskortets unika serienummer (<b>NIC</b>)."
+    hint: "Antal bytes/bitar samt vad första och sista halvan anger (OUI / NIC).",
+    fullCheck: (t) => (t.includes("48") || t.includes("6 byte")) && (t.includes("oui") || t.includes("tillverk")) && (t.includes("nic") || t.includes("serienummer") || t.includes("unik")),
+    partialCheck: (t) => t.includes("48") || t.includes("6 byte") || t.includes("oui") || t.includes("tillverk"),
+    expl: "Den är på 6 bytes (48 bitar). De 3 första byten anger tillverkaren (OUI) och de 3 sista byten är nätverkskortets unika serienummer (NIC)."
   },
   {
+    id: 12,
     q: "Vad är en MAC-adress?",
-    rules: [
-      [["fysisk", "nätverkskort", "hårdvara"], ["personnummer", "unik", "adress"]],
-      [["inbränd", "fabrik", "ändras inte", "tillverk"]]
-    ],
-    minRulesMet: 1,
-    a: "Nätverkskortets unika <b>fysiska adress ('personnummer')</b> som är inbränd på kortet från fabriken och i grunden aldrig ändras."
+    hint: "Fysisk adress inbränd från fabriken – nätverkskortets...",
+    fullCheck: (t) => (t.includes("fysisk") || t.includes("hårdvar") || t.includes("inbränd")) && (t.includes("personnummer") || t.includes("unik") || t.includes("kort")),
+    partialCheck: (t) => t.includes("personnummer") || t.includes("unik") || t.includes("adress") || t.includes("fysisk"),
+    expl: "Nätverkskortets unika fysiska hårdvaruadress ('personnummer'). Den bränns in på kortet från fabriken och ändras aldrig."
   },
   {
+    id: 13,
     q: "Vilka nätverksklasser finns det och ge exempel på adresser?",
-    rules: [
-      [["klass a", "a:"], ["1-126", "1–126", "10."]],
-      [["klass b", "b:"], ["128-191", "128–191", "172."]],
-      [["klass c", "c:"], ["192-223", "192–223", "192.168"]]
-    ],
-    minRulesMet: 3,
-    a: "<b>Klass A:</b> 1–126 (Ex: 10.0.0.1) – för jättestora nätverk.<br><b>Klass B:</b> 128–191 (Ex: 172.16.0.1) – för mellanstora nätverk.<br><b>Klass C:</b> 192–223 (Ex: 192.168.1.1) – för små nät/hemmanätverk."
+    hint: "Klass A, B och C – nämn gärna ett exempel eller startintervall för varje.",
+    fullCheck: (t) => (t.includes("klass a") || t.includes("a")) && (t.includes("klass b") || t.includes("b")) && (t.includes("klass c") || t.includes("c")) && (t.includes("10.") || t.includes("172.") || t.includes("192.168") || t.includes("126") || t.includes("191")),
+    partialCheck: (t) => t.includes("klass a") || t.includes("klass b") || t.includes("klass c"),
+    expl: "Klass A (1–126, ex 10.0.0.1), Klass B (128–191, ex 172.16.0.1), Klass C (192–223, ex 192.168.1.1)."
   },
   {
-    q: "Hur räknar man ut Host-ID? (Husnumret)",
-    rules: [
-      [["ta bort", "nätverk", "där masken har 255", "masken"]],
-      [["kvar", "över", "resten", ".25", "värd", "host"]]
-    ],
-    minRulesMet: 2,
-    a: "Man tar bort nätverksdelen från IP-adressen (där masken har 255) – siffrorna som blir kvar är Host-ID.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Host-ID <b>.25</b>."
+    id: 14,
+    q: "Hur räknar man ut Host-ID (husnumret)?",
+    hint: "Vad gör man med nätverksdelen och subnätmasken?",
+    fullCheck: (t) => (t.includes("ta bort") || t.includes("kvar") || t.includes("rest") || t.includes("över")) && (t.includes("nätverk") || t.includes("mask") || t.includes("255") || t.includes("25")),
+    partialCheck: (t) => t.includes("kvar") || t.includes("mask") || t.includes("nätverk"),
+    expl: "Man tar bort nätverksdelen (där subnätmasken har 255) från IP-adressen – siffrorna som blir över är Host-ID (t.ex. .25 i 192.168.1.25)."
   },
   {
-    q: "Hur räknar man ut Net-ID? (Gatunamnet)",
-    rules: [
-      [["and", "jämför", "multiplicera"], ["mask", "subnät"]],
-      [["255", "behåll", "samma"], ["noll", "0", "192.168.1.0"]]
-    ],
-    minRulesMet: 2,
-    a: "Man gör en AND-operation mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Net-ID <b>192.168.1.0</b>."
+    id: 15,
+    q: "Hur räknar man ut Net-ID (gatunamnet)?",
+    hint: "Vilken logisk operation görs med subnätmasken, och vad händer med siffrorna?",
+    fullCheck: (t) => (t.includes("and") || t.includes("jämför")) && (t.includes("mask") || t.includes("255") || t.includes("noll")),
+    partialCheck: (t) => t.includes("and") || t.includes("mask") || t.includes("255"),
+    expl: "Man gör en logisk AND-jämförelse mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor (Net-ID)."
   },
   {
-    q: "Vilka adresser har Klass A?",
-    rules: [
-      [["1", "126", "1-126", "1–126"]],
-      [["255.0.0.0", "/8"]]
-    ],
-    minRulesMet: 2,
-    a: "Adresser som börjar på <b>1 – 126</b> (Standardmask: <b>255.0.0.0</b> eller /8)."
+    id: 16,
+    q: "Vilka adresser har Klass A och vilken är dess standardmask?",
+    hint: "Börjar på 1 och slutar vid 126. Masken har 8 bitar.",
+    fullCheck: (t) => (t.includes("1-126") || (t.includes("1") && t.includes("126"))) && (t.includes("255.0.0.0") || t.includes("/8")),
+    partialCheck: (t) => t.includes("1-126") || t.includes("126") || t.includes("255.0.0.0") || t.includes("/8"),
+    expl: "Adresser från 1 till 126 (1.0.0.0 – 126.255.255.255). Standardmask: 255.0.0.0 (/8)."
   },
   {
-    q: "Hur många nätverk kan Klass A ha?",
-    rules: [
-      [["126"]]
-    ],
-    minRulesMet: 1,
-    a: "<b>126 stycken</b> (2^7 minus 0 och 127 som är reserverade)."
+    id: 17,
+    q: "Hur många nätverk kan Klass A maximalt ha?",
+    hint: "2^7 minus de två reserverade nätverken 0 och 127.",
+    fullCheck: (t) => t.includes("126"),
+    partialCheck: (t) => t.includes("128") || t.includes("127"),
+    expl: "126 stycken användbara nätverk (2^7 minus 0 och 127)."
   },
   {
-    q: "Hur många värdenheter kan Klass A ha?",
-    rules: [
-      [["16", "miljon", "16777214", "16 777 214"]]
-    ],
-    minRulesMet: 1,
-    a: "Cirka 16,7 miljoner per nätverk (exakt <b>16 777 214 st</b>)."
+    id: 18,
+    q: "Hur många värdenheter (hosts) kan Klass A ha per nätverk?",
+    hint: "2^24 minus 2. Cirka 16,7 miljoner.",
+    fullCheck: (t) => t.includes("16 777 214") || t.includes("16777214") || t.includes("16 777 216") || (t.includes("16") && t.includes("miljon")),
+    partialCheck: (t) => t.includes("16"),
+    expl: "16 777 214 stycken användbara värdenheter per nätverk (2^24 - 2)."
   },
   {
-    q: "Vilka adresser har Klass B?",
-    rules: [
-      [["128", "191", "128-191", "128–191"]],
-      [["255.255.0.0", "/16"]]
-    ],
-    minRulesMet: 2,
-    a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: <b>255.255.0.0</b> eller /16). 127 är reserverat för loopback."
+    id: 19,
+    q: "Vilka adresser har Klass B och vilken är standardmasken?",
+    hint: "Börjar på 128 (eftersom 127 hoppas över) och slutar vid 191. Standardmask med två 255:or.",
+    fullCheck: (t) => (t.includes("128") && t.includes("191")) && (t.includes("255.255.0.0") || t.includes("/16")),
+    partialCheck: (t) => (t.includes("128") && t.includes("191")) || t.includes("255.255.0.0"),
+    expl: "Adresser från 128 till 191 (128.0.0.0 – 191.255.255.255). Standardmask: 255.255.0.0 (/16). 127 hoppas över pga loopback."
   },
   {
+    id: 20,
     q: "Hur många nätverk kan Klass B ha?",
-    rules: [
-      [["16 384", "16384", "16 tusen", "16000"]]
-    ],
-    minRulesMet: 1,
-    a: "<b>16 384 stycken</b> (cirka 16 tusen)."
+    hint: "2^14. Cirka 16 tusen.",
+    fullCheck: (t) => t.includes("16 384") || t.includes("16384") || (t.includes("16") && t.includes("tusen")),
+    partialCheck: (t) => t.includes("16"),
+    expl: "16 384 stycken nätverk (2^14)."
   },
   {
-    q: "Hur många värdenheter kan Klass B ha?",
-    rules: [
-      [["65 534", "65534", "65 tusen"]]
-    ],
-    minRulesMet: 1,
-    a: "<b>65 534 stycken</b> per nätverk."
+    id: 21,
+    q: "Hur många värdenheter (hosts) kan Klass B ha per nätverk?",
+    hint: "2^16 minus 2. Cirka 65 tusen.",
+    fullCheck: (t) => t.includes("65 534") || t.includes("65534") || t.includes("65 536") || (t.includes("65") && t.includes("tusen")),
+    partialCheck: (t) => t.includes("65"),
+    expl: "65 534 stycken användbara värdenheter per nätverk (2^16 - 2)."
   },
   {
-    q: "Vilka adresser har Klass C?",
-    rules: [
-      [["192", "223", "192-223", "192–223"]],
-      [["255.255.255.0", "/24"]]
-    ],
-    minRulesMet: 2,
-    a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: <b>255.255.255.0</b> eller /24). Slutar på 223!"
+    id: 22,
+    q: "Vilka adresser har Klass C och vilken är standardmasken?",
+    hint: "Börjar på 192 och slutar på 223 (inte 255!). Standardmask med tre 255:or.",
+    fullCheck: (t) => (t.includes("192") && t.includes("223")) && (t.includes("255.255.255.0") || t.includes("/24")),
+    partialCheck: (t) => (t.includes("192") && t.includes("223")) || t.includes("255.255.255.0") || t.includes("192"),
+    expl: "Adresser från 192 till 223 (192.0.0.0 – 223.255.255.255). Standardmask: 255.255.255.0 (/24). Slutar vid 223!"
   },
   {
+    id: 23,
     q: "Hur många nätverk kan Klass C ha?",
-    rules: [
-      [["2,1", "2.1", "miljon", "2097152", "2 097 152"]]
-    ],
-    minRulesMet: 1,
-    a: "Cirka 2,1 miljoner stycken (exakt <b>2 097 152 st</b>)."
+    hint: "2^21. Cirka 2,1 miljoner.",
+    fullCheck: (t) => t.includes("2 097 152") || t.includes("2097152") || (t.includes("2") && t.includes("miljon")),
+    partialCheck: (t) => t.includes("2"),
+    expl: "2 097 152 stycken nätverk (cirka 2,1 miljoner)."
   },
   {
-    q: "Hur många värdenheter kan Klass C ha?",
-    rules: [
-      [["254"]]
-    ],
-    minRulesMet: 1,
-    a: "<b>254 stycken</b> per nätverk (256 minus Net-ID och Broadcast)."
+    id: 24,
+    q: "Hur många användbara värdenheter kan Klass C ha per nätverk?",
+    hint: "256 minus Net-ID (.0) och broadcast (.255).",
+    fullCheck: (t) => t.includes("254"),
+    partialCheck: (t) => t.includes("256"),
+    expl: "254 stycken användbara värdenheter (256 minus 2 = 254)."
   },
   {
-    q: "Vad är en Default Gateway?",
-    rules: [
-      [["router", "ip"], ["lokal", "adress"]],
-      [["dörr", "väg ut", "annan", "annat", "internet", "skicka vidare"]]
-    ],
-    minRulesMet: 2,
-    a: "Routerns IP-adress på det lokala nätet. Det fungerar som 'dörren ut' dit datorn skickar all trafik som ska till andra nätverk eller Internet."
+    id: 25,
+    q: "Vad är en Default Gateway och vilken funktion fyller den?",
+    hint: "Routerns IP-adress på det lokala nätet – fungerar som 'dörren ut'.",
+    fullCheck: (t) => t.includes("router") && (t.includes("lokal") || t.includes("dörr") || t.includes("annat") || t.includes("internet") || t.includes("vidare")),
+    partialCheck: (t) => t.includes("router") || t.includes("gateway") || t.includes("dörr"),
+    expl: "Routerns IP-adress på det lokala nätet. Den fungerar som dörren ut dit datorn skickar all trafik som ska till andra nätverk eller Internet."
   },
   {
-    q: "Vilka olika typer av IPv4-adresser finns det?",
-    rules: [
-      [["unicast"]],
-      [["multicast"]],
-      [["broadcast"]],
-      [["loopback", "127.0.0.1"]],
-      [["link-local", "apipa", "169.254"]]
-    ],
-    minRulesMet: 4,
-    a: "• <b>Unicast:</b> Skickar till en enskild enhet.<br>• <b>Multicast:</b> Skickar till en definierad grupp.<br>• <b>Broadcast:</b> Skickar till alla på lokala nätet.<br>• <b>Loopback:</b> Datorn testar sig själv internt (127.0.0.1).<br>• <b>Link-local:</b> Automatisk adress vid DHCP-avbrott (169.254.x.x).<br>• <b>Unspecified:</b> Startadress (0.0.0.0)."
+    id: 26,
+    q: "Nämn minst tre olika typer av IPv4-adresser/sändningssätt.",
+    hint: "T.ex. Unicast, Multicast, Broadcast, Loopback, Link-local.",
+    fullCheck: (t) => {
+      const list = ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified", "127.0.0.1"];
+      let c = 0;
+      list.forEach(x => { if (t.includes(x)) c++; });
+      return c >= 3;
+    },
+    partialCheck: (t) => {
+      const list = ["unicast", "multicast", "broadcast", "loopback", "link-local", "unspecified", "127.0.0.1"];
+      let c = 0;
+      list.forEach(x => { if (t.includes(x)) c++; });
+      return c >= 1;
+    },
+    expl: "Unicast (en-till-en), Multicast (till grupp), Broadcast (till alla lokalt), Loopback (127.0.0.1) och Link-local (169.254.x.x / APIPA)."
   }
 ];
 
 let currentIndex = 0;
-let score = 0;
-let answered = false;
+let userAnswers = {};
+let results = {};
 
-function loadQuestion() {
-  answered = false;
-  const current = questions[currentIndex];
-  document.getElementById("question-indicator").innerText = `Fråga ${currentIndex + 1} av ${questions.length}`;
-  document.getElementById("score-counter").innerText = score;
-  document.getElementById("progress-fill").style.width = `${(currentIndex / questions.length) * 100}%`;
-  
-  document.getElementById("q-text").innerText = `${currentIndex + 1}. ${current.q}`;
-  const input = document.getElementById("user-input");
-  input.value = "";
-  input.disabled = false;
-  input.focus();
-  
-  const feedbackBox = document.getElementById("feedback-box");
-  feedbackBox.style.display = "none";
-  feedbackBox.className = "feedback-box";
-  
-  document.getElementById("btn-submit").style.display = "inline-block";
-  document.getElementById("btn-next").style.display = "none";
+function toggleHint() {
+  const box = document.getElementById("qHint");
+  box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
-function checkAnswer() {
-  if (answered) return;
-  
-  const userText = document.getElementById("user-input").value.trim().toLowerCase();
-  const current = questions[currentIndex];
-  
-  if (!userText) {
-    alert("Skriv ett svar först!");
+function handleKey(e) {
+  if (e.key === "Enter") {
+    submitAnswer();
+  }
+}
+
+function normalize(str) {
+  return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function updateProgress() {
+  const total = questions.length;
+  const pct = ((currentIndex + 1) / total) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("stepLabel").textContent = `Fråga ${currentIndex + 1} av ${total}`;
+
+  let totalScore = 0;
+  for (let id in results) {
+    totalScore += results[id].score;
+  }
+  document.getElementById("scoreLabel").textContent = `Poäng: ${totalScore.toFixed(1)}`;
+}
+
+function loadQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById("qTitle").textContent = `${idx + 1}. ${q.q}`;
+  document.getElementById("qHint").textContent = q.hint;
+  document.getElementById("qHint").style.display = "none";
+
+  const input = document.getElementById("ansInput");
+  input.value = userAnswers[q.id] || "";
+  input.focus();
+
+  const resBox = document.getElementById("resBox");
+  const badge = document.getElementById("qBadge");
+
+  if (results[q.id]) {
+    const res = results[q.id];
+    resBox.style.display = "block";
+    if (res.score >= 1.0) {
+      resBox.className = "result-box result-correct";
+      resBox.innerHTML = `<strong>Rätt! (1.0 p)</strong><br>${q.expl}`;
+      badge.textContent = "1.0 / 1.0 p";
+      badge.style.borderColor = "var(--correct)";
+      badge.style.color = "#86efac";
+    } else if (res.score >= 0.5) {
+      resBox.className = "result-box result-partial";
+      resBox.innerHTML = `<strong>Delvis rätt / nära! (0.5 p)</strong><br>${q.expl}`;
+      badge.textContent = "0.5 / 1.0 p";
+      badge.style.borderColor = "var(--partial)";
+      badge.style.color = "#fde047";
+    } else {
+      resBox.className = "result-box result-wrong";
+      resBox.innerHTML = `<strong>Inte riktigt (0.0 p)</strong><br><strong>Facit:</strong> ${q.expl}`;
+      badge.textContent = "0.0 / 1.0 p";
+      badge.style.borderColor = "var(--wrong)";
+      badge.style.color = "#fca5a5";
+    }
+  } else {
+    resBox.style.display = "none";
+    badge.textContent = "1.0 p";
+    badge.style.borderColor = "var(--border)";
+    badge.style.color = "var(--accent)";
+  }
+
+  document.getElementById("btnPrev").disabled = (idx === 0);
+  document.getElementById("btnNext").textContent = (idx === questions.length - 1) ? "Visa resultat →" : "Nästa →";
+  updateProgress();
+}
+
+function submitAnswer() {
+  const q = questions[currentIndex];
+  const input = document.getElementById("ansInput");
+  const userAns = input.value.trim();
+  userAnswers[q.id] = userAns;
+
+  if (!userAns) {
+    results[q.id] = { score: 0 };
+    loadQuestion(currentIndex);
     return;
   }
-  
-  answered = true;
-  document.getElementById("user-input").disabled = true;
-  document.getElementById("btn-submit").style.display = "none";
-  document.getElementById("btn-next").style.display = "inline-block";
 
-  // Kontrollera att varje delkrav matchar
-  let rulesPassed = 0;
-  current.rules.forEach(rule => {
-    // rule är en array av sub-krav, t.ex. [ ["pan"], ["bluetooth", "klocka"] ]
-    // Texten MÅSTE innehålla minst ett ord från varje sub-krav!
-    const passed = rule.every(subGroup => subGroup.some(word => userText.includes(word)));
-    if (passed) rulesPassed++;
-  });
+  const clean = normalize(userAns);
+  let score = 0;
 
-  const isCorrect = rulesPassed >= current.minRulesMet;
-  const feedbackBox = document.getElementById("feedback-box");
-  const statusEl = document.getElementById("feedback-status");
-  const solutionEl = document.getElementById("solution-text");
-
-  if (isCorrect) {
-    score++;
-    document.getElementById("score-counter").innerText = score;
-    feedbackBox.className = "feedback-box correct";
-    statusEl.innerHTML = "✓ Godkänt & utförligt svar!";
-  } else {
-    feedbackBox.className = "feedback-box wrong";
-    statusEl.innerHTML = "✕ Ej fullt godkänt: Svaret saknade viktiga förklaringar eller begrepp.";
+  if (q.fullCheck(clean)) {
+    score = 1.0;
+  } else if (q.partialCheck(clean)) {
+    score = 0.5;
   }
 
-  solutionEl.innerHTML = `<strong>Facit / Komplett svar:</strong><br>${current.a}`;
-  feedbackBox.style.display = "block";
+  results[q.id] = { score: score };
+  loadQuestion(currentIndex);
 }
 
 function nextQuestion() {
-  currentIndex++;
-  if (currentIndex < questions.length) {
-    loadQuestion();
+  const q = questions[currentIndex];
+  userAnswers[q.id] = document.getElementById("ansInput").value.trim();
+
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    loadQuestion(currentIndex);
   } else {
     showSummary();
   }
 }
 
+function prevQuestion() {
+  const q = questions[currentIndex];
+  userAnswers[q.id] = document.getElementById("ansInput").value.trim();
+
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion(currentIndex);
+  }
+}
+
 function showSummary() {
-  document.getElementById("quiz-card").style.display = "none";
-  document.getElementById("progress-container").style.display = "none";
-  
-  const summaryCard = document.getElementById("summary-card");
-  summaryCard.style.display = "block";
-  
-  const percentage = Math.round((score / questions.length) * 100);
-  document.getElementById("final-score").innerText = `${score} / ${questions.length} rätt (${percentage}%)`;
-  
-  let comment = "";
-  if (percentage >= 90) comment = "Mästerligt! Du behärskar både terminologin och förklaringarna.";
-  else if (percentage >= 70) comment = "Mycket bra! Gå igenom de frågor där detaljer saknades.";
-  else comment = "Kör ett varv till och fokusera på att skriva ut vad termerna faktiskt gör!";
-  
-  document.getElementById("final-comment").innerText = comment;
+  document.getElementById("quizCard").style.display = "none";
+  document.getElementById("progressContainer").style.display = "none";
+
+  let totalScore = 0;
+  for (let id in results) {
+    totalScore += results[id].score;
+  }
+
+  const summary = document.getElementById("summaryCard");
+  summary.style.display = "block";
+  document.getElementById("finalScore").textContent = `${totalScore.toFixed(1)} / ${questions.length} p`;
+
+  const feedback = document.getElementById("finalFeedback");
+  const pct = (totalScore / questions.length) * 100;
+  if (pct >= 85) feedback.textContent = "Grymt jobbat! Du har stenkoll på nätverksgrunderna inför provet.";
+  else if (pct >= 50) feedback.textContent = "Bra jobbat! Vissa delar sitter bra, repetera gärna intervallen och beräkningarna en gång till.";
+  else feedback.textContent = "Bra försök! Gå gärna igenom facit och gör om quizet för att nöta in detaljerna.";
 }
 
 function restartQuiz() {
   currentIndex = 0;
-  score = 0;
-  document.getElementById("quiz-card").style.display = "block";
-  document.getElementById("progress-container").style.display = "flex";
-  document.getElementById("summary-card").style.display = "none";
-  loadQuestion();
+  userAnswers = {};
+  results = {};
+  document.getElementById("summaryCard").style.display = "none";
+  document.getElementById("quizCard").style.display = "flex";
+  document.getElementById("progressContainer").style.display = "block";
+  loadQuestion(0);
 }
 
-loadQuestion();
+window.onload = () => loadQuestion(0);
 </script>
-
 </body>
 </html>
