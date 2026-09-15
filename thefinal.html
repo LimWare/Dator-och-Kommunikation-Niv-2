@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nätverk & Adressering - Examensläge</title>
+  <title>Nätverk & Adressering - Strikt Läge</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -211,7 +211,7 @@
 <div class="container">
   <header>
     <h1>Nätverk & Adressering</h1>
-    <p class="subtitle">Skärpt rättningsläge: Svara utförligt med både termer och förklaringar.</p>
+    <p class="subtitle">Strikt läge: Både begrepp OCH förklaring/användning krävs för att bli godkänd.</p>
   </header>
 
   <div class="progress-container" id="progress-container">
@@ -248,282 +248,248 @@
 </div>
 
 <script>
+// Varje fråga har 'rules'. För att en rule ska passera måste användarens svar matcha MINST ett ord per sub-array.
 const questions = [
   {
     q: "Vilka olika nätverkstyper finns det och var används de?",
-    minLen: 60,
-    groups: [
-      ["pan", "bluetooth", "klocka", "nära"],
-      ["lan", "lokalt", "hem", "skola", "kontor"],
-      ["man", "stad", "kommun", "metropol"],
-      ["wan", "internet", "värld", "land"]
+    rules: [
+      [["pan"], ["bluetooth", "klocka", "nära", "personlig", "hörlurar"]],
+      [["lan"], ["lokal", "hem", "skola", "kontor", "byggnad"]],
+      [["man"], ["stad", "kommun", "metropol"]],
+      [["wan"], ["internet", "värld", "land", "global", "länder"]]
     ],
-    minGroups: 4,
+    minRulesMet: 3, // Måste ha förklarat minst 3 av dem korrekt
     a: "<b>PAN:</b> Personligt och mycket nära (Bluetooth, klockor, hörlurar).<br><b>LAN:</b> Lokalt nätverk i ett hem, en skola eller ett kontor.<br><b>MAN:</b> Stadsnät som täcker en hel stad eller kommun.<br><b>WAN:</b> Stort nätverk över länder/världen (Internet)."
   },
   {
     q: "Vilka olika typer av topologier finns det och var används de?",
-    minLen: 60,
-    groups: [
-      ["stjärn", "star", "switch"],
-      ["buss", "bus", "fordon", "bil", "kabel"],
-      ["ring", "cirkel", "stafett"],
-      ["mesh", "redundans", "datacenter", "flera"],
-      ["träd", "tree", "hybrid"]
+    rules: [
+      [["stjärn", "star"], ["switch", "central"]],
+      [["buss", "bus"], ["kabel", "fordon", "bil"]],
+      [["ring"], ["cirkel", "stafett", "telekom"]],
+      [["mesh"], ["datacenter", "flera", "backup", "redundans"]],
+      [["träd", "tree"], ["stjärn", "nivåer", "hierarki"]]
     ],
-    minGroups: 4,
+    minRulesMet: 3,
     a: "<b>Stjärna:</b> Kopplas till central switch (hem/kontor).<br><b>Buss:</b> Sammankopplad gemensam kabel (bilar/fordon).<br><b>Ring:</b> Cirkulär överföring som stafettpinne (telekom).<br><b>Mesh:</b> Maskor med flera vägar för redundans (datacenter).<br><b>Träd:</b> Stjärnnät ihopkopplade i hierarki.<br><b>Hybrid:</b> Kombination av olika topologier."
   },
   {
     q: "Vilka typer av nätverksmedia finns det och vad för signaler skickar de?",
-    minLen: 40,
-    groups: [
-      ["koppar", "el", "ström", "elektrisk"],
-      ["fiber", "ljus"],
-      ["trådlös", "radio", "vågor"]
+    rules: [
+      [["koppar", "tp", "koax"], ["el", "elektrisk", "ström"]],
+      [["fiber"], ["ljus", "laser"]],
+      [["trådlös", "wifi", "wi-fi"], ["radio", "vågor"]]
     ],
-    minGroups: 3,
+    minRulesMet: 3,
     a: "<b>Koppar:</b> TP-kabel och antennkabel (koax) – skickar <b>el/elektriska signaler</b>.<br><b>Fiber:</b> Glas-/plastkabel – skickar <b>ljus</b>.<br><b>Trådlöst:</b> Wi-Fi/mobilnät – skickar <b>radiovågor</b>."
   },
   {
     q: "Ge exempel på bunden kommunikation.",
-    minLen: 20,
-    groups: [
-      ["kabel", "fysisk", "trådbunden"],
-      ["tp", "fiber", "koppar", "ledare"]
+    rules: [
+      [["kabel", "fysisk", "trådbunden"], ["tp", "fiber", "koppar", "koax", "sladd"]]
     ],
-    minGroups: 2,
+    minRulesMet: 1,
     a: "All kommunikation som går via en <b>fysisk kabel</b> (t.ex. TP-kabel, koaxialkabel eller fiber), alltså inte trådlöst via luften."
   },
   {
     q: "Vilka typer av TP-kablar finns det?",
-    minLen: 30,
-    groups: [
-      ["utp", "oskärmad", "unshielded"],
-      ["stp", "skärmad", "shielded"],
-      ["cat", "cat5", "cat6", "kategor"]
+    rules: [
+      [["utp"], ["oskärmad", "utan skärm", "unshielded"]],
+      [["stp"], ["skärmad", "skärm", "shielded"]],
+      [["cat", "cat5", "cat6", "cat7", "cat8"], ["kategori", "klasser", "versioner", "cat"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "<b>Skärmning:</b> UTP (oskärmad, billigast) och STP (metallskärm mot störningar).<br><b>Klasser:</b> Cat5e, Cat6, Cat6a, Cat7 och Cat8."
   },
   {
     q: "Vilken kapacitet har TP-kabeln och hur långt kan man sända?",
-    minLen: 25,
-    groups: [
-      ["100", "meter"],
-      ["gbps", "gbit", "hastighet", "1", "10"]
+    rules: [
+      [["100"], ["meter", "m"]],
+      [["gbps", "gbit", "hastighet", "kapacitet"], ["1", "10", "40", "cat5", "cat6"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "<b>Maxlängd:</b> Alltid max <b>100 meter</b>.<br><b>Hastighet:</b> Cat5e klarar 1 Gbps, Cat6/6a upp till 10 Gbps (Cat8 upp till 40 Gbps på korta sträckor)."
   },
   {
     q: "Beskriv en koaxialkabel och vilka fördelar och nackdelar den har.",
-    minLen: 40,
-    groups: [
-      ["koppar", "ledare", "skärm"],
-      ["störning", "tål", "stryk", "skydd"],
-      ["styv", "svår", "böja", "långsam", "kapacitet"]
+    rules: [
+      [["koppar", "ledare"], ["mitten", "skärm", "isolering"]],
+      [["tål", "störning", "skydd", "stryk"], ["bra", "hög", "stark"]],
+      [["styv", "svår", "böja", "kapacitet", "långsam"], ["mindre", "sämre", "inte"]]
     ],
-    minGroups: 3,
+    minRulesMet: 2,
     a: "<b>Uppbyggnad:</b> Tjock koppartråd, plastisolering och yttre metallskärm.<br><b>Fördel:</b> Tål störningar jättebra och tål fysiskt stryk.<br><b>Nackdel:</b> Styv, svår att böja och har lägre kapacitet än modern fiber."
   },
   {
     q: "Vilka typer av fiberkablar finns det?",
-    minLen: 45,
-    groups: [
-      ["singlemode", "single", "smf"],
-      ["multimode", "multi", "mmf"],
-      ["laser"],
-      ["led", "ljusdiod"],
-      ["lång", "mil", "kort"]
+    rules: [
+      [["singlemode", "single-mode", "single mode"], ["laser", "tunn", "lång", "mil"]],
+      [["multimode", "multi-mode", "multimode"], ["led", "ljus", "tjock", "kort"]]
     ],
-    minGroups: 4,
+    minRulesMet: 2,
     a: "<b>Singlemode:</b> Supertunn kärna, använder laser, för långa sträckor (flera mil).<br><b>Multimode:</b> Tjockare kärna, enklare ljus (LED), för korta sträckor (inom byggnad/datacenter)."
   },
   {
     q: "Hur fungerar en fiberkabel rent tekniskt?",
-    minLen: 40,
-    groups: [
-      ["ljus", "blixt", "puls"],
-      ["studs", "totalreflektion", "reflek"],
-      ["fotodiod", "mottagare", "diod", "ettor"]
+    rules: [
+      [["ljus", "blixt"], ["studsar", "totalreflektion", "kärna"]],
+      [["fotodiod", "mottagare"], ["ettor", "nollor", "omvandlar", "signal"]]
     ],
-    minGroups: 2,
-    a: "Data görs om till ljusblixtar. Ljuset studsar inuti glastråden genom <b>totalreflektion</b> hela vägen till en <b>fotodiod</b> som omvandlar ljuset till ettor och nollor igen."
+    minRulesMet: 2,
+    a: "Data omvandlas till ljusblixtar. Ljuset studsar inuti glastråden genom <b>totalreflektion</b> hela vägen till en <b>fotodiod</b> som omvandlar ljuset till ettor och nollor igen."
   },
   {
     q: "Vilka fördelar finns det med fiberkabel?",
-    minLen: 30,
-    groups: [
-      ["snabb", "kapacitet", "hastighet"],
-      ["störning", "åska", "el"],
-      ["lång", "mil", "räckvidd"],
-      ["avlyssn", "säker"]
+    rules: [
+      [["snabb", "kapacitet", "hastighet"]],
+      [["störning", "åska", "el", "elektricitet"]],
+      [["lång", "mil", "sträcka", "räckvidd"]],
+      [["avlyssn", "säker"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "1. Extrem kapacitet och hastighet.<br>2. Helt okänsligt för elstörningar och åska.<br>3. Enorm räckvidd (mil utan repeater).<br>4. Mycket svårt att avlyssna obemärkt."
   },
   {
     q: "Hur är en MAC-adress uppbyggd?",
-    minLen: 30,
-    groups: [
-      ["6", "sex", "48"],
-      ["byte", "bit"],
-      ["oui", "tillverk"],
-      ["nic", "serienummer", "unik"]
+    rules: [
+      [["6", "sex"], ["byte", "bytes", "48", "bitar"]],
+      [["oui", "första 3", "3 första"], ["tillverk"]],
+      [["nic", "sista 3", "3 sista"], ["serienummer", "kort", "unik"]]
     ],
-    minGroups: 3,
+    minRulesMet: 2,
     a: "Består av <b>6 bytes (48 bitar)</b>.<br>• De 3 första byten visar vem som är tillverkare (<b>OUI</b>).<br>• De 3 sista byten är nätverkskortets unika serienummer (<b>NIC</b>)."
   },
   {
     q: "Vad är en MAC-adress?",
-    minLen: 25,
-    groups: [
-      ["fysisk", "hårdvara", "kort"],
-      ["personnummer", "unik", "identifier"],
-      ["inbränd", "fabrik", "ändras inte"]
+    rules: [
+      [["fysisk", "nätverkskort", "hårdvara"], ["personnummer", "unik", "adress"]],
+      [["inbränd", "fabrik", "ändras inte", "tillverk"]]
     ],
-    minGroups: 2,
+    minRulesMet: 1,
     a: "Nätverkskortets unika <b>fysiska adress ('personnummer')</b> som är inbränd på kortet från fabriken och i grunden aldrig ändras."
   },
   {
     q: "Vilka nätverksklasser finns det och ge exempel på adresser?",
-    minLen: 45,
-    groups: [
-      ["klass a", "a:", "1-126", "1–126", "10."],
-      ["klass b", "b:", "128-191", "128–191", "172."],
-      ["klass c", "c:", "192-223", "192–223", "192.168"]
+    rules: [
+      [["klass a", "a:"], ["1-126", "1–126", "10."]],
+      [["klass b", "b:"], ["128-191", "128–191", "172."]],
+      [["klass c", "c:"], ["192-223", "192–223", "192.168"]]
     ],
-    minGroups: 3,
+    minRulesMet: 3,
     a: "<b>Klass A:</b> 1–126 (Ex: 10.0.0.1) – för jättestora nätverk.<br><b>Klass B:</b> 128–191 (Ex: 172.16.0.1) – för mellanstora nätverk.<br><b>Klass C:</b> 192–223 (Ex: 192.168.1.1) – för små nät/hemmanätverk."
   },
   {
     q: "Hur räknar man ut Host-ID? (Husnumret)",
-    minLen: 35,
-    groups: [
-      ["ta bort", "nätverk", "där masken", "respektive"],
-      ["kvar", "över", "siffror", "host", "husnummer", ".25"]
+    rules: [
+      [["ta bort", "nätverk", "där masken har 255", "masken"]],
+      [["kvar", "över", "resten", ".25", "värd", "host"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Man tar bort nätverksdelen från IP-adressen (där masken har 255) – siffrorna som blir kvar är Host-ID.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Host-ID <b>.25</b>."
   },
   {
     q: "Hur räknar man ut Net-ID? (Gatunamnet)",
-    minLen: 35,
-    groups: [
-      ["and", "jämför", "mask"],
-      ["255", "behåll", "samma"],
-      ["noll", "0", "192.168.1.0"]
+    rules: [
+      [["and", "jämför", "multiplicera"], ["mask", "subnät"]],
+      [["255", "behåll", "samma"], ["noll", "0", "192.168.1.0"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Man gör en AND-operation mellan IP-adressen och subnätmasken. Där masken har 255 behålls siffrorna, resten blir nollor.<br><i>Exempel:</i> IP 192.168.1.25 med mask 255.255.255.0 ger Net-ID <b>192.168.1.0</b>."
   },
   {
     q: "Vilka adresser har Klass A?",
-    minLen: 15,
-    groups: [
-      ["1", "126", "1-126", "1–126"],
-      ["255.0.0.0", "/8"]
+    rules: [
+      [["1", "126", "1-126", "1–126"]],
+      [["255.0.0.0", "/8"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Adresser som börjar på <b>1 – 126</b> (Standardmask: <b>255.0.0.0</b> eller /8)."
   },
   {
     q: "Hur många nätverk kan Klass A ha?",
-    minLen: 3,
-    groups: [
-      ["126"]
+    rules: [
+      [["126"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "<b>126 stycken</b> (2^7 minus 0 och 127 som är reserverade)."
   },
   {
     q: "Hur många värdenheter kan Klass A ha?",
-    minLen: 4,
-    groups: [
-      ["16", "miljon", "16777214", "16 777 214"]
+    rules: [
+      [["16", "miljon", "16777214", "16 777 214"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "Cirka 16,7 miljoner per nätverk (exakt <b>16 777 214 st</b>)."
   },
   {
     q: "Vilka adresser har Klass B?",
-    minLen: 15,
-    groups: [
-      ["128", "191", "128-191", "128–191"],
-      ["255.255.0.0", "/16"]
+    rules: [
+      [["128", "191", "128-191", "128–191"]],
+      [["255.255.0.0", "/16"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Adresser som börjar på <b>128 – 191</b> (Standardmask: <b>255.255.0.0</b> eller /16). 127 är reserverat för loopback."
   },
   {
     q: "Hur många nätverk kan Klass B ha?",
-    minLen: 4,
-    groups: [
-      ["16 384", "16384", "16 tusen"]
+    rules: [
+      [["16 384", "16384", "16 tusen", "16000"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "<b>16 384 stycken</b> (cirka 16 tusen)."
   },
   {
     q: "Hur många värdenheter kan Klass B ha?",
-    minLen: 4,
-    groups: [
-      ["65 534", "65534"]
+    rules: [
+      [["65 534", "65534", "65 tusen"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "<b>65 534 stycken</b> per nätverk."
   },
   {
     q: "Vilka adresser har Klass C?",
-    minLen: 15,
-    groups: [
-      ["192", "223", "192-223", "192–223"],
-      ["255.255.255.0", "/24"]
+    rules: [
+      [["192", "223", "192-223", "192–223"]],
+      [["255.255.255.0", "/24"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Adresser som börjar på <b>192 – 223</b> (Standardmask: <b>255.255.255.0</b> eller /24). Slutar på 223!"
   },
   {
     q: "Hur många nätverk kan Klass C ha?",
-    minLen: 4,
-    groups: [
-      ["2,1", "2.1", "miljon", "2097152", "2 097 152"]
+    rules: [
+      [["2,1", "2.1", "miljon", "2097152", "2 097 152"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "Cirka 2,1 miljoner stycken (exakt <b>2 097 152 st</b>)."
   },
   {
     q: "Hur många värdenheter kan Klass C ha?",
-    minLen: 3,
-    groups: [
-      ["254"]
+    rules: [
+      [["254"]]
     ],
-    minGroups: 1,
+    minRulesMet: 1,
     a: "<b>254 stycken</b> per nätverk (256 minus Net-ID och Broadcast)."
   },
   {
     q: "Vad är en Default Gateway?",
-    minLen: 30,
-    groups: [
-      ["router", "ip"],
-      ["lokal", "eget nät"],
-      ["dörr", "väg ut", "andra nät", "internet"]
+    rules: [
+      [["router", "ip"], ["lokal", "adress"]],
+      [["dörr", "väg ut", "annan", "annat", "internet", "skicka vidare"]]
     ],
-    minGroups: 2,
+    minRulesMet: 2,
     a: "Routerns IP-adress på det lokala nätet. Det fungerar som 'dörren ut' dit datorn skickar all trafik som ska till andra nätverk eller Internet."
   },
   {
     q: "Vilka olika typer av IPv4-adresser finns det?",
-    minLen: 40,
-    groups: [
-      ["unicast"],
-      ["multicast"],
-      ["broadcast"],
-      ["loopback", "127.0.0.1"],
-      ["link-local", "apipa", "169.254"]
+    rules: [
+      [["unicast"]],
+      [["multicast"]],
+      [["broadcast"]],
+      [["loopback", "127.0.0.1"]],
+      [["link-local", "apipa", "169.254"]]
     ],
-    minGroups: 4,
+    minRulesMet: 4,
     a: "• <b>Unicast:</b> Skickar till en enskild enhet.<br>• <b>Multicast:</b> Skickar till en definierad grupp.<br>• <b>Broadcast:</b> Skickar till alla på lokala nätet.<br>• <b>Loopback:</b> Datorn testar sig själv internt (127.0.0.1).<br>• <b>Link-local:</b> Automatisk adress vid DHCP-avbrott (169.254.x.x).<br>• <b>Unspecified:</b> Startadress (0.0.0.0)."
   }
 ];
@@ -563,26 +529,22 @@ function checkAnswer() {
     alert("Skriv ett svar först!");
     return;
   }
-
-  // 1. Kontrollera längd
-  if (userText.length < current.minLen) {
-    alert(`Svaret är för kort! Du måste förklara mer utförligt (minst ${current.minLen} tecken).`);
-    return;
-  }
   
   answered = true;
   document.getElementById("user-input").disabled = true;
   document.getElementById("btn-submit").style.display = "none";
   document.getElementById("btn-next").style.display = "inline-block";
 
-  // 2. Kontrollera att tillräckligt många obligatoriska begrepp/grupper finns med
-  let matchedGroups = 0;
-  current.groups.forEach(group => {
-    const hasMatch = group.some(term => userText.includes(term));
-    if (hasMatch) matchedGroups++;
+  // Kontrollera att varje delkrav matchar
+  let rulesPassed = 0;
+  current.rules.forEach(rule => {
+    // rule är en array av sub-krav, t.ex. [ ["pan"], ["bluetooth", "klocka"] ]
+    // Texten MÅSTE innehålla minst ett ord från varje sub-krav!
+    const passed = rule.every(subGroup => subGroup.some(word => userText.includes(word)));
+    if (passed) rulesPassed++;
   });
 
-  const isCorrect = matchedGroups >= current.minGroups;
+  const isCorrect = rulesPassed >= current.minRulesMet;
   const feedbackBox = document.getElementById("feedback-box");
   const statusEl = document.getElementById("feedback-status");
   const solutionEl = document.getElementById("solution-text");
