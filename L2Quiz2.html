@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hårdvara & BIOS/UEFI - 20 Flervalsfrågor</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --success: #22c55e;
+      --success-bg: rgba(34, 197, 94, 0.15);
+      --error: #ef4444;
+      --error-bg: rgba(239, 68, 68, 0.15);
+      --opt-hover: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 740px;
+    }
+
+    header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: var(--card-border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 16px 0 20px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-sub);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .question-category {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: var(--opt-hover);
+      border-color: var(--primary);
+    }
+
+    .option-key {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 22px;
+    }
+
+    .option-btn.correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success) !important;
+      color: var(--success) !important;
+    }
+
+    .option-btn.correct .option-key {
+      color: var(--success) !important;
+    }
+
+    .option-btn.incorrect {
+      background: var(--error-bg) !important;
+      border-color: var(--error) !important;
+      color: var(--error) !important;
+    }
+
+    .option-btn.incorrect .option-key {
+      color: var(--error) !important;
+    }
+
+    .explanation-box {
+      background: rgba(15, 23, 42, 0.8);
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .explanation-box.active {
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-next {
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: #0f172a;
+      transition: all 0.2s ease;
+      display: none;
+    }
+
+    .btn-next:hover {
+      background: var(--primary-hover);
+    }
+
+    .summary-screen {
+      display: none;
+      text-align: center;
+    }
+
+    .summary-screen.active {
+      display: block;
+    }
+
+    .summary-title {
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .repeat-list {
+      margin-top: 20px;
+      text-align: left;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+    }
+
+    .repeat-list ul {
+      padding-left: 20px;
+      margin-top: 10px;
+    }
+
+    .repeat-list li {
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
+
+    .repeat-list li strong {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Hårdvara, Felsökning & BIOS/UEFI</h1>
+      <p>Komplett träningspass med 20 flervalsfrågor</p>
+    </header>
+
+    <div class="stats-bar">
+      <span id="progress-text">Fråga 1 av 20</span>
+      <span id="score-text">Poäng: 0</span>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="card" id="quiz-card">
+      <div class="question-category" id="q-category">Kategori</div>
+      <h2 class="question-title" id="q-text">Frågetext</h2>
+
+      <div class="options-grid" id="options-container"></div>
+
+      <div class="explanation-box" id="explanation-box"></div>
+
+      <div class="actions">
+        <button class="btn-next" id="btn-next">Nästa fråga →</button>
+      </div>
+    </div>
+
+    <div class="card summary-screen" id="summary-card">
+      <h2 class="summary-title">Quizet är klart!</h2>
+      <p id="summary-score" style="font-size: 1.2rem; margin-bottom: 12px;"></p>
+      
+      <div class="repeat-list" id="repeat-container" style="display: none;">
+        <h3 style="color: var(--error); font-size: 1.05rem;">Frågor att repetera:</h3>
+        <ul id="repeat-list"></ul>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button class="btn-next" id="btn-restart" style="display: inline-block;">Starta om quizet</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        id: 1,
+        category: "Kommandorad",
+        question: "Vad är den främsta skillnaden mellan Command Prompt (cmd.exe) och PowerShell?",
+        options: [
+          "Command Prompt stöder Linux-kommandon direkt medan PowerShell endast kör MS-DOS-kommandon",
+          "Command Prompt hanterar enklare kommandon (t.ex. filer/nätverk), medan PowerShell är kraftfullare och stöder avancerad automatisering och skript",
+          "PowerShell kan endast köras via ett USB-minne innan Windows startar",
+          "Command Prompt använder objektorienterade pipelines medan PowerShell endast skickar ren text"
+        ],
+        answer: 1,
+        explanation: "Command Prompt är det traditionella verktyget för grundläggande fil- och nätverkskommandon, medan PowerShell är ett modernt ramverk byggt för skript, objekthantering och systemautomation."
+      },
+      {
+        id: 2,
+        category: "Kommandorad",
+        question: "Vilken funktion fyller applikationen Windows Terminal?",
+        options: [
+          "Det är ett diagnosverktyg för att mäta moderkortets temperaturer",
+          "Det ersätter nätaggregatets interna firmware",
+          "Det fungerar som ett modernt samlingsgränssnitt som kan köra cmd, PowerShell och Linux via WSL i flikar under samma tak",
+          "Det är ett grafiskt verktyg för att formatera SATA-diskar i AHCI-läge"
+        ],
+        answer: 2,
+        explanation: "Windows Terminal samlar olika kommandotolkar (cmd, PowerShell, Azure Cloud Shell och Linux-distributioner i WSL) i ett gemensamt gränssnitt med flikstöd."
+      },
+      {
+        id: 3,
+        category: "CPU-komponenter",
+        question: "Vilken funktion har styrenheten (Control Unit, CU) inuti en processor?",
+        options: [
+          "Att utföra addition, subtraktion och logiska grindberäkningar",
+          "Att tolka instruktioner och styra processorns interna dataflöde och komponenter",
+          "Att lagra data permanent när strömmen bryts",
+          "Att mäta spänningsfall från moderkortets spänningsregulatorer"
+        ],
+        answer: 1,
+        explanation: "CU (Control Unit) är processorns dirigent som hämtar, avkodar och schemalägger instruktioner, medan ALU utför själva beräkningarna."
+      },
+      {
+        id: 4,
+        category: "CPU-komponenter",
+        question: "Vad kännetecknar processorns interna register (Registers) jämfört med Cache och RAM?",
+        options: [
+          "De är extremt snabba, små minnesceller direkt i processorn som sparar värden för stunden",
+          "De är långsammare än externt RAM men har större kapacitet",
+          "De behåller informationen permanent även när datorn är helt avstängd",
+          "De lagrar uteslutande operativsystemets bootfiler"
+        ],
+        answer: 0,
+        explanation: "Register sitter direkt i CPU:n och har den snabbaste åtkomsttiden av alla minnen, men rymmer endast några byte/ord av data som bearbetas just nu."
+      },
+      {
+        id: 5,
+        category: "CPU-komponenter",
+        question: "Vilken specifik uppgift har adressbussen respektive kontrollbussen i en dator?",
+        options: [
+          "Adressbussen bär ström till fläkten medan kontrollbussen mäter klockfrekvensen",
+          "Adressbussen talar om vilken minnesposition data ska hämtas/sparas till, medan kontrollbussen skickar styrsignaler (t.ex. läs/skriv)",
+          "Båda bussarna skickar endast grafiska pixlar till bildskärmen",
+          "Adressbussen sparar cache-minnet medan kontrollbussen hanterar tangentbordsnedtryckningar"
+        ],
+        answer: 1,
+        explanation: "Adressbussen pekar ut minnesadresser (var), databussen bär innehållet (vad), och kontrollbussen skickar styrsignaler och synkronisering (hur/när)."
+      },
+      {
+        id: 6,
+        category: "Felsökning PSU",
+        question: "Vad är en multimeter och vad används den till vid felsökning av ett nätaggregat (PSU)?",
+        options: [
+          "Ett programvaruverktyg som analyserar dåliga sektorer på hårddisken",
+          "Ett elektriskt mätinstrument som mäter spänning, ström och motstånd i kretsar och nätaggregat",
+          "Ett expansionskort som läser av pipkoder från BIOS",
+          "En sensor som stänger av datorn vid överhettning"
+        ],
+        answer: 1,
+        explanation: "En multimeter är ett universellt mätverktyg som används för att kontrollera att PSU:ns ledningar ger korrekta likspänningar (+12V, +5V, +3.3V) samt att inga kortslutningar föreligger."
+      },
+      {
+        id: 7,
+        category: "Felsökning RAM",
+        question: "Hur körs Windows Memory Diagnostic vid misstänkta minnesfel?",
+        options: [
+          "Man söker upp det i Start-menyn och väljer att köra testet automatiskt vid nästa omstart",
+          "Man startar det inifrån Kommandotolken med kommandot 'format ram'",
+          "Det körs automatiskt i bakgrunden utan att datorn behöver starta om",
+          "Det kan endast laddas via en optisk CD-skiva i rent DOS-läge"
+        ],
+        answer: 0,
+        explanation: "Windows Memory Diagnostic schemaläggs via Start-menyn och startar i en lågnivåmiljö direkt vid omstart innan Windows laddas."
+      },
+      {
+        id: 8,
+        category: "Felsökning RAM",
+        question: "Varför används ofta MemTest86 istället för operativsystemets egna inbyggda minnestester?",
+        options: [
+          "För att det automatiskt reparerar fysiskt trasiga minneskretsar på RAM-stickan",
+          "För att det startas från USB/CD innan Windows laddas, vilket tillåter djupare tester av minnesadresser som OS annars blockerar",
+          "För att det kan testa nätaggregatets spänningar samtidigt",
+          "För att det inte kräver något moderkort för att köras"
+        ],
+        answer: 1,
+        explanation: "Eftersom MemTest86 körs fristående via UEFI/USB kan det skriva och läsa testmönster över hela det fysiska minnesområdet utan att operativsystemet reserverar eller skyddar adresser."
+      },
+      {
+        id: 9,
+        category: "Felsökning Hårddisk",
+        question: "Hur felsöker man mekaniska hårddiskar med avseende på dåliga sektorer eller prestandaförluster?",
+        options: [
+          "Genom att ändra boot-ordningen i BIOS till CD-ROM",
+          "Genom att köra tillverkarnas egna diagnosverktyg (t.ex. Seagate SeaTools eller WD Data Lifeguard) för att analysera S.M.A.R.T. och diskens yta",
+          "Genom att mäta rotationshastigheten med en multimeter mot hårddiskens lock",
+          "Genom att stänga av AHCI-läget och köra i rent IDE-läge"
+        ],
+        answer: 1,
+        explanation: "Tillverkarnas egna mjukvaror har djupast stöd för diskens interna firmware, felloggar och ytskanning efter oläsbara eller omallokerade sektorer."
+      },
+      {
+        id: 10,
+        category: "Felsökning Moderkort",
+        question: "Vad bör du visuellt granska på moderkortet och vilken felsökningsmetod rekommenderas vid startproblem?",
+        options: [
+          "Kontrollera kondensatorerna (cylindrarna) så att de inte buktar/läcker, och provstarta med minimal hårdvara (moderkort, PSU, CPU, 1 RAM-modul)",
+          "Byta ut klockbatteriet och köra alla USB-portar samtidigt under belastning",
+          "Löda bort nordbryggan och testa den separat med en multimeter",
+          "Koppla ur CPU-fläkten för att se om moderkortet ger bild snabbare"
+        ],
+        answer: 0,
+        explanation: "Skadade kondensatorer syns ofta genom att toppen buktar uppåt eller läcker elektrolyt. Att skala ner till 'minimal hårdvara' isolerar systemet från externa kort och enheter som kortsluter."
+      },
+      {
+        id: 11,
+        category: "POST",
+        question: "Vad är POST (Power-On Self Test) och hur meddelas fel om bildskärmen inte kan aktiveras?",
+        options: [
+          "Ett test i Windows Defender som varnar via systemljud",
+          "Ett självtest som körs av BIOS/UEFI direkt vid start; vid fel varnar datorn med pipkoder från moderkortets högtalare eller diagnostik-LED",
+          "En funktion i nätaggregatet som bryter strömmen om tangentbordet saknas",
+          "Ett skript som körs av bootloadern för att verifiera MBR-sektorn"
+        ],
+        answer: 1,
+        explanation: "POST kontrollerar omedelbart att CPU, RAM, grafikkort och moderkort fungerar. Kan inte bild visas använder systemet pipkoder eller sifferkoder (Q-Code/LED) för att tala om vad som felar."
+      },
+      {
+        id: 12,
+        category: "Bootstrap Loader",
+        question: "Vilken uppgift har en Bootstrap Loader och var söker den på en modern GPT-disk?",
+        options: [
+          "Den raderar RAM vid avstängning och letar efter dolda backup-filer i MBR",
+          "Den startar efter POST för att ladda operativsystemets kärna (kernel) till RAM; på GPT-diskar söker UEFI i EFI System Partition (ESP)",
+          "Den överklockar processorns klockfrekvens under Windows-starten",
+          "Den skickar ett Magic Packet över nätverket för att verifiera licensen"
+        ],
+        answer: 1,
+        explanation: "När POST är godkänt exekveras Bootstrap Loadern. På GPT/UEFI-system läses bootfilerna in från partitionen ESP (formaterad i FAT32) för att starta OS-kärnan i RAM."
+      },
+      {
+        id: 13,
+        category: "BIOS/UEFI",
+        question: "Vad står BIOS för och vad är dess grundläggande uppgift innan operativsystemet har laddats?",
+        options: [
+          "Binary Integrated Output Socket; kontrollerar fläkthastigheter vid hög belastning",
+          "Basic Input/Output System; startar upp systemet och erbjuder inbyggda I/O-funktioner så att datorn kan hantera tangentbord, skärm och diskar",
+          "Broadband Internet Operating System; ansluter datorn trådlöst till routern",
+          "Built-in Operating Security; krypterar användarens filer på hårddisken"
+        ],
+        answer: 1,
+        explanation: "BIOS initierar hårdvaran och tillhandahåller primitiva in-/utmatningsrutiner så att systemet kan visa text på skärmen och ta emot tangentbordskommandon innan operativsystemet tagit över."
+      },
+      {
+        id: 14,
+        category: "Lagringsgränssnitt",
+        question: "Vad är AHCI och vilken fördel ger tekniken för moderna SATA-hårddiskar och SSD:er?",
+        options: [
+          "Ett äldre gränssnitt för bandkablar som saknar stöd för diskar över 500 GB",
+          "Ett modernt protokoll som ger Native Command Queuing (NCQ) för optimerad läsordning samt förbättrad prestanda för SSD",
+          "En BIOS-funktion som låser hårddisken mot skrivning i viloläge",
+          "Ett trådlöst filöverföringsprotokoll för interna nätverk"
+        ],
+        answer: 1,
+        explanation: "AHCI (Advanced Host Controller Interface) möjliggör NCQ, vilket låter hårddisken/SSD:n omorganisera inkommande kommandon för att minska söktider och höja prestandan."
+      },
+      {
+        id: 15,
+        category: "Processorinställningar",
+        question: "Vad gör inställningen Core Multi-Processing i BIOS och när ska den normalt vara inaktiverad (Disabled)?",
+        options: [
+          "Den låter alla processorkärnor arbeta samtidigt; inaktiveras endast vid felsökning av äldre program som kraschar med flera kärnor",
+          "Den stänger av CPU-kylaren vid lätt belastning för att spara ström",
+          "Den gör att datorn kan köra två operativsystem på samma hårddisk samtidigt",
+          "Den aktiverar automatisk backup av BIOS till molnet"
+        ],
+        answer: 0,
+        explanation: "Core Multi-Processing ska vara aktiverad för att dra nytta av flerkärnig prestanda. Att sätta den till Disabled tvingar CPU:n att agera som enkelkärnig, vilket används för bakåtkompatibilitet."
+      },
+      {
+        id: 16,
+        category: "Virtualisering",
+        question: "Vad är Intel Virtualization Technology (Intel VT-x) och i vilket scenario krävs att det är aktiverat?",
+        options: [
+          "Det låter processorn köra flera virtuella operativsystem samtidigt; krävs för program som VMware, VirtualBox eller Hyper-V",
+          "Det optimerar skärmens uppdateringsfrekvens vid 3D-modellering",
+          "Det tillåter trådlös laddning av bärbara datorer via nätverkskortet",
+          "Det skyddar hårddisken mot fysiska fallskador"
+        ],
+        answer: 0,
+        explanation: "Intel VT-x (och motsvarande AMD-V) är instruktionsuppsättningar i processorn som ger hårdvarustöd för hypervisors så att virtuella maskiner kan exekveras med hög prestanda."
+      },
+      {
+        id: 17,
+        category: "Energihantering",
+        question: "Vad är syftet med menyn Power Management i BIOS/UEFI?",
+        options: [
+          "Att reglera datorns strömförbrukning och beteende vid inaktivitet för att spara energi och förlänga batteritid",
+          "Att välja vilket elbolag datorn ska hämta ström ifrån",
+          "Att begränsa antalet USB-enheter som får anslutas samtidigt",
+          "Att förhindra att datorn blir varm genom att klocka ner skärmens ljusstyrka permanent"
+        ],
+        answer: 0,
+        explanation: "Power Management hanterar datorns strömsparlägen (sleep/hibernate, ACPI-tillstånd), hur fläktar och diskar går ner i viloläge och hur batteriet förvaltas."
+      },
+      {
+        id: 18,
+        category: "Nätverk / Start",
+        question: "Vad innebär funktionen Wake-on-LAN (WoL)?",
+        options: [
+          "Att datorn automatiskt raderar nätverkskortets MAC-adress vid midnatt",
+          "Att datorn kan startas om eller väckas upp från viloläge på distans när en nätverksförfrågan (Magic Packet) tas emot",
+          "Att datorn blockerar trådlöst nätverk när nätverkskabeln är i",
+          "Att nätaggregatet stängs av om internetanslutningen bryts"
+        ],
+        answer: 1,
+        explanation: "Wake-on-LAN håller nätverkskortets kretsar strömsatta i viloläge så att det kan trigga moderkortets uppstart när ett 'Magic Packet' med rätt MAC-adress tas emot."
+      },
+      {
+        id: 19,
+        category: "Boot-ordning",
+        question: "Hur bör Primary Boot Sequence ställas in om du ska göra en ren installation av ett operativsystem från ett USB-minne?",
+        options: [
+          "Hårddisk först, CD/DVD därefter och USB sist",
+          "USB-enheten först i sekvensen, följt av CD/DVD och sist hårddisken",
+          "Stänga av alla boot-enheter och starta i rent BIOS-läge",
+          "Nätverkskortet (PXE) först och inaktivera USB helt"
+        ],
+        answer: 1,
+        explanation: "Genom att placera USB först i listan läser BIOS installationsmediet vid start istället för att starta direkt från den redan installerade hårddisken."
+      },
+      {
+        id: 20,
+        category: "BIOS-underhåll",
+        question: "Vilka är vanliga och legitima anledningar till att genomföra en BIOS-uppdatering?",
+        options: [
+          "Kompabilitet med ny hårdvara (ny CPU/RAM), buggfixar, förbättrad prestanda samt säkerhetsfixar mot sårbarheter som Spectre och Meltdown",
+          "För att öka hårddiskens fysiska lagringskapacitet",
+          "För att radera tillfälliga webbläsarfiler i Windows automatiskt",
+          "För att ändra upplösningen på externa bildskärmar"
+        ],
+        answer: 0,
+        explanation: "En BIOS-uppdatering uppdaterar mikrokoden för processorer, åtgärdar kända moderkortsbuggar och täpper till allvarliga hårdvarusårbarheter i processorsäkerheten (t.ex. Spectre/Meltdown)."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let reviewList = [];
+
+    const qCategoryEl = document.getElementById("q-category");
+    const qTextEl = document.getElementById("q-text");
+    const optionsContainerEl = document.getElementById("options-container");
+    const explanationBoxEl = document.getElementById("explanation-box");
+    const btnNextEl = document.getElementById("btn-next");
+    const progressTextEl = document.getElementById("progress-text");
+    const scoreTextEl = document.getElementById("score-text");
+    const progressBarEl = document.getElementById("progress-bar");
+    const quizCardEl = document.getElementById("quiz-card");
+    const summaryCardEl = document.getElementById("summary-card");
+    const summaryScoreEl = document.getElementById("summary-score");
+    const repeatContainerEl = document.getElementById("repeat-container");
+    const repeatListEl = document.getElementById("repeat-list");
+    const btnRestartEl = document.getElementById("btn-restart");
+
+    const OPTION_KEYS = ["A", "B", "C", "D"];
+
+    function renderQuestion() {
+      if (currentIndex >= QUESTIONS.length) {
+        showSummary();
+        return;
+      }
+
+      const q = QUESTIONS[currentIndex];
+      qCategoryEl.textContent = `Fråga ${currentIndex + 1} av ${QUESTIONS.length} • ${q.category}`;
+      qTextEl.textContent = q.question;
+
+      optionsContainerEl.innerHTML = "";
+      explanationBoxEl.classList.remove("active");
+      explanationBoxEl.textContent = "";
+      btnNextEl.style.display = "none";
+
+      progressTextEl.textContent = `Fråga ${currentIndex + 1} av ${QUESTIONS.length}`;
+      scoreTextEl.textContent = `Poäng: ${score}`;
+      progressBarEl.style.width = `${(currentIndex / QUESTIONS.length) * 100}%`;
+
+      q.options.forEach((optText, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<span class="option-key">${OPTION_KEYS[index]})</span> <span>${optText}</span>`;
+        btn.addEventListener("click", () => handleSelectAnswer(index));
+        optionsContainerEl.appendChild(btn);
+      });
+    }
+
+    function handleSelectAnswer(selectedIndex) {
+      const q = QUESTIONS[currentIndex];
+      const buttons = optionsContainerEl.querySelectorAll(".option-btn");
+
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selectedIndex === q.answer) {
+        score++;
+        buttons[selectedIndex].classList.add("correct");
+        explanationBoxEl.innerHTML = `<strong>Rätt svar!</strong> ${q.explanation}`;
+      } else {
+        buttons[selectedIndex].classList.add("incorrect");
+        buttons[q.answer].classList.add("correct");
+        explanationBoxEl.innerHTML = `<strong>Fel svar.</strong> Rätt alternativ var <strong>${OPTION_KEYS[q.answer]}</strong>.<br>${q.explanation}`;
+        
+        if (!reviewList.some(item => item.id === q.id)) {
+          reviewList.push({
+            category: q.category,
+            question: q.question,
+            correctAnswer: q.options[q.answer]
+          });
+        }
+      }
+
+      scoreTextEl.textContent = `Poäng: ${score}`;
+      explanationBoxEl.classList.add("active");
+      btnNextEl.style.display = "inline-block";
+    }
+
+    function handleNext() {
+      currentIndex++;
+      renderQuestion();
+    }
+
+    function showSummary() {
+      quizCardEl.style.display = "none";
+      summaryCardEl.classList.add("active");
+      progressBarEl.style.width = "100%";
+      progressTextEl.textContent = `Avslutad (${QUESTIONS.length}/${QUESTIONS.length})`;
+      scoreTextEl.textContent = `Slutpoäng: ${score}`;
+
+      const pct = Math.round((score / QUESTIONS.length) * 100);
+      summaryScoreEl.textContent = `Du fick ${score} av ${QUESTIONS.length} rätt (${pct}%)!`;
+
+      if (reviewList.length > 0) {
+        repeatContainerEl.style.display = "block";
+        repeatListEl.innerHTML = "";
+        reviewList.forEach(item => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${item.category}:</strong> ${item.question}<br><span style="color: var(--success);">Rätt svar: ${item.correctAnswer}</span>`;
+          repeatListEl.appendChild(li);
+        });
+      } else {
+        repeatContainerEl.style.display = "none";
+      }
+    }
+
+    function restart() {
+      currentIndex = 0;
+      score = 0;
+      reviewList = [];
+      quizCardEl.style.display = "block";
+      summaryCardEl.classList.remove("active");
+      renderQuestion();
+    }
+
+    btnNextEl.addEventListener("click", handleNext);
+    btnRestartEl.addEventListener("click", restart);
+
+    renderQuestion();
+  </script>
+</body>
+</html>
