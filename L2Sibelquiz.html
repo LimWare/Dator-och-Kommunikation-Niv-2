@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skrivquiz: Hårdvara, Felsökning & BIOS/UEFI</title>
+  <title>Instuderingsquiz: Hårdvara & BIOS/UEFI</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -313,6 +313,7 @@
       <div class="progress-bar" id="progress-bar"></div>
     </div>
 
+    <!-- Frågekort -->
     <div class="card" id="quiz-card">
       <div class="question-category" id="q-category">Kategori</div>
       <h2 class="question-title" id="q-text">Frågetext</h2>
@@ -320,8 +321,10 @@
       <label class="prompt-label" for="user-answer">Ditt svar:</label>
       <textarea id="user-answer" placeholder="Formulera ditt svar med egna ord här..."></textarea>
 
+      <!-- Rätt / Fel Banner -->
       <div class="result-banner" id="result-banner"></div>
 
+      <!-- Facit och nyckelordsvisning -->
       <div class="facit-box" id="facit-box">
         <div class="facit-title">Facit & Förklaring</div>
         <div class="facit-text" id="facit-text"></div>
@@ -331,6 +334,7 @@
         </div>
       </div>
 
+      <!-- Knappar -->
       <div class="actions">
         <button class="btn-primary" id="btn-check">Rätta mitt svar</button>
         <div id="next-controls" style="display: none; width: 100%; justify-content: space-between; align-items: center;">
@@ -340,6 +344,7 @@
       </div>
     </div>
 
+    <!-- Slutskärm -->
     <div class="card summary-screen" id="summary-card">
       <h2 class="summary-title">Övningen är klar!</h2>
       <p id="summary-score" style="font-size: 1.2rem; margin-bottom: 12px;"></p>
@@ -361,7 +366,7 @@
         id: 1,
         category: "Kommandorad",
         question: "Vad är den främsta skillnaden mellan Command Prompt (cmd.exe) och PowerShell?",
-        keywords: ["cmd", "fil", "mapp", "nätverk", "PowerShell", "skript", "automatisering"],
+        keywords: ["enklare", "fil", "mapp", "nätverk", "kraftfullare", "skript", "automatisering"],
         minMatches: 2,
         answer: "Command Prompt (cmd.exe) används för enklare kommandon som fil- och mapphantering samt grundläggande nätverksverktyg.\nPowerShell är kraftfullare och stöder skript och automatisering."
       },
@@ -377,7 +382,7 @@
         id: 3,
         category: "CPU-komponenter",
         question: "Vilken funktion har styrenheten (Control Unit, CU) inuti en processor?",
-        keywords: ["CU", "styrenhet", "instruktion", "styr", "tolkar"],
+        keywords: ["instruktioner", "styr", "tolkar", "styrenhet"],
         minMatches: 2,
         answer: "CU (styrenheten) bestämmer och tolkar instruktioner och styr processorns funktioner och flöden."
       },
@@ -385,7 +390,7 @@
         id: 4,
         category: "CPU-komponenter",
         question: "Vad kännetecknar processorns interna register (Registers) jämfört med Cache och RAM?",
-        keywords: ["register", "tillfälliga", "värden", "snabba", "processor"],
+        keywords: ["tillfälliga", "värden", "snabba", "minnesceller"],
         minMatches: 2,
         answer: "Registers sparar tillfälliga värden direkt i processorn och är de snabbaste minnescellerna i systemet."
       },
@@ -393,7 +398,7 @@
         id: 5,
         category: "CPU-komponenter",
         question: "Vilken specifik uppgift har adressbussen respektive kontrollbussen i en dator?",
-        keywords: ["adressbuss", "position", "adress", "kontrollbuss", "styrsignal", "läs", "skriv"],
+        keywords: ["position", "adress", "styrsignaler", "styrsignal", "läs", "skriv", "synkronisering"],
         minMatches: 2,
         answer: "• Adressbussen talar om vilken minnesposition/adress data ska hämtas från eller sparas till.\n• Kontrollbussen skickar styrsignaler (t.ex. om data ska läsas eller skrivas samt synkronisering)."
       },
@@ -401,7 +406,7 @@
         id: 6,
         category: "Felsökning PSU",
         question: "Vad är en multimeter och vad används den till vid felsökning av ett nätaggregat (PSU)?",
-        keywords: ["multimeter", "spänning", "ström", "motstånd", "elektrisk"],
+        keywords: ["mätverktyg", "spänning", "ström", "motstånd", "elektriska värden"],
         minMatches: 2,
         answer: "En multimeter är ett mätverktyg som mäter elektriska värden som spänning (t.ex. 12V, 5V, 3.3V), ström och motstånd i en elektronisk enhet/krets."
       },
@@ -409,7 +414,7 @@
         id: 7,
         category: "Felsökning RAM",
         question: "Hur startas och körs Windows Memory Diagnostic vid misstänkta minnesfel?",
-        keywords: ["start-meny", "omstart", "automatiskt", "testar"],
+        keywords: ["start-meny", "startmenyn", "omstart", "automatiskt", "testar minnet"],
         minMatches: 2,
         answer: "Windows Memory Diagnostic söks upp i Start-menyn och schemaläggs att testa minnet automatiskt vid omstart."
       },
@@ -417,7 +422,7 @@
         id: 8,
         category: "Felsökning RAM",
         question: "Varför används ofta MemTest86 istället för operativsystemets egna inbyggda minnestester?",
-        keywords: ["MemTest86", "USB", "CD", "innan", "missa", "avancerat"],
+        keywords: ["USB", "CD", "innan windows", "missa", "avancerat"],
         minMatches: 2,
         answer: "MemTest86 är ett mer avancerat verktyg som startas via ett bootbart USB-minne eller CD innan Windows laddas för att hitta fel som Windows eget verktyg kan missa."
       },
@@ -425,7 +430,7 @@
         id: 9,
         category: "Felsökning Hårddisk",
         question: "Hur felsöker man mekaniska hårddiskar med avseende på dåliga sektorer eller prestandaförluster?",
-        keywords: ["tillverkarnas", "diagnostikprogram", "SeaTools", "Lifeguard", "sektor"],
+        keywords: ["tillverkarnas", "diagnostikprogram", "SeaTools", "Lifeguard", "sektorer", "dåliga sektorer"],
         minMatches: 2,
         answer: "Genom att köra tillverkarnas egna diagnostikprogram (t.ex. Seagate SeaTools eller Western Digital Data Lifeguard Diagnostic) för att hitta problem som dåliga sektorer eller långsamma delar."
       },
@@ -433,7 +438,7 @@
         id: 10,
         category: "Felsökning Moderkort",
         question: "Vad bör du visuellt granska på moderkortet och vilken felsökningsmetod rekommenderas vid startproblem?",
-        keywords: ["kondensator", "puck", "minimal hårdvara", "PSU", "CPU", "RAM"],
+        keywords: ["kondensatorer", "kondensatorerna", "puckarna", "hela", "minimal hårdvara", "en enda ram"],
         minMatches: 2,
         answer: "1. Kontrollera kondensatorerna (de små puckarna/cylindrarna) så att de är hela och inte buktar eller läcker.\n2. Starta sedan med minimal hårdvara: endast moderkort, nätaggregat (PSU), processor (CPU) och en enda RAM-modul."
       },
@@ -441,7 +446,7 @@
         id: 11,
         category: "POST",
         question: "Vad är POST (Power-On Self Test) och hur meddelas fel om bildskärmen inte kan aktiveras?",
-        keywords: ["Power-On Self Test", "självtest", "BIOS", "UEFI", "pipkod", "felmeddelande"],
+        keywords: ["självtest", "kontrollera", "start", "pipkoder", "felmeddelanden"],
         minMatches: 2,
         answer: "POST är ett självtest som BIOS/UEFI kör direkt vid start för att kontrollera att CPU, RAM, GPU m.m. fungerar innan systemet laddas. Vid fel varnar datorn med pipkoder eller felmeddelanden."
       },
@@ -449,7 +454,7 @@
         id: 12,
         category: "Bootstrap Loader",
         question: "Vilken uppgift har en Bootstrap Loader och var söker den på en modern GPT-disk?",
-        keywords: ["POST", "kärna", "kernel", "RAM", "GPT", "ESP", "EFI System Partition"],
+        keywords: ["efter post", "kärna", "kernel", "RAM", "ESP", "EFI System Partition"],
         minMatches: 2,
         answer: "Den startar efter POST för att ladda operativsystemets kärna (kernel) till RAM. På moderna GPT-diskar letar UEFI efter en EFI System Partition (ESP) där bootloadern ligger."
       },
@@ -457,7 +462,7 @@
         id: 13,
         category: "BIOS/UEFI",
         question: "Vad står BIOS för och vad är dess grundläggande uppgift innan operativsystemet har laddats?",
-        keywords: ["Basic Input/Output System", "starta", "I/O", "kommunicera", "skärm", "tangentbord", "hårddisk"],
+        keywords: ["starta upp", "inbyggda", "I/O", "kommunicera", "skärm", "tangentbord", "hårddiskar"],
         minMatches: 2,
         answer: "Basic Input/Output System hjälper till att starta upp systemet och tillhandahåller inbyggda I/O-funktioner så att datorn kan kommunicera med skärm, tangentbord och hårddiskar innan operativsystemet tagit över."
       },
@@ -465,7 +470,7 @@
         id: 14,
         category: "Lagringsgränssnitt",
         question: "Vad är AHCI och vilka fördelar har tekniken jämfört med äldre ATA för SATA-hårddiskar och SSD:er?",
-        keywords: ["AHCI", "SATA", "NCQ", "Native Command Queuing", "prestanda", "SSD"],
+        keywords: ["modernare", "NCQ", "Native Command Queuing", "läsordning", "prestanda", "SSD"],
         minMatches: 2,
         answer: "AHCI är en modernare teknik för SATA-hårddiskar och SSD:er jämfört med gamla ATA. Fördelarna är Native Command Queuing (NCQ) för optimerad läsordning samt bättre prestanda för SSD."
       },
@@ -473,7 +478,7 @@
         id: 15,
         category: "Processorinställningar",
         question: "Vad gör inställningen Core Multi-Processing i BIOS och när ska den normalt vara inaktiverad (Disabled)?",
-        keywords: ["kärnor", "samtidigt", "prestanda", "Enabled", "Disabled", "felsök", "äldre program"],
+        keywords: ["arbeta samtidigt", "öka prestanda", "aktiverad", "inaktiveras", "äldre program", "kompatibilitet"],
         minMatches: 2,
         answer: "Gör att alla processorkärnor kan arbeta samtidigt för att öka prestandan. Ska vara aktiverad (Enabled) vid spel/multitasking, och inaktiveras (Disabled) endast vid felsökning av äldre program med kompatibilitetsproblem."
       },
@@ -481,7 +486,7 @@
         id: 16,
         category: "Virtualisering",
         question: "Vad är Intel Virtualization Technology (Intel VT-x) och i vilket scenario krävs att det är aktiverat?",
-        keywords: ["VT-x", "flera operativsystem", "virtuella maskiner", "VMware", "VirtualBox", "Hyper-V"],
+        keywords: ["flera operativsystem", "virtuella maskiner", "VMware", "VirtualBox", "Hyper-V"],
         minMatches: 2,
         answer: "Intel VT-x tillåter datorn att köra flera operativsystem samtidigt via virtuella maskiner. Den aktiveras när du vill köra program som VMware, VirtualBox eller Hyper-V."
       },
@@ -489,7 +494,7 @@
         id: 17,
         category: "Energihantering",
         question: "Vad är syftet med menyn Power Management i BIOS/UEFI?",
-        keywords: ["strömförbrukning", "viloläge", "energi", "batteri", "bärbara"],
+        keywords: ["strömförbrukning", "viloläge", "inte används", "energi", "batteritid"],
         minMatches: 2,
         answer: "En meny i BIOS/UEFI där man ställer in hur datorn hanterar sin strömförbrukning och hur den beter sig när den inte används aktivt, vilket sparar energi och förlänger batteritid."
       },
@@ -497,7 +502,7 @@
         id: 18,
         category: "Nätverk / Start",
         question: "Vad innebär funktionen Wake-on-LAN (WoL)?",
-        keywords: ["Wake-on-LAN", "startas", "väckas", "viloläge", "distans", "nätverk", "nätverksförfrågan"],
+        keywords: ["startas om", "väckas", "viloläge", "distans", "nätverket", "nätverksförfrågan"],
         minMatches: 2,
         answer: "Gör att datorn kan startas om eller väckas upp från viloläge på distans via nätverket när en nätverksförfrågan skickas till den."
       },
@@ -513,7 +518,7 @@
         id: 20,
         category: "BIOS-underhåll",
         question: "Vilka kan anledningarna till en BIOS-uppdatering vara?",
-        keywords: ["ny hårdvara", "CPU", "RAM", "buggfix", "prestanda", "Spectre", "Meltdown", "säkerhet"],
+        keywords: ["kompatibilitet", "ny hårdvara", "buggfixar", "prestanda", "Spectre", "Meltdown", "säkerhetsförbättringar"],
         minMatches: 2,
         answer: "Kompatibilitet med ny hårdvara (ny CPU/RAM), buggfixar för kända fel, förbättrad prestanda, nya funktioner samt säkerhetsförbättringar mot sårbarheter som Spectre och Meltdown."
       }
@@ -582,22 +587,39 @@
       facitTextEl.textContent = q.answer;
       keywordsContainerEl.innerHTML = "";
 
+      // Filtrera bort ord som redan fanns i frågan
+      const questionWords = q.question.toLowerCase();
+
       let matchCount = 0;
+      let validKeywordCount = 0;
+
       q.keywords.forEach(kw => {
+        const kwLower = kw.toLowerCase();
         const span = document.createElement("span");
         span.className = "keyword-pill";
-        const isMatched = text.includes(kw.toLowerCase());
+
+        const isMatched = text.includes(kwLower);
+        const existedInPrompt = questionWords.includes(kwLower);
+
         if (isMatched) {
-          matchCount++;
           span.classList.add("matched");
           span.textContent = `✓ ${kw}`;
+          if (!existedInPrompt) {
+            matchCount++;
+          }
         } else {
           span.textContent = kw;
         }
+
+        if (!existedInPrompt) {
+          validKeywordCount++;
+        }
+
         keywordsContainerEl.appendChild(span);
       });
 
-      const isCorrect = matchCount >= q.minMatches;
+      const requiredMatches = Math.min(q.minMatches || 2, Math.max(1, validKeywordCount));
+      const isCorrect = matchCount >= requiredMatches;
       applyEvaluation(isCorrect);
 
       userAnswerEl.disabled = true;
