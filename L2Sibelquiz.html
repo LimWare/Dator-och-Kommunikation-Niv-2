@@ -366,7 +366,7 @@
         id: 1,
         category: "Kommandorad",
         question: "Vad är den främsta skillnaden mellan Command Prompt (cmd.exe) och PowerShell?",
-        keywords: ["enklare", "fil", "mapp", "nätverk", "kraftfullare", "skript", "automatisering"],
+        keywords: ["enklare", "fil", "mapp", "nätverk", "skript", "automatisering"],
         minMatches: 2,
         answer: "Command Prompt (cmd.exe) används för enklare kommandon som fil- och mapphantering samt grundläggande nätverksverktyg.\nPowerShell är kraftfullare och stöder skript och automatisering."
       },
@@ -374,7 +374,7 @@
         id: 2,
         category: "Kommandorad",
         question: "Vilken funktion fyller applikationen Windows Terminal?",
-        keywords: ["samlingsplats", "flikar", "cmd", "PowerShell", "Linux", "WSL"],
+        keywords: ["samlingsplats", "flikar", "köra", "WSL", "Linux"],
         minMatches: 2,
         answer: "Windows Terminal är en modern samlingsplats som kan köra cmd, PowerShell och Linux-kommandon via WSL under samma tak."
       },
@@ -382,7 +382,7 @@
         id: 3,
         category: "CPU-komponenter",
         question: "Vilken funktion har styrenheten (Control Unit, CU) inuti en processor?",
-        keywords: ["instruktioner", "styr", "tolkar", "styrenhet"],
+        keywords: ["instruktioner", "styr", "tolkar", "dataflöde"],
         minMatches: 2,
         answer: "CU (styrenheten) bestämmer och tolkar instruktioner och styr processorns funktioner och flöden."
       },
@@ -398,7 +398,7 @@
         id: 5,
         category: "CPU-komponenter",
         question: "Vilken specifik uppgift har adressbussen respektive kontrollbussen i en dator?",
-        keywords: ["position", "adress", "styrsignaler", "styrsignal", "läs", "skriv", "synkronisering"],
+        keywords: ["position", "adress", "styrsignaler", "läs", "skriv", "synkronisering"],
         minMatches: 2,
         answer: "• Adressbussen talar om vilken minnesposition/adress data ska hämtas från eller sparas till.\n• Kontrollbussen skickar styrsignaler (t.ex. om data ska läsas eller skrivas samt synkronisering)."
       },
@@ -406,7 +406,7 @@
         id: 6,
         category: "Felsökning PSU",
         question: "Vad är en multimeter och vad används den till vid felsökning av ett nätaggregat (PSU)?",
-        keywords: ["mätverktyg", "spänning", "ström", "motstånd", "elektriska värden"],
+        keywords: ["mätverktyg", "spänning", "ström", "motstånd", "elektriska"],
         minMatches: 2,
         answer: "En multimeter är ett mätverktyg som mäter elektriska värden som spänning (t.ex. 12V, 5V, 3.3V), ström och motstånd i en elektronisk enhet/krets."
       },
@@ -414,7 +414,7 @@
         id: 7,
         category: "Felsökning RAM",
         question: "Hur startas och körs Windows Memory Diagnostic vid misstänkta minnesfel?",
-        keywords: ["start-meny", "startmenyn", "omstart", "automatiskt", "testar minnet"],
+        keywords: ["start-meny", "startmenyn", "omstart", "automatiskt"],
         minMatches: 2,
         answer: "Windows Memory Diagnostic söks upp i Start-menyn och schemaläggs att testa minnet automatiskt vid omstart."
       },
@@ -422,7 +422,7 @@
         id: 8,
         category: "Felsökning RAM",
         question: "Varför används ofta MemTest86 istället för operativsystemets egna inbyggda minnestester?",
-        keywords: ["USB", "CD", "innan windows", "missa", "avancerat"],
+        keywords: ["USB", "CD", "innan windows", "hitta fel", "avancerat"],
         minMatches: 2,
         answer: "MemTest86 är ett mer avancerat verktyg som startas via ett bootbart USB-minne eller CD innan Windows laddas för att hitta fel som Windows eget verktyg kan missa."
       },
@@ -430,7 +430,7 @@
         id: 9,
         category: "Felsökning Hårddisk",
         question: "Hur felsöker man mekaniska hårddiskar med avseende på dåliga sektorer eller prestandaförluster?",
-        keywords: ["tillverkarnas", "diagnostikprogram", "SeaTools", "Lifeguard", "sektorer", "dåliga sektorer"],
+        keywords: ["tillverkarnas", "diagnostikprogram", "SeaTools", "Lifeguard", "sektorer"],
         minMatches: 2,
         answer: "Genom att köra tillverkarnas egna diagnostikprogram (t.ex. Seagate SeaTools eller Western Digital Data Lifeguard Diagnostic) för att hitta problem som dåliga sektorer eller långsamma delar."
       },
@@ -438,7 +438,7 @@
         id: 10,
         category: "Felsökning Moderkort",
         question: "Vad bör du visuellt granska på moderkortet och vilken felsökningsmetod rekommenderas vid startproblem?",
-        keywords: ["kondensatorer", "kondensatorerna", "puckarna", "hela", "minimal hårdvara", "en enda ram"],
+        keywords: ["kondensatorer", "puckarna", "hela", "minimal hårdvara", "en enda ram"],
         minMatches: 2,
         answer: "1. Kontrollera kondensatorerna (de små puckarna/cylindrarna) så att de är hela och inte buktar eller läcker.\n2. Starta sedan med minimal hårdvara: endast moderkort, nätaggregat (PSU), processor (CPU) och en enda RAM-modul."
       },
@@ -494,7 +494,7 @@
         id: 17,
         category: "Energihantering",
         question: "Vad är syftet med menyn Power Management i BIOS/UEFI?",
-        keywords: ["strömförbrukning", "viloläge", "inte används", "energi", "batteritid"],
+        keywords: ["strömförbrukning", "viloläge", "spara energi", "batteritid"],
         minMatches: 2,
         answer: "En meny i BIOS/UEFI där man ställer in hur datorn hanterar sin strömförbrukning och hur den beter sig när den inte används aktivt, vilket sparar energi och förlänger batteritid."
       },
@@ -518,7 +518,7 @@
         id: 20,
         category: "BIOS-underhåll",
         question: "Vilka kan anledningarna till en BIOS-uppdatering vara?",
-        keywords: ["kompatibilitet", "ny hårdvara", "buggfixar", "prestanda", "Spectre", "Meltdown", "säkerhetsförbättringar"],
+        keywords: ["kompatibilitet", "ny hårdvara", "buggfixar", "prestanda", "Spectre", "Meltdown", "säkerhet"],
         minMatches: 2,
         answer: "Kompatibilitet med ny hårdvara (ny CPU/RAM), buggfixar för kända fel, förbättrad prestanda, nya funktioner samt säkerhetsförbättringar mot sårbarheter som Spectre och Meltdown."
       }
@@ -587,40 +587,31 @@
       facitTextEl.textContent = q.answer;
       keywordsContainerEl.innerHTML = "";
 
-      // Filtrera bort ord som redan fanns i frågan
-      const questionWords = q.question.toLowerCase();
+      // 1. Spärr mot att bara kopiera/upprepa frågan
+      const qClean = q.question.toLowerCase().replace(/[^a-zåäö0-9]/g, "");
+      const aClean = text.replace(/[^a-zåäö0-9]/g, "");
+      const isJustRepeatingQuestion = aClean.length > 10 && qClean.includes(aClean);
 
       let matchCount = 0;
-      let validKeywordCount = 0;
-
       q.keywords.forEach(kw => {
         const kwLower = kw.toLowerCase();
         const span = document.createElement("span");
         span.className = "keyword-pill";
 
         const isMatched = text.includes(kwLower);
-        const existedInPrompt = questionWords.includes(kwLower);
-
         if (isMatched) {
+          matchCount++;
           span.classList.add("matched");
           span.textContent = `✓ ${kw}`;
-          if (!existedInPrompt) {
-            matchCount++;
-          }
         } else {
           span.textContent = kw;
         }
-
-        if (!existedInPrompt) {
-          validKeywordCount++;
-        }
-
         keywordsContainerEl.appendChild(span);
       });
 
-      const requiredMatches = Math.min(q.minMatches || 2, Math.max(1, validKeywordCount));
-      const isCorrect = matchCount >= requiredMatches;
-      applyEvaluation(isCorrect);
+      // Måste ha tillräckligt med träffar OCH får inte bara vara en kopia av frågan
+      const isCorrect = (matchCount >= (q.minMatches || 2)) && !isJustRepeatingQuestion;
+      applyEvaluation(isCorrect, isJustRepeatingQuestion);
 
       userAnswerEl.disabled = true;
       facitBoxEl.classList.add("active");
@@ -628,7 +619,7 @@
       nextControlsEl.style.display = "flex";
     }
 
-    function applyEvaluation(isCorrect) {
+    function applyEvaluation(isCorrect, isRepetition = false) {
       currentEvaluation = isCorrect;
       resultBannerEl.style.display = "block";
 
@@ -638,7 +629,11 @@
         btnOverrideEl.textContent = "Markera som FEL";
       } else {
         resultBannerEl.className = "result-banner incorrect";
-        resultBannerEl.textContent = "✗ FEL SVAR. Jämför med facit nedan.";
+        if (isRepetition) {
+          resultBannerEl.textContent = "✗ FEL SVAR. Du klistrade bara in frågan utan att förklara skillnaden.";
+        } else {
+          resultBannerEl.textContent = "✗ FEL SVAR. Jämför med facit nedan.";
+        }
         btnOverrideEl.textContent = "Markera som RÄTT";
       }
     }
