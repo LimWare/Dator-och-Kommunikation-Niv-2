@@ -135,7 +135,6 @@
       border-color: var(--primary);
     }
 
-    /* Resultatbanner */
     .result-banner {
       display: none;
       padding: 12px 16px;
@@ -314,7 +313,6 @@
       <div class="progress-bar" id="progress-bar"></div>
     </div>
 
-    <!-- Frågekort -->
     <div class="card" id="quiz-card">
       <div class="question-category" id="q-category">Kategori</div>
       <h2 class="question-title" id="q-text">Frågetext</h2>
@@ -322,10 +320,8 @@
       <label class="prompt-label" for="user-answer">Ditt svar:</label>
       <textarea id="user-answer" placeholder="Formulera ditt svar med egna ord här..."></textarea>
 
-      <!-- Rätt / Fel Banner -->
       <div class="result-banner" id="result-banner"></div>
 
-      <!-- Facit och nyckelordsvisning -->
       <div class="facit-box" id="facit-box">
         <div class="facit-title">Facit & Förklaring</div>
         <div class="facit-text" id="facit-text"></div>
@@ -335,7 +331,6 @@
         </div>
       </div>
 
-      <!-- Knappar -->
       <div class="actions">
         <button class="btn-primary" id="btn-check">Rätta mitt svar</button>
         <div id="next-controls" style="display: none; width: 100%; justify-content: space-between; align-items: center;">
@@ -345,7 +340,6 @@
       </div>
     </div>
 
-    <!-- Slutskärm -->
     <div class="card summary-screen" id="summary-card">
       <h2 class="summary-title">Övningen är klar!</h2>
       <p id="summary-score" style="font-size: 1.2rem; margin-bottom: 12px;"></p>
@@ -603,7 +597,6 @@
         keywordsContainerEl.appendChild(span);
       });
 
-      // Bedömning: minst q.minMatches träffade nyckelord
       const isCorrect = matchCount >= q.minMatches;
       applyEvaluation(isCorrect);
 
@@ -687,9 +680,3 @@
   </script>
 </body>
 </html>
-```eof
-
-### Vad som uppdaterades:
-* **Automatisk RÄTT/FEL-bedömning:** När du klickar på "Rätta mitt svar" jämförs din text mot förväntade begrepp och visar en tydlig banner med antingen grön **✓ RÄTT SVAR** eller röd **✗ FEL SVAR**.
-* **Ändra bedömning:** Om du uttryckt dig korrekt med andra ord kan du klicka på *Ändra bedömning* för att växla mellan rätt och fel innan du klickar på *Nästa fråga*.
-* **Repetitionslista:** Alla frågor som avslutas som "FEL" hamnar automatiskt på slutskärmen tillsammans med det fullständiga svaret.
