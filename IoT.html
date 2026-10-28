@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avancerat Quiz: CPU och IoT</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        .question-container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 3px solid #ecf0f1;
+        }
+        .question {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 12px;
+            padding: 8px;
+            background-color: #f9fbfb;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .options li:hover {
+            background-color: #eef2f5;
+        }
+        .options label {
+            cursor: pointer;
+            display: block;
+            width: 100%;
+        }
+        .textarea-answer {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: inherit;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+        .textarea-answer:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #fff;
+        }
+        .char-counter {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 5px;
+        }
+        .facit-section {
+            display: none;
+            background-color: #e8f6f3;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 5px solid #1abc9c;
+            margin-top: 40px;
+        }
+        .facit-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #bdc3c7;
+        }
+        .facit-item:last-child {
+            border-bottom: none;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: not-allowed;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        button.active {
+            background-color: #3498db;
+            cursor: pointer;
+        }
+        button.active:hover {
+            background-color: #2980b9;
+        }
+        .warning-text {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Avancerat Quiz: CPU och IoT</h1>
+    <p>Testa dina kunskaper! De öppna frågorna kräver utförliga svar för att "Visa Facit"-knappen ska låsas upp. Korta gissningar accepteras inte av systemet.</p>
+
+    <h2>Del 1: Flervalsfrågor</h2>
+
+    <div class="question-container">
+        <div class="question">1. Vilken specifik uppgift har adressbussen i en CPU?</div>
+        <ul class="options">
+            <li><label><input type="radio" name="q1"> A) Den transporterar själva datan och instruktionerna mellan komponenterna.</label></li>
+            <li><label><input type="radio" name="q1"> B) Den anger exakt var i minnet data ska läsas eller skrivas.</label></li>
+            <li><label><input type="radio" name="q1"> C) Den skickar styrsignaler som samordnar processorns olika arbeten.</label></li>
+            <li><label><input type="radio" name="q1"> D) Den lagrar tillfälliga minnesadresser i processorns register.</label></li>
+        </ul>
+    </div>
+
+    <div class="question-container">
+        <div class="question">2. Vad är den primära funktionen för en ALU (Arithmetic Logic Unit)?</div>
+        <ul class="options">
+            <li><label><input type="radio" name="q2"> A) Att tolka instruktioner och styra vad de andra delarna ska göra.</label></li>
+            <li><label><input type="radio" name="q2"> B) Att agera som en snabb mellanlagring (cache) för ofta använd data.</label></li>
+            <li><label><input type="radio" name="q2"> C) Att utföra matematiska beräkningar och logiska operationer.</label></li>
+            <li><label><input type="radio" name="q2"> D) Att hålla takten i processorns arbete via klockfrekvensen.</label></li>
+        </ul>
+    </div>
+
+    <div class="question-container">
+        <div class="question">3. Vilken processortyp används ofta inom IoT när enheten ska hantera mer krävande uppgifter, till skillnad från enkla sensoravläsningar?</div>
+        <ul class="options">
+            <li><label><input type="radio" name="q3"> A) Mikrokontroller (MCU)</label></li>
+            <li><label><input type="radio" name="q3"> B) Mikroprocessor (MPU)</label></li>
+            <li><label><input type="radio" name="q3"> C) Intel vPro-chip</label></li>
+            <li><label><input type="radio" name="q3"> D) Enkärnig ALU-processor</label></li>
+        </ul>
+    </div>
+
+    <div class="question-container">
+        <div class="question">4. Vilken av följande beskrivs som en central fördel med multithreading?</div>
+        <ul class="options">
+            <li><label><input type="radio" name="q4"> A) Att processorn fysiskt delas upp i flera kärnor för att hantera nätverkstrafik.</label></li>
+            <li><label><input type="radio" name="q4"> B) Att processorn kan arbeta med flera trådar under samma tidsperiod, så att en tråd kan arbeta medan en annan väntar.</label></li>
+            <li><label><input type="radio" name="q4"> C) Att programmet automatiskt sänker klockfrekvensen för trådar som inte används för att spara energi.</label></li>
+            <li><label><input type="radio" name="q4"> D) Att IT-personal kan fjärrstyra de enskilda trådarna på distans vid felsökning.</label></li>
+        </ul>
+    </div>
+
+    <div class="question-container">
+        <div class="question">5. Vilken säkerhetsfunktion i en IoT-processor har till specifik uppgift att kontrollera programvaran redan när enheten startas?</div>
+        <ul class="options">
+            <li><label><input type="radio" name="q5"> A) Kryptering</label></li>
+            <li><label><input type="radio" name="q5"> B) Säker uppstart</label></li>
+            <li><label><input type="radio" name="q5"> C) Åtkomstskydd</label></li>
+            <li><label><input type="radio" name="q5"> D) Verifierade uppdateringar</label></li>
+        </ul>
+    </div>
+
+    <h2>Del 2: Analyserande textfrågor</h2>
+    <p><em>Förklara med egna ord. Du måste skriva minst 30 tecken per svar för att låsa upp facit.</em></p>
+
+    <div class="question-container">
+        <div class="question">6. Beskriv hur en instruktion hanteras i en CPU. I ditt svar måste du förklara det exakta samarbetet mellan Kontrollenheten och ALU:n.</div>
+        <textarea class="textarea-answer text-req" placeholder="Skriv din förklaring här..."></textarea>
+        <div class="char-counter">Minst 30 tecken krävs. Tecken: <span class="count">0</span>/30</div>
+    </div>
+
+    <div class="question-container">
+        <div class="question">7. Vad är den avgörande skillnaden mellan hur processorn hanterar arbete via "Multithreading" jämfört med en "Flerkärnig CPU"?</div>
+        <textarea class="textarea-answer text-req" placeholder="Förklara skillnaden..."></textarea>
+        <div class="char-counter">Minst 30 tecken krävs. Tecken: <span class="count">0</span>/30</div>
+    </div>
+
+    <div class="question-container">
+        <div class="question">8. Förklara processorns roll i en IoT-arkitektur. Ge ett konkret exempel på hur processorn hanterar inkommande data från en sensor och vad den resulterar i.</div>
+        <textarea class="textarea-answer text-req" placeholder="Beskriv flödet och ge exempel..."></textarea>
+        <div class="char-counter">Minst 30 tecken krävs. Tecken: <span class="count">0</span>/30</div>
+    </div>
+
+    <div class="question-container">
+        <div class="question">9. När man ska välja en processor för en IoT-enhet behöver man väga fyra specifika huvudegenskaper mot varandra. Vilka är dessa fyra, och vad behöver processorn ha stöd för utöver detta?</div>
+        <textarea class="textarea-answer text-req" placeholder="Lista de fyra egenskaperna och ytterligare stödfunktioner..."></textarea>
+        <div class="char-counter">Minst 30 tecken krävs. Tecken: <span class="count">0</span>/30</div>
+    </div>
+
+    <button id="facitBtn" disabled>Fyll i alla textsvar för att visa Facit</button>
+    <div id="warningText" class="warning-text">Du måste utveckla dina svar i textrutorna ovan.</div>
+
+    <div id="facit" class="facit-section">
+        <h2>Facit och Rättningsmall</h2>
+        
+        <h3>Del 1: Flervalsfrågor</h3>
+        <p><strong>1: B</strong> (Adressbussen anger exakt var i minnet data ska läsas/skrivas. A är databussen, C är kontrollbussen).</p>
+        <p><strong>2: C</strong> (ALU gör beräkningar/logik. A är Kontrollenheten, B är Cache, D är Klockan).</p>
+        <p><strong>3: B</strong> (MPU används för mer krävande uppgifter, medan MCU passar enklare, strömsnåla uppgifter).</p>
+        <p><strong>4: B</strong> (Multithreading låter processorn arbeta med flera trådar under samma tidsperiod).</p>
+        <p><strong>5: B</strong> (Säker uppstart kontrollerar programvaran vid start. Verifierade uppdateringar sker senare).</p>
+
+        <h3>Del 2: Rättningsmall för textfrågor</h3>
+        <p><em>För full poäng på textfrågorna måste ditt svar innehålla följande koncept:</em></p>
+        
+        <div class="facit-item">
+            <strong>Fråga 6 (CPU-utförande):</strong><br>
+            Svaret måste nämna att CPU:n hämtar, tolkar och utför instruktioner. Det måste tydligt framgå att <em>Kontrollenheten</em> är den som styr vad delarna ska göra, medan <em>ALU:n</em> utför de faktiska beräkningarna eller logiska operationerna, varefter resultatet lagras (ofta i register).
+        </div>
+
+        <div class="facit-item">
+            <strong>Fråga 7 (Trådar vs Kärnor):</strong><br>
+            Svaret måste visa förståelse för att <em>Multithreading</em> innebär att processorn växlar mellan trådar under samma tidsperiod (när en väntar, jobbar en annan), medan en <em>Flerkärnig CPU</em> innebär att flera uppgifter fysiskt kan utföras exakt samtidigt eftersom arbetet delas upp mellan separata kärnor.
+        </div>
+
+        <div class="facit-item">
+            <strong>Fråga 8 (IoT-arkitektur):</strong><br>
+            Svaret ska förklara att processorn tar emot data, bearbetar dem och sedan styr enheten. Ett exempel måste finnas med (t.ex. att processorn tar emot data om för hög temperatur från en sensor och skickar en signal för att starta en fläkt, samt förbereder data för att skickas vidare).
+        </div>
+
+        <div class="facit-item">
+            <strong>Fråga 9 (Avvägningar IoT-processor):</strong><br>
+            De fyra huvudfaktorerna som måste nämnas är: <strong>Prestanda, strömförbrukning, pris och storlek</strong>. Utöver detta ska det nämnas att processorn behöver tillräckligt med minne samt rätt stöd för sensorer, kommunikation och säkerhet.
+        </div>
+    </div>
+
+    <script>
+        const textareas = document.querySelectorAll('.text-req');
+        const facitBtn = document.getElementById('facitBtn');
+        const warningText = document.getElementById('warningText');
+        const minChars = 30;
+
+        function checkInputs() {
+            let allValid = true;
+            
+            textareas.forEach(ta => {
+                const counterSpan = ta.nextElementSibling.querySelector('.count');
+                const len = ta.value.trim().length;
+                counterSpan.textContent = len;
+                
+                if (len < minChars) {
+                    allValid = false;
+                    counterSpan.style.color = '#e74c3c'; // Röd om för kort
+                } else {
+                    counterSpan.style.color = '#27ae60'; // Grön om godkänd
+                }
+            });
+
+            if (allValid) {
+                facitBtn.disabled = false;
+                facitBtn.classList.add('active');
+                facitBtn.textContent = 'Visa Facit';
+                warningText.style.display = 'none';
+            } else {
+                facitBtn.disabled = true;
+                facitBtn.classList.remove('active');
+                facitBtn.textContent = 'Fyll i alla textsvar för att visa Facit';
+                warningText.style.display = 'block';
+            }
+        }
+
+        textareas.forEach(ta => {
+            ta.addEventListener('input', checkInputs);
+        });
+
+        facitBtn.addEventListener('click', () => {
+            document.getElementById('facit').style.display = 'block';
+            facitBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
